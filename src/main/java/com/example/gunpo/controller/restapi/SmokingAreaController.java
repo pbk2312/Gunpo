@@ -25,12 +25,15 @@ public class SmokingAreaController {
     public ResponseEntity<ResponseDto<List<SmokingAreaDto>>> getAllSmokingZones() {
         // Redis에서 흡연 구역 정보를 가져옵니다.
         List<SmokingAreaDto> smokingZones = smokingAreaService.getAllSmokingZones();
+        log.info("흡연 구역 정보를 Redis에서 가져왔습니다: {}", smokingZones);
 
         // 응답 메시지를 설정합니다.
         String message = smokingZones.isEmpty() ? "흡연 구역 정보가 없습니다." : "흡연 구역 정보를 성공적으로 가져왔습니다.";
+        log.info("응답 메시지 설정: {}", message);
 
         // ResponseDto 객체를 생성합니다.
         ResponseDto<List<SmokingAreaDto>> responseDto = new ResponseDto<>(message, smokingZones);
+        log.info("ResponseDto 생성: {}", responseDto);
 
         // 응답을 반환합니다.
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
