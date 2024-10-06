@@ -1,10 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="군포 시민을 위한 소통 플랫폼" />
+    <meta name="author" content="Your Name" />
+    <title>Gunpo Community Platform</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        .hero {
+            background-color: #007bff;
+            color: white;
+            padding: 60px 20px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        .feature {
+            padding: 40px 20px;
+            text-align: center;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        .feature:hover {
+            transform: translateY(-5px);
+        }
+        .feature h2 {
+            margin-bottom: 20px;
+        }
+        .feature p {
+            color: #6c757d;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+        }
+        .icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            color: #007bff;
+        }
+    </style>
 </head>
 <body>
-
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
+        </div>
+    </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Top navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <button class="btn btn-primary" id="sidebarToggle">Toggle Menu</button>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <li class="nav-item active"><a class="nav-link" href="#!">Home</a></li>
+                        <li class="nav-item"><a class="nav-link" href="#!">Link</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <!-- Page content-->
+        <div class="container-fluid">
+            <!-- Hero Section -->
+            <div class="hero">
+                <h1>환영합니다, 군포 시민 여러분!</h1>
+                <p>군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다.</p>
+            </div>
+            <!-- Features Section -->
+            <div class="row">
+                <div class="col-md-4 feature">
+                    <div class="icon">💬</div>
+                    <h2>소통의 장</h2>
+                    <p>시민들이 의견을 나누고 질문할 수 있는 커뮤니티 게시판.</p>
+                </div>
+                <div class="col-md-4 feature">
+                    <div class="icon">📅</div>
+                    <h2>이벤트 안내</h2>
+                    <p>지역의 다양한 이벤트 및 행사 정보를 제공합니다.</p>
+                </div>
+                <div class="col-md-4 feature">
+                    <div class="icon">📷</div>
+                    <h2>사진 갤러리</h2>
+                    <p>이벤트 및 활동의 순간들을 공유하는 공간입니다.</p>
+                </div>
+            </div>
+            <!-- Additional Section -->
+            <div class="row mt-4">
+                <div class="col-md-12 feature">
+                    <div class="icon">🌐</div>
+                    <h2>지속적인 정보 업데이트</h2>
+                    <p>군포의 최신 소식과 정보를 지속적으로 업데이트합니다.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
 </body>
 </html>
