@@ -8,6 +8,7 @@ import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,7 +41,11 @@ public class MemberDto {
     @FutureOrPresent(message = "생년월일은 현재 날짜 이전이어야 합니다.")
     private LocalDate dateOfBirth;
 
-    private List<Board> boards = new ArrayList<>();  // 작성한 게시글 리스트
+    public UsernamePasswordAuthenticationToken toAuthentication() {
+        return new UsernamePasswordAuthenticationToken(email, password);
+        // 사용자 로그인 기능 처리하기 위한 메서드
+    }
+
 
 
 }
