@@ -1,7 +1,9 @@
 package com.example.gunpo.service;
 
 import com.example.gunpo.domain.Member;
+import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.MemberNotFoundException;
 
 public interface MemberService {
@@ -29,8 +31,8 @@ public interface MemberService {
 
     /**
      * 회원 로그인 기능을 수행합니다.
-     * @param memberDto 로그인할 회원 정보
+     * @param loginDto 로그인할 회원 정보
      * @return 로그인한 회원 정보
      */
-    Member login(MemberDto memberDto);
+    TokenDto login(LoginDto loginDto);
 }

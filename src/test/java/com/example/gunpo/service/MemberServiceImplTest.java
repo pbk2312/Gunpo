@@ -2,6 +2,7 @@ package com.example.gunpo.service;
 
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.domain.MemberRole;
+import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
 import com.example.gunpo.exception.MemberNotFoundException;
@@ -139,7 +140,7 @@ class MemberServiceImplTest {
         Long memberId = memberService.save(memberDto);
 
         // 로그인할 정보
-        MemberDto loginDto = MemberDto.builder()
+        LoginDto loginDto = LoginDto.builder()
                 .email("loginTest@naver.com")
                 .password("loginpassword")
                 .build();
@@ -167,7 +168,7 @@ class MemberServiceImplTest {
         memberService.save(memberDto);
 
         // 잘못된 비밀번호로 로그인 시도
-        MemberDto loginDto = MemberDto.builder()
+        LoginDto loginDto = LoginDto.builder()
                 .email("loginFailTest@naver.com")
                 .password("wrongpassword")
                 .build();

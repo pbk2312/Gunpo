@@ -11,8 +11,6 @@ import lombok.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
@@ -25,13 +23,15 @@ public class MemberDto {
 
     @NotBlank(message = "이메일은 필수 입력 값입니다.")
     @Email(message = "이메일 형식에 맞지 않습니다.")
-
     private String email;
 
     @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
     @Pattern(regexp="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W)(?=\\S+$).{8,20}",
             message = "비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다.")
     private String password;
+
+    @NotBlank
+    private String checkPassword;
 
     private MemberRole memberRole;
 
@@ -41,10 +41,8 @@ public class MemberDto {
     @FutureOrPresent(message = "생년월일은 현재 날짜 이전이어야 합니다.")
     private LocalDate dateOfBirth;
 
-    public UsernamePasswordAuthenticationToken toAuthentication() {
-        return new UsernamePasswordAuthenticationToken(email, password);
-        // 사용자 로그인 기능 처리하기 위한 메서드
-    }
+    private String certificationNumber;
+
 
 
 
