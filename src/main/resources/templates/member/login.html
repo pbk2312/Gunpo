@@ -16,9 +16,9 @@
       font-family: 'Arial', sans-serif;
     }
     .login-container {
-      max-width: 400px;
+      max-width: 500px; /* 크기 확장 */
       margin: auto;
-      padding: 20px;
+      padding: 30px; /* 패딩 추가 */
       background-color: white;
       border-radius: 8px;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -27,6 +27,36 @@
       background-color: #007bff;
       border-color: #007bff;
     }
+    .btn-signup {
+      background-color: #28a745;
+      border-color: #28a745;
+      margin-top: 10px;
+    }
+
+    /* 홈 버튼 스타일 */
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #6a11cb; /* 아이콘 색상 */
+      text-decoration: none;
+    }
+
+    .navbar-brand .icon {
+      font-size: 2rem; /* 아이콘 크기 */
+      margin-right: 10px;
+    }
+
+    .navbar-brand .text {
+      font-size: 1rem; /* 글씨 크기를 아이콘보다 작게 설정 */
+      color: #6c757d; /* 회색 글씨 */
+    }
+
+    .navbar-brand:hover .text {
+      color: #343a40; /* 호버 시 글씨 색상 변경 */
+    }
+
   </style>
 </head>
 <body>
@@ -49,23 +79,20 @@
     <!-- Top navigation -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
       <div class="container-fluid">
-        <button class="btn btn-primary" id="sidebarToggle">메뉴 열기/닫기</button>
+        <a class="navbar-brand" href="/">
+          <span class="icon">🏠</span> <!-- 상시 보이는 홈 아이콘 -->
+          <span class="text">홈으로</span> <!-- 아이콘보다 작고 회색 글씨 -->
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <li class="nav-item active"><a class="nav-link" href="#!">홈</a></li>
-            <li class="nav-item"><a class="nav-link" href="#!">링크</a></li>
-          </ul>
-        </div>
       </div>
     </nav>
     <!-- Main content -->
     <main class="container-fluid">
       <div class="login-container mt-5">
         <h2 class="text-center">로그인</h2>
-        <form id="loginForm" action="/api/login" method="post">
+        <form id="loginForm" action="/api/member/login" method="post">
           <div class="mb-3">
             <label for="email" class="form-label">이메일</label>
             <input type="email" class="form-control" id="email" name="email" required>
@@ -74,9 +101,9 @@
             <label for="password" class="form-label">비밀번호</label>
             <input type="password" class="form-control" id="password" name="password" required>
           </div>
-          <button type="submit" class="btn btn-primary">로그인</button>
-          <p class="mt-3 text-center"><a href="/sign-up">회원가입</a></p>
+          <button type="submit" class="btn btn-primary w-100">로그인</button>
         </form>
+        <button class="btn btn-signup w-100">회원가입</button> <!-- 회원가입 버튼 추가 -->
       </div>
     </main>
   </div>
@@ -85,34 +112,33 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- Core theme JS -->
 <script src="js/scripts.js"></script>
-<!-- 추가된 JavaScript 코드 -->
 <script>
-    document.getElementById("loginForm").onsubmit = function(event) {
+  document.getElementById("loginForm").onsubmit = function(event) {
     event.preventDefault(); // 기본 폼 제출을 막음
-
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
 
-    fetch("/api/login", {
-    method: "POST",
-    headers: {
-    "Content-Type": "application/json", // JSON 형식으로 요청 헤더 설정
-  },
-    body: JSON.stringify({ email, password }) // JSON 데이터로 변환
-  })
-    .then(response => {
-    if (response.ok) {
-    window.location.href = "/"; // 로그인 성공 시 리다이렉트
-  } else {
-    return response.json().then(data => {
-    alert(data.message || "로그인에 실패했습니다."); // 에러 처리
-  });
-  }
-  })
-    .catch(error => {
-    console.error("Error:", error);
-    alert("로그인 처리 중 오류가 발생했습니다."); // 네트워크 오류 처리
-  });
+    fetch("/api/member/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    })
+            .then(response => {
+              if (response.ok) {
+                window.location.href = "/"; // 로그인 성공 시 리다이렉트
+              } else {
+                return response.json().then(data => {
+                  alert(data.message || "로그인에 실패했습니다."); // 에러 처리
+                });
+              }
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              alert("로그인 처리 중 오류가 발생했습니다."); // 네트워크 오류 처리
+            });
+  };
+  document.getElementById("signupButton").onclick = function() {
+    window.location.href = "/sign-up"; // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
   };
 </script>
 </body>

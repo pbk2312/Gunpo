@@ -6,6 +6,8 @@ import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.MemberNotFoundException;
 
+import java.util.Map;
+
 public interface MemberService {
 
     /**
@@ -35,4 +37,13 @@ public interface MemberService {
      * @return 로그인한 회원 정보
      */
     TokenDto login(LoginDto loginDto);
+
+    Member getUserDetails(String accessToken);
+
+    void logout(Member member);
+
+
+    Member findByRefreshToken(String refreshToken);
+
+
 }

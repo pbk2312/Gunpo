@@ -4,6 +4,7 @@ import com.example.gunpo.domain.Member;
 import com.example.gunpo.domain.MemberRole;
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
 import com.example.gunpo.exception.MemberNotFoundException;
 import com.example.gunpo.repository.MemberRepository;
@@ -146,11 +147,10 @@ class MemberServiceImplTest {
                 .build();
 
         // when
-        Member loggedInMember = memberService.login(loginDto);
+        TokenDto tokenDto = memberService.login(loginDto);
 
         // then
-        assertNotNull(loggedInMember);
-        assertEquals(loggedInMember.getId(), memberId, "로그인 실패.");
+        assertNotNull(tokenDto);
     }
 
     // 로그인 실패 테스트 (잘못된 비밀번호)

@@ -31,7 +31,7 @@
         <!-- Top navigation-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
             <div class="container-fluid">
-                <button class="btn btn-primary" id="sidebarToggle">Toggle Menu</button>
+                <button class="btn btn-primary" id="sidebarToggle">메뉴 열기/닫기</button>
             </div>
         </nav>
         <!-- Page content-->
@@ -163,7 +163,7 @@
                 return;
             }
 
-            fetch('/api/sign-up', {
+            fetch('/api/member/sign-up', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

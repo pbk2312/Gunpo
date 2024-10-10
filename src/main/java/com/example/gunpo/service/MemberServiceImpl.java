@@ -7,6 +7,7 @@ import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
 import com.example.gunpo.exception.MemberNotFoundException;
+import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.mapper.MemberMapper;
@@ -16,19 +17,23 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
-public class MemberServiceImpl implements MemberService{
+public class MemberServiceImpl implements MemberService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final MemberRepository memberRepository;
@@ -119,11 +124,12 @@ public class MemberServiceImpl implements MemberService{
 
         return updatedMember.getId();
     }
+
     @Override
     public TokenDto login(LoginDto loginDto) {
-        log.info("loginDtoEmail = {} " ,loginDto.getEmail());
+        log.info("loginDtoEmail = {} ", loginDto.getEmail());
         Optional<Member> optionalMember = memberRepository.findByEmail(loginDto.getEmail());
-        log.info("optionalMember : {}" ,optionalMember.get().getEmail());
+        log.info("optionalMember : {}", optionalMember.get().getEmail());
 
         // 회원 존재 여부 확인
         Member member = optionalMember.orElseThrow(() -> new MemberNotFoundException("해당 이메일에 대한 회원이 존재하지 않습니다."));
@@ -153,5 +159,41 @@ public class MemberServiceImpl implements MemberService{
         } catch (BadCredentialsException e) {
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    @Override
+    public void logout(Member member) {
+        redisService.deleteStringValue(String.valueOf(member.getId()));
+    }
+
+    @Override
+    public Member findByRefreshToken(String refreshToken) {
+        // Redis에서 refreshToken으로 memberId 찾기
+        String memberId = redisService.findMemberIdByRefreshToken(refreshToken);
+        if (memberId != null) {
+            // memberId로 Member 정보 조회
+            return memberRepository.findById(Long.valueOf(memberId))
+                    .orElseThrow(() -> new IllegalArgumentException("해당하는 사용자를 찾을 수 없습니다."));
+        }
+        throw new IllegalArgumentException("유효하지 않은 refreshToken입니다.");
+    }
+
+    @Override
+    public Member getUserDetails(String accessToken) {
+
+        // accessToken이 유효하지 않을 경우 예외 발생
+        if (!tokenProvider.validate(accessToken)) {
+            throw new UnauthorizedException("인증되지 않은 사용자입니다.");
+        }
+
+        // accessToken을 통해 인증 객체를 가져옴
+        Authentication authentication = tokenProvider.getAuthentication(accessToken);
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        // 이메일을 통해 회원 조회
+        Optional<Member> optionalMember = memberRepository.findByEmail(userDetails.getUsername());
+
+        // Optional 처리
+        return optionalMember.orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
     }
 }
