@@ -10,6 +10,12 @@
     <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="/css/styles.css" rel="stylesheet" />
+    <style>
+        .required {
+            color: red; /* 필수 표시를 위한 빨간색 */
+            margin-left: 5px; /* 아이콘과 라벨 사이의 간격 */
+        }
+    </style>
 </head>
 <body>
 <div class="d-flex" id="wrapper">
@@ -31,7 +37,10 @@
         <!-- Top navigation-->
         <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
             <div class="container-fluid">
-                <button class="btn btn-primary" id="sidebarToggle">메뉴 열기/닫기</button>
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span> <!-- 상시 보이는 홈 아이콘 -->
+                    <span class="text">홈으로</span> <!-- 아이콘보다 작고 회색 글씨 -->
+                </a>
             </div>
         </nav>
         <!-- Page content-->
@@ -39,7 +48,7 @@
             <h1 class="mt-4">회원가입</h1>
             <form id="signUpForm">
                 <div class="mb-3">
-                    <label for="email" class="form-label">이메일</label>
+                    <label for="email" class="form-label">이메일</label><span class="required">*</span>
                     <div class="input-group">
                         <input type="email" class="form-control" id="email" name="email" required>
                         <button type="button" class="btn btn-outline-secondary" id="sendCertification">인증번호 전송</button>
@@ -47,7 +56,7 @@
                     <small class="form-text text-muted">유효한 이메일 주소를 입력해주세요.</small>
                 </div>
                 <div class="mb-3">
-                    <label for="certificationNumber" class="form-label">인증번호</label>
+                    <label for="certificationNumber" class="form-label">인증번호</label><span class="required">*</span>
                     <div class="input-group">
                         <input type="text" class="form-control" id="certificationNumber" name="certificationNumber" required>
                         <button type="button" class="btn btn-outline-secondary" id="verifyCertification">인증번호 확인</button>
@@ -55,23 +64,23 @@
                     <small class="form-text text-muted">이메일로 전송된 인증번호를 입력해주세요.</small>
                 </div>
                 <div class="mb-3">
-                    <label for="nickname" class="form-label">닉네임</label>
+                    <label for="nickname" class="form-label">닉네임</label><span class="required">*</span>
                     <input type="text" class="form-control" id="nickname" name="nickname" required>
                     <small class="form-text text-muted">닉네임은 필수 입력값입니다.</small>
                 </div>
                 <div class="mb-3">
-                    <label for="dateOfBirth" class="form-label">생년월일</label>
+                    <label for="dateOfBirth" class="form-label">생년월일</label><span class="required">*</span>
                     <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
                 </div>
                 <div class="mb-3">
-                    <label for="password" class="form-label">비밀번호</label>
+                    <label for="password" class="form-label">비밀번호</label><span class="required">*</span>
                     <input type="password" class="form-control" id="password" name="password" required
                            pattern="(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\W).{8,20}"
                            title="비밀번호는 영문 대,소문자와 숫자, 특수기호가 적어도 1개 이상씩 포함된 8자 ~ 20자의 비밀번호여야 합니다.">
                     <small class="form-text text-muted">비밀번호는 8자 ~ 20자 사이로 영문, 숫자, 특수문자를 포함해야 합니다.</small>
                 </div>
                 <div class="mb-3">
-                    <label for="checkPassword" class="form-label">비밀번호 확인</label>
+                    <label for="checkPassword" class="form-label">비밀번호 확인</label><span class="required">*</span>
                     <input type="password" class="form-control" id="checkPassword" name="checkPassword" required>
                 </div>
                 <button type="submit" class="btn btn-primary">회원가입</button>
@@ -150,40 +159,26 @@
             return;
         }
 
-        // 회원가입 폼 제출 처리
-        document.getElementById('signUpForm').addEventListener('submit', function (event) {
-            event.preventDefault(); // 기본 폼 제출 방지
-
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData.entries());
-
-            // 비밀번호 일치 여부 확인
-            if (data.password !== data.checkPassword) {
-                alert('비밀번호가 일치하지 않습니다.');
-                return;
-            }
-
-            fetch('/api/member/sign-up', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+        fetch('/api/member/sign-up', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message); // 성공 메시지 표시
+                    window.location.href = "/login"; // 로그인 페이지로 리디렉션
+                } else {
+                    alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+                }
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.message) {
-                        alert(data.message); // 성공 메시지 표시
-                        window.location.href = "/"; // 홈으로 리디렉션
-                    } else {
-                        alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('회원가입 중 오류가 발생했습니다.');
-                });
-        });
+            .catch(error => {
+                console.error('Error:', error);
+                alert('회원가입 중 오류가 발생했습니다.');
+            });
     });
 </script>
 </body>

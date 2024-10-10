@@ -103,7 +103,7 @@
           </div>
           <button type="submit" class="btn btn-primary w-100">로그인</button>
         </form>
-        <button class="btn btn-signup w-100">회원가입</button> <!-- 회원가입 버튼 추가 -->
+        <button id="signupButton" class="btn btn-signup w-100">회원가입</button> <!-- 회원가입 버튼에 ID 추가 -->
       </div>
     </main>
   </div>
@@ -125,18 +125,24 @@
     })
             .then(response => {
               if (response.ok) {
-                window.location.href = "/"; // 로그인 성공 시 리다이렉트
+                return response.json(); // JSON 응답을 반환
               } else {
                 return response.json().then(data => {
                   alert(data.message || "로그인에 실패했습니다."); // 에러 처리
+                  throw new Error(data.message || "로그인에 실패했습니다."); // 에러를 던져서 아래의 catch로 이동
                 });
               }
+            })
+            .then(data => {
+              const redirectUrl = data.data.redirectUrl; // 리다이렉트 URL 가져오기
+              window.location.href = redirectUrl; // 로그인 성공 시 리다이렉트
             })
             .catch(error => {
               console.error("Error:", error);
               alert("로그인 처리 중 오류가 발생했습니다."); // 네트워크 오류 처리
             });
   };
+
   document.getElementById("signupButton").onclick = function() {
     window.location.href = "/sign-up"; // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
   };

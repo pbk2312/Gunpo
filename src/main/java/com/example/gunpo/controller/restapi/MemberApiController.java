@@ -12,6 +12,7 @@ import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.service.MemberService;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,7 +28,7 @@ import java.util.Map;
 @Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/api/member")
-public class MemberApiController{
+public class MemberApiController {
 
     private final MemberService memberService;
     private final TokenProvider tokenProvider;
@@ -54,8 +55,7 @@ public class MemberApiController{
             log.error("비밀번호 불일치: {}", e.getMessage());
             ResponseDto<String> response = new ResponseDto<>("입력한 비밀번호가 일치하지 않습니다.", null);
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // 기타 예외 처리
             log.error("회원가입 처리 중 예외 발생: {}", e.getMessage());
             ResponseDto<String> response = new ResponseDto<>("회원가입 처리 중 오류가 발생했습니다.", null);
@@ -65,29 +65,52 @@ public class MemberApiController{
 
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseDto<?>> login(@RequestBody LoginDto loginDto,
-                                                HttpServletResponse response) {
+    public ResponseEntity<ResponseDto<Map<String, String>>> login(
+            @RequestBody LoginDto loginDto,
+            HttpServletResponse response,
+            HttpServletRequest request) {
+        Map<String, String> responseMap = new HashMap<>(); // 응답 데이터를 담을 맵 생성
+
         try {
+            // 로그인 서비스 호출
             TokenDto tokenDto = memberService.login(loginDto);
 
-            addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600); // 한시간
-            addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000); // 7일
-            ResponseDto<Member> httpresponse = new ResponseDto<>("로그인 성공", null);
-            return ResponseEntity.ok(httpresponse);
+            // 쿠키에 토큰 저장
+            addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600); // accessToken 유효기간 1시간
+            addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000); // refreshToken 유효기간 7일
+
+            // 세션에 저장된 리다이렉트 URL 가져오기
+            String redirectUrl = (String) request.getSession().getAttribute("redirectUrl");
+            request.getSession().removeAttribute("redirectUrl"); // 사용 후 세션에서 제거
+
+            // 응답 맵에 데이터 추가
+            responseMap.put("accessToken", tokenDto.getAccessToken());
+            responseMap.put("redirectUrl", redirectUrl != null ? redirectUrl : "/"); // redirectUrl 없을 경우 기본 경로 설정
+
+            // 응답 객체 생성 및 반환
+            ResponseDto<Map<String, String>> httpResponse = new ResponseDto<>("로그인 성공", responseMap);
+            return ResponseEntity.ok(httpResponse);
+
         } catch (MemberNotFoundException e) {
             // MemberNotFoundException 발생 시, 구체적인 메시지 전달
-            return buildErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
+            responseMap.put("error", e.getMessage());
+            ResponseDto<Map<String, String>> errorResponse = new ResponseDto<>("로그인 실패", responseMap);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
         } catch (IncorrectPasswordException e) {
             // IncorrectPasswordException 발생 시, 구체적인 메시지 전달
-            return buildErrorResponse(HttpStatus.UNAUTHORIZED, e.getMessage());
+            responseMap.put("error", e.getMessage());
+            ResponseDto<Map<String, String>> errorResponse = new ResponseDto<>("로그인 실패", responseMap);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
         } catch (Exception e) {
             // 기타 예외 발생 시, 구체적인 메시지 전달
-            return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+            responseMap.put("error", e.getMessage());
+            ResponseDto<Map<String, String>> errorResponse = new ResponseDto<>("로그인 중 오류 발생", responseMap);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ResponseDto<?>> logout(@CookieValue(value = "accessToken", required = false) String accessToken, HttpServletResponse response){
+    public ResponseEntity<ResponseDto<?>> logout(@CookieValue(value = "accessToken", required = false) String accessToken, HttpServletResponse response) {
 
         // accessToken이 없을 경우 예외 처리
         if (accessToken == null) {
