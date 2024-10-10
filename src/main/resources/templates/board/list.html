@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <meta name="description" content="Gunpo Community 게시판 목록" />
+  <meta name="author" content="작성자 이름" />
+  <title>게시판 목록</title>
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+  <!-- Core theme CSS (includes Bootstrap) -->
+  <link href="/css/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+  <!-- Sidebar -->
+  <div class="border-end bg-white" id="sidebar-wrapper">
+    <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+    <div class="list-group list-group-flush">
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">커뮤니티 게시판</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연구역</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
+    </div>
+  </div>
+
+  <!-- Page content wrapper -->
+  <div id="page-content-wrapper">
+    <!-- Top navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <span class="icon">🏠</span>
+          <span class="text">홈으로</span>
+        </a>
+      </div>
+    </nav>
+
+    <!-- 게시물 목록 -->
+    <div class="container mt-4">
+      <h2>게시판 목록</h2>
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th>번호</th>
+          <th>제목</th>
+          <th>작성자</th>
+          <th>작성일</th>
+          <th>조회수</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- 게시물 리스트 -->
+        <tr th:each="board : ${boardPage}">
+          <td th:text="${board.id}">1</td>
+          <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시물 제목</a></td>
+          <td th:text="${board.nickname}">작성자</td>
+          <td th:text="${board.viewCount}">0</td>
+        </tr>
+        </tbody>
+      </table>
+
+      <!-- 페이지 네비게이션 -->
+      <nav aria-label="게시판 페이지 탐색">
+        <ul class="pagination justify-content-center">
+          <li class="page-item" th:classappend="${boardPage.number == 0} ? 'disabled'">
+            <a class="page-link" th:href="@{/board/list(page=${boardPage.number - 1}, size=${boardPage.size})}">이전</a>
+          </li>
+          <li class="page-item" th:each="i : ${#numbers.sequence(0, boardPage.totalPages - 1)}"
+              th:classappend="${i == boardPage.number} ? 'active'">
+            <a class="page-link" th:href="@{/board/list(page=${i}, size=${boardPage.size})}" th:text="${i + 1}">1</a>
+          </li>
+          <li class="page-item" th:classappend="${boardPage.number + 1 == boardPage.totalPages} ? 'disabled'">
+            <a class="page-link" th:href="@{/board/list(page=${boardPage.number + 1}, size=${boardPage.size})}">다음</a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap core JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS -->
+<script src="/js/scripts.js"></script>
+</body>
+</html>

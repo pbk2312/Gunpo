@@ -23,7 +23,6 @@ public class EmailController {
 
     private final EmailService emailService;
 
-    // 인증 매일 보내기
     // 인증 메일 보내기
     @PostMapping("/sendCertificationMail")
     public ResponseEntity<ResponseDto<?>> sendCertificationMail(@Valid @RequestBody EmailDto emailDto) {

@@ -3,12 +3,10 @@ package com.example.gunpo.controller.view;
 
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 

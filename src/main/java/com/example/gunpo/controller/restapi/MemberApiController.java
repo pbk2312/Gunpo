@@ -14,6 +14,7 @@ import com.example.gunpo.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -34,7 +35,7 @@ public class MemberApiController {
     private final TokenProvider tokenProvider;
 
     @PostMapping("/sign-up")
-    public ResponseEntity<ResponseDto<?>> signUp(@RequestBody MemberDto memberDto) {
+    public ResponseEntity<ResponseDto<?>> signUp(@Valid @RequestBody MemberDto memberDto) {
         try {
             Long saveMemberId = memberService.save(memberDto);
             log.info("저장된 회원 아이디: {}", saveMemberId);

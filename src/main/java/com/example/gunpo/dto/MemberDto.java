@@ -1,14 +1,12 @@
 package com.example.gunpo.dto;
 
 
-import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.MemberRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
 import java.time.LocalDate;
 
