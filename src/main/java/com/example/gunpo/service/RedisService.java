@@ -23,46 +23,26 @@ public class RedisService {
     private final RedisTemplate<String, SmokingArea> redisTemplate;
     private final StringRedisTemplate stringRedisTemplate;
     private static final String REDIS_KEY_PREFIX = "smoking_area:";
+    private static final String BOARD_KEY_PREFIX = "board_id:";
 
+    // 흡연 구역 Redis에 저장
     public void saveToRedis(List<SmokingArea> smokingAreas) {
-        smokingAreas.forEach(smokingArea -> {
-            String redisKey = REDIS_KEY_PREFIX + smokingArea.getBoothName(); // 고유 키 설정
-            // Redis에 이미 존재하는지 확인
-            if (!redisTemplate.hasKey(redisKey)) {
-                redisTemplate.opsForValue().set(redisKey, smokingArea); // Redis에 저장
-                log.info("Redis에 저장된 흡연구역: {}", smokingArea.getBoothName());
-            } else {
-                log.info("이미 Redis에 존재하는 흡연구역: {}", smokingArea.getBoothName());
-            }
-        });
+        smokingAreas.forEach(this::saveSmokingAreaToRedis);
     }
-    // Redis에 저장된 흡역 구연 정보 가져오기
+
+    // 흡연 구역들 key 로 가져오기
     public List<SmokingAreaDto> getAllSmokingZonesFromRedis() {
-        // Redis에 저장된 모든 흡연 구역 키 가져오기 (REDIS_KEY_PREFIX로 시작하는 키)
-        Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
-
-        List<SmokingAreaDto> smokingZoneList = new ArrayList<>();
-
-        if (keys != null) {
-            keys.forEach(key -> {
-                // 각 키에 저장된 SmokingArea 데이터 가져오기
-                SmokingArea smokingArea = (SmokingArea) redisTemplate.opsForValue().get(key);
-                if (smokingArea != null) {
-                    // SmokingArea를 SmokingZoneAreaDto로 변환
-                    SmokingAreaDto dto = SmokingZoneMapper.INSTANCE.toDto(smokingArea);
-                    smokingZoneList.add(dto); // 리스트에 추가
-                }
-            });
-        }
-
-        return smokingZoneList; // 모든 흡연 구역 리스트 반환
+        Set<String> keys = getSmokingZoneKeys();
+        return getSmokingAreaDtos(keys);
     }
 
+    // RefreshToken Redis 에 저장
     public void setStringValue(String memberId, String token, Long expirationTime) {
         ValueOperations<String, String> stringValueOperations = stringRedisTemplate.opsForValue();
         stringValueOperations.set(memberId, token, expirationTime, TimeUnit.MILLISECONDS);
     }
 
+    // RefreshToken Redis에서 삭제
     public void deleteStringValue(String memberId) {
         stringRedisTemplate.delete(memberId);
         log.info("Redis에서 키 삭제 완료: {}", memberId);
@@ -70,16 +50,8 @@ public class RedisService {
 
     // refreshToken으로 memberId 찾기
     public String findMemberIdByRefreshToken(String refreshToken) {
-        ValueOperations<String, String> stringValueOperations = stringRedisTemplate.opsForValue();
-        // 모든 키를 순회하면서 refreshToken과 일치하는 값을 찾는다
-        for (String key : stringRedisTemplate.keys("*")) {
-            String storedToken = stringValueOperations.get(key);
-            if (refreshToken.equals(storedToken)) {
-                log.info("Redis에서 refreshToken으로 memberId 찾기 완료: {}", key);
-                return key; // memberId 반환
-            }
-        }
-        return null;
+        Set<String> keys = stringRedisTemplate.keys("*");
+        return findMemberIdByToken(refreshToken, keys);
     }
 
     // 이메일 인증번호를 Redis에 저장하는 메서드
@@ -92,8 +64,95 @@ public class RedisService {
 
     // 이메일 인증번호를 Redis에서 가져오는 메서드
     public String getEmailCertificationFromRedis(String email) {
+        String key = createEmailCertificationKey(email); // 이메일을 기반으로 키 생성
+        return retrieveCertificationNumber(key, email);
+    }
+
+    // 인증번호 인증 상태 변경
+    public void updateEmailCertificationInRedis(String email, String updatedValue) {
+        String key = createEmailCertificationKey(email); // 이메일을 기반으로 키 생성
+        updateCertificationValue(key, updatedValue);
+    }
+
+    // Redis에 조회수 저장
+    public void saveViewCountToRedis(Long boardId) {
+        log.info("boardId : {} " ,boardId);
+        String redisKey = createRedisKey(boardId); // Redis 키 생성
         ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
-        String key = "emailCertification:" + email; // 이메일을 기반으로 키 생성
+        saveViewCountIfAbsent(boardId, redisKey, valueOperations);
+    }
+
+    private String createRedisKey(Long boardId) {
+        return String.format("boardId:%d", boardId); // Redis 키 생성 로직을 별도의 메서드로 분리
+    }
+
+    private void saveViewCountIfAbsent(Long boardId, String redisKey, ValueOperations<String, String> valueOperations) {
+        // 조회수의 초기값을 0으로 설정
+        if (stringRedisTemplate.opsForValue().setIfAbsent(redisKey, "0")) {
+            log.info("게시물 ID {}의 조회수를 Redis에 0으로 저장했습니다.", boardId);
+        } else {
+            log.info("게시물 ID {}의 조회수가 이미 Redis에 존재합니다.", boardId);
+        }
+    }
+
+    private void saveSmokingAreaToRedis(SmokingArea smokingArea) {
+        String redisKey = getRedisKey(smokingArea);
+        if (!isSmokingAreaInRedis(redisKey)) {
+            redisTemplate.opsForValue().set(redisKey, smokingArea);
+            logInfoForSavedArea(smokingArea);
+        } else {
+            logInfoForExistingArea(smokingArea);
+        }
+    }
+
+    private String getRedisKey(SmokingArea smokingArea) {
+        return REDIS_KEY_PREFIX + smokingArea.getBoothName();
+    }
+
+    private boolean isSmokingAreaInRedis(String redisKey) {
+        return redisTemplate.hasKey(redisKey);
+    }
+
+    private void logInfoForSavedArea(SmokingArea smokingArea) {
+        log.info("Redis에 저장된 흡연구역: {}", smokingArea.getBoothName());
+    }
+
+    private void logInfoForExistingArea(SmokingArea smokingArea) {
+        log.info("이미 Redis에 존재하는 흡연구역: {}", smokingArea.getBoothName());
+    }
+
+    private Set<String> getSmokingZoneKeys() {
+        // Redis에 저장된 모든 흡연 구역 키 가져오기 (REDIS_KEY_PREFIX로 시작하는 키)
+        return redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+    }
+
+    private SmokingAreaDto getSmokingAreaDtoFromRedis(String key) {
+        // 각 키에 저장된 SmokingArea 데이터 가져오기
+        SmokingArea smokingArea = (SmokingArea) redisTemplate.opsForValue().get(key);
+        return (smokingArea != null) ? SmokingZoneMapper.INSTANCE.toDto(smokingArea) : null;
+    }
+
+    private String findMemberIdByToken(String refreshToken, Set<String> keys) {
+        ValueOperations<String, String> stringValueOperations = stringRedisTemplate.opsForValue();
+
+        if (keys != null) {
+            for (String key : keys) {
+                String storedToken = stringValueOperations.get(key);
+                if (refreshToken.equals(storedToken)) {
+                    log.info("Redis에서 refreshToken으로 memberId 찾기 완료: {}", key);
+                    return key; // memberId 반환
+                }
+            }
+        }
+        return null; // 일치하는 memberId가 없는 경우
+    }
+
+    private String createEmailCertificationKey(String email) {
+        return "emailCertification:" + email; // 이메일 기반의 키 생성
+    }
+
+    private String retrieveCertificationNumber(String key, String email) {
+        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
         String certificationNumber = valueOperations.get(key); // Redis에서 인증번호 가져오기
 
         if (certificationNumber != null) {
@@ -105,9 +164,23 @@ public class RedisService {
         }
     }
 
-    public void updateEmailCertificationInRedis(String email, String updatedValue) {
+    private void updateCertificationValue(String key, String updatedValue) {
         ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
-        valueOperations.set("emailCertification:" + email, updatedValue);
-        log.info("이메일 인증 상태가 Redis에서 업데이트되었습니다. email: {}", email);
+        valueOperations.set(key, updatedValue);
+        log.info("이메일 인증 상태가 Redis에서 업데이트되었습니다. email: {}", key);
+    }
+
+    private List<SmokingAreaDto> getSmokingAreaDtos(Set<String> keys) {
+        List<SmokingAreaDto> smokingZoneList = new ArrayList<>();
+
+        if (keys != null) {
+            keys.forEach(key -> {
+                SmokingAreaDto dto = getSmokingAreaDtoFromRedis(key);
+                if (dto != null) {
+                    smokingZoneList.add(dto); // 리스트에 추가
+                }
+            });
+        }
+        return smokingZoneList;
     }
 }

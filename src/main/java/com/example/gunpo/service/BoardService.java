@@ -12,7 +12,7 @@ public interface BoardService {
 
     Page<BoardDto> getPosts(Pageable pageable);
     // 게시물 조회 메서드
-    Board getPost(Long postId); // 게시물 조회
+    BoardDto getPost(Long postId); // 게시물 조회
 
     // 게시물 수정 메서드 (추가적인 예시)
     void updatePost(BoardDto boardDto); // 수정할 게시물 ID와 내용을 인수로 받음
