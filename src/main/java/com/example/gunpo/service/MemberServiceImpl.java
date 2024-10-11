@@ -116,7 +116,7 @@ public class MemberServiceImpl implements MemberService {
 
         Member updatedMember = findMemberAndUpdateMember(memberDto);
 
-        // 로그 추가
+        // 로그 추가링
         log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
 
         return updatedMember.getId();

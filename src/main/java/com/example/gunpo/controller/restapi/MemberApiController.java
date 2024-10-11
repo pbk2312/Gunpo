@@ -8,6 +8,7 @@ import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
 import com.example.gunpo.exception.MemberNotFoundException;
+import com.example.gunpo.exception.MemberSaveException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.service.MemberService;
@@ -39,75 +40,82 @@ public class MemberApiController {
         try {
             Long saveMemberId = memberService.save(memberDto);
             log.info("저장된 회원 아이디: {}", saveMemberId);
-            // 성공적인 응답 반환
-            ResponseDto<Long> response = new ResponseDto<>("회원가입이 성공적으로 완료되었습니다.", saveMemberId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(response);
-        } catch (IllegalArgumentException e) {
-            // 유효성 검사나 이메일 중복 시 에러 응답
+            return createSuccessResponse(saveMemberId);
+        } catch (MemberSaveException e) {
             log.error("회원가입 오류: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null);
-            return ResponseEntity.badRequest().body(response);
+            return createErrorResponse(e.getMessage(), HttpStatus.BAD_REQUEST);
         } catch (VerificationCodeMismatchException e) {
-            // 인증 실패 시 에러 응답
             log.error("인증 오류: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            return createErrorResponse(e.getMessage(), HttpStatus.FORBIDDEN);
         } catch (IncorrectPasswordException e) {
             log.error("비밀번호 불일치: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>("입력한 비밀번호가 일치하지 않습니다.", null);
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+            return createErrorResponse("입력한 비밀번호가 일치하지 않습니다.", HttpStatus.FORBIDDEN);
         } catch (Exception e) {
-            // 기타 예외 처리
             log.error("회원가입 처리 중 예외 발생: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>("회원가입 처리 중 오류가 발생했습니다.", null);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            return createErrorResponse("회원가입 처리 중 오류가 발생했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    private ResponseEntity<ResponseDto<?>> createSuccessResponse(Long memberId) {
+        ResponseDto<Long> response = new ResponseDto<>("회원가입이 성공적으로 완료되었습니다.", memberId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    private ResponseEntity<ResponseDto<?>> createErrorResponse(String message, HttpStatus status) {
+        ResponseDto<String> response = new ResponseDto<>(message, null);
+        return ResponseEntity.status(status).body(response);
+    }
 
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<Map<String, String>>> login(
             @RequestBody LoginDto loginDto,
             HttpServletResponse response,
             HttpServletRequest request) {
-        Map<String, String> responseMap = new HashMap<>(); // 응답 데이터를 담을 맵 생성
 
+        Map<String, String> responseMap = new HashMap<>();
         try {
-            // 로그인 서비스 호출
+            // 로그인 서비스 호출 및 토큰 처리
             TokenDto tokenDto = memberService.login(loginDto);
+            setTokensInCookies(response, tokenDto);
 
-            // 쿠키에 토큰 저장
-            addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600); // accessToken 유효기간 1시간
-            addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000); // refreshToken 유효기간 7일
+            // 리다이렉트 URL 처리
+            String redirectUrl = getRedirectUrlFromSession(request);
 
-            // 세션에 저장된 리다이렉트 URL 가져오기
-            String redirectUrl = (String) request.getSession().getAttribute("redirectUrl");
-            request.getSession().removeAttribute("redirectUrl"); // 사용 후 세션에서 제거
-
-            // 응답 맵에 데이터 추가
             responseMap.put("accessToken", tokenDto.getAccessToken());
-            responseMap.put("redirectUrl", redirectUrl != null ? redirectUrl : "/"); // redirectUrl 없을 경우 기본 경로 설정
+            responseMap.put("redirectUrl", redirectUrl);
 
-            // 응답 객체 생성 및 반환
-            ResponseDto<Map<String, String>> httpResponse = new ResponseDto<>("로그인 성공", responseMap);
-            return ResponseEntity.ok(httpResponse);
+            return buildResponse(HttpStatus.OK, "로그인 성공", responseMap);
 
-        } catch (MemberNotFoundException e) {
-            // MemberNotFoundException 발생 시, 구체적인 메시지 전달
-            responseMap.put("error", e.getMessage());
-            ResponseDto<Map<String, String>> errorResponse = new ResponseDto<>("로그인 실패", responseMap);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-        } catch (IncorrectPasswordException e) {
-            // IncorrectPasswordException 발생 시, 구체적인 메시지 전달
-            responseMap.put("error", e.getMessage());
-            ResponseDto<Map<String, String>> errorResponse = new ResponseDto<>("로그인 실패", responseMap);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+        } catch (MemberNotFoundException | IncorrectPasswordException e) {
+            return buildErrorResponse(e, e instanceof MemberNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
-            // 기타 예외 발생 시, 구체적인 메시지 전달
-            responseMap.put("error", e.getMessage());
-            ResponseDto<Map<String, String>> errorResponse = new ResponseDto<>("로그인 중 오류 발생", responseMap);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return buildErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+    }
+
+    // 쿠키에 토큰 저장 메서드
+    private void setTokensInCookies(HttpServletResponse response, TokenDto tokenDto) {
+        addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600);
+        addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000);
+    }
+
+    // 세션에서 리다이렉트 URL 가져오는 메서드
+    private String getRedirectUrlFromSession(HttpServletRequest request) {
+        String redirectUrl = (String) request.getSession().getAttribute("redirectUrl");
+        request.getSession().removeAttribute("redirectUrl");
+        return redirectUrl != null ? redirectUrl : "/";
+    }
+
+    // 응답 객체 생성 메서드
+    private ResponseEntity<ResponseDto<Map<String, String>>> buildResponse(HttpStatus status, String message, Map<String, String> data) {
+        return ResponseEntity.status(status).body(new ResponseDto<>(message, data));
+    }
+
+    // 오류 응답 객체 생성 메서드
+    private ResponseEntity<ResponseDto<Map<String, String>>> buildErrorResponse(Exception e, HttpStatus status) {
+        Map<String, String> errorMap = new HashMap<>();
+        errorMap.put("error", e.getMessage());
+        return buildResponse(status, "로그인 실패", errorMap);
     }
 
     @PostMapping("/logout")
@@ -142,45 +150,71 @@ public class MemberApiController {
         Map<String, Object> data = new HashMap<>();
 
         try {
-            // Access Token 검증
-            if (accessToken != null && tokenProvider.validate(accessToken)) {
-                data.put("isLoggedIn", true);
-                return ResponseEntity.ok(new ResponseDto<>("Access token is valid", data));
+            // Access Token 검증 및 처리
+            if (isValidAccessToken(accessToken)) {
+                return buildSuccessResponse("Access token is valid", data, true);
             }
 
-            // Access Token이 만료된 경우 Refresh Token 확인
-            if (refreshToken != null && tokenProvider.validate(refreshToken)) {
-                Member member = memberService.findByRefreshToken(refreshToken);
-                if (member != null) {
-                    // 새 Access Token 발급
-                    Authentication authentication = tokenProvider.getAuthenticationFromRefreshToken(refreshToken);
-                    TokenDto newTokenDTO = tokenProvider.generateTokenDto(authentication);
-
-                    // 새 Access Token을 쿠키에 저장
-                    addCookie(response, "accessToken", newTokenDTO.getAccessToken(), 3600); // 1시간 유효
-
-                    data.put("isLoggedIn", true);
-                    data.put("accessToken", newTokenDTO.getAccessToken());
-                    return ResponseEntity.ok(new ResponseDto<>("New access token issued", data));
-                }
+            // Refresh Token 검증 및 새로운 Access Token 발급 처리
+            if (isValidRefreshToken(refreshToken)) {
+                return handleRefreshTokenValidation(refreshToken, response, data);
             }
 
             // Refresh Token이 유효하지 않은 경우
-            data.put("isLoggedIn", false);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDto<>("Refresh token is invalid", data));
+            return buildFailureResponse("Refresh token is invalid", data);
 
         } catch (Exception e) {
             log.error("토큰 검증 중 오류 발생", e);
-            data.put("isLoggedIn", false);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDto<>("Error occurred during token validation", data));
+            return buildFailureResponse("Error occurred during token validation", data);
         }
     }
 
-
-    private ResponseEntity<ResponseDto<?>> buildErrorResponse(HttpStatus status, String message) {
-        ResponseDto<?> response = new ResponseDto<>(message, null);
-        return ResponseEntity.status(status).body(response);
+    // Access Token 유효성 검증
+    private boolean isValidAccessToken(String accessToken) {
+        return accessToken != null && tokenProvider.validate(accessToken);
     }
+
+    // Refresh Token 유효성 검증
+    private boolean isValidRefreshToken(String refreshToken) {
+        return refreshToken != null && tokenProvider.validate(refreshToken);
+    }
+
+    // Refresh Token 검증 후 새 Access Token 발급 처리
+    private ResponseEntity<ResponseDto<Map<String, Object>>> handleRefreshTokenValidation(
+            String refreshToken, HttpServletResponse response, Map<String, Object> data) throws Exception {
+
+        Member member = memberService.findByRefreshToken(refreshToken);
+        if (member != null) {
+            // 새 Access Token 발급 및 쿠키 저장
+            TokenDto newTokenDTO = generateNewAccessToken(refreshToken, response);
+
+            data.put("isLoggedIn", true);
+            data.put("accessToken", newTokenDTO.getAccessToken());
+            return buildSuccessResponse("New access token issued", data, true);
+        }
+        return buildFailureResponse("Refresh token is invalid", data);
+    }
+
+    // 새 Access Token 발급 메서드
+    private TokenDto generateNewAccessToken(String refreshToken, HttpServletResponse response) throws Exception {
+        Authentication authentication = tokenProvider.getAuthenticationFromRefreshToken(refreshToken);
+        TokenDto newTokenDTO = tokenProvider.generateTokenDto(authentication);
+        addCookie(response, "accessToken", newTokenDTO.getAccessToken(), 3600); // 1시간 유효
+        return newTokenDTO;
+    }
+
+    // 성공 응답 생성 메서드
+    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message, Map<String, Object> data, boolean isLoggedIn) {
+        data.put("isLoggedIn", isLoggedIn);
+        return ResponseEntity.ok(new ResponseDto<>(message, data));
+    }
+
+    // 실패 응답 생성 메서드
+    private ResponseEntity<ResponseDto<Map<String, Object>>> buildFailureResponse(String message, Map<String, Object> data) {
+        data.put("isLoggedIn", false);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDto<>(message, data));
+    }
+
 
     private void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
         Cookie cookie = createCookie(name, value, maxAge);
