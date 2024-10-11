@@ -152,7 +152,7 @@ public class MemberApiController {
         try {
             // Access Token 검증 및 처리
             if (isValidAccessToken(accessToken)) {
-                return buildSuccessResponse("Access token is valid", data, true);
+                return buildSuccessResponse("Access token is valid", data);
             }
 
             // Refresh Token 검증 및 새로운 Access Token 발급 처리
@@ -190,7 +190,7 @@ public class MemberApiController {
 
             data.put("isLoggedIn", true);
             data.put("accessToken", newTokenDTO.getAccessToken());
-            return buildSuccessResponse("New access token issued", data, true);
+            return buildSuccessResponse("New access token issued", data);
         }
         return buildFailureResponse("Refresh token is invalid", data);
     }
@@ -204,8 +204,8 @@ public class MemberApiController {
     }
 
     // 성공 응답 생성 메서드
-    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message, Map<String, Object> data, boolean isLoggedIn) {
-        data.put("isLoggedIn", isLoggedIn);
+    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message, Map<String, Object> data) {
+        data.put("isLoggedIn", true);
         return ResponseEntity.ok(new ResponseDto<>(message, data));
     }
 

@@ -61,7 +61,7 @@
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
@@ -92,13 +92,14 @@
         <!-- Page content-->
         <div class="container-fluid">
             <!-- Hero Section -->
-            <div class="hero">
+            <div class="hero" id="heroSection">
                 <h1>환영합니다, 군포 시민 여러분!</h1>
-                <p>군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다.</p>
+                <p>군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다</p>
             </div>
+
             <!-- Features Section -->
             <div class="row">
-                <div class="col-md-4 feature">
+                <div class="col-md-4 feature" id="communitySection" style="cursor: pointer;">
                     <div class="icon">💬</div>
                     <h2>소통의 장</h2>
                     <p>시민들이 의견을 나누고 질문할 수 있는 커뮤니티 게시판.</p>
@@ -203,6 +204,9 @@
     window.onload = function () {
         checkAuth();
     };
+    document.getElementById('communitySection').addEventListener('click', function() {
+        window.location.href = '/board/list'; // 클릭 시 /board/list로 이동
+    });
 </script>
 </body>
 </html>
