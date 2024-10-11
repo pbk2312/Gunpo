@@ -19,18 +19,25 @@ public class BoardApiController {
     private final BoardService boardService;
 
     @PostMapping("/new")
-    public ResponseEntity<ResponseDto<?>> boardCreatePost(
+    public ResponseEntity<ResponseDto<Object>> boardCreatePost(
             @CookieValue(value = "accessToken", required = false) String accessToken,
             @RequestBody BoardDto boardDto) {
+
         try {
             Long postId = boardService.createPost(boardDto, accessToken);
-            ResponseDto<Long> responseDto = new ResponseDto<>("게시글이 성공적으로 작성되었습니다.",postId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(responseDto); // 201 Created 응답
+            return createResponseEntity(HttpStatus.CREATED, "게시글이 성공적으로 작성되었습니다.", postId);
         } catch (Exception e) {
-            // 예외 처리: 적절한 메시지를 담은 ResponseDto를 반환
-            ResponseDto<String> errorResponse = new ResponseDto<>(null, "게시글 작성에 실패했습니다: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse); // 400 Bad Request 응답
+            return createErrorResponseEntity("게시글 작성에 실패했습니다: " + e.getMessage());
         }
     }
 
+    private ResponseEntity<ResponseDto<Object>> createResponseEntity(HttpStatus status, String message, Object data) {
+        ResponseDto<Object> responseDto = new ResponseDto<>(message, data);
+        return ResponseEntity.status(status).body(responseDto);
+    }
+
+    private ResponseEntity<ResponseDto<Object>> createErrorResponseEntity(String errorMessage) {
+        ResponseDto<Object> errorResponse = new ResponseDto<>(null, errorMessage);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
 }
