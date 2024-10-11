@@ -7,17 +7,15 @@ import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
 import com.example.gunpo.exception.MemberNotFoundException;
+import com.example.gunpo.exception.MemberSaveException;
 import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.repository.MemberRepository;
-import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -26,8 +24,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -46,66 +42,87 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Long save(@Valid MemberDto memberDto) {
-
         log.info("회원 저장 요청: {}", memberDto);
+        try {
+            Member savedMember = saveAndGetSavedMember(memberDto);
+            log.info("회원이 성공적으로 저장되었습니다. ID: {}", savedMember.getId());
+            return savedMember.getId(); // 저장된 회원의 ID 반환
+        } catch (Exception e) {
+            log.error("회원 저장 중 오류 발생: {}", e.getMessage());
+            throw new MemberSaveException("회원 저장 중 오류가 발생했습니다.");
+        }
+    }
 
-        // DTO 유효성 검사 (예: 필수 필드 체크)
+    private Member saveAndGetSavedMember(MemberDto memberDto) {
+        validateMemberDto(memberDto); // DTO 유효성 검사 및 이메일 중복 검사
+        verifyEmailCertification(memberDto); // 이메일 인증 상태 확인
+        checkPasswordMatch(memberDto); // 비밀번호 일치 여부 확인
+
+        Member member = createMember(memberDto); // Member 객체 생성
+        return memberRepository.save(member); // 회원 저장
+    }
+
+    private void validateMemberDto(MemberDto memberDto) {
         if (memberDto.getEmail() == null || memberDto.getPassword() == null) {
             log.error("이메일 또는 비밀번호가 누락되었습니다: {}", memberDto);
             throw new IllegalArgumentException("이메일과 비밀번호는 필수입니다.");
         }
-        // 이메일 중복 검사
         if (memberRepository.findByEmail(memberDto.getEmail()).isPresent()) {
             log.error("이미 사용 중인 이메일: {}", memberDto.getEmail());
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
-
-        // MemberDto를 Member 엔티티로 변환
-        Member member = MemberMapper.INSTANCE.toEntity(memberDto);
-
-        // Redis에서 인증 상태 확인
-        String value = redisService.getEmailCertificationFromRedis(memberDto.getEmail());
-        if (value == null) {
-            throw new VerificationCodeMismatchException("이메일 인증이 완료되지 않았습니다."); // 인증 정보가 없을 경우
-        }
-
-        String[] parts = value.split(":");
-        boolean isEmailVerified = Boolean.parseBoolean(parts[1]); // 인증 상태 확인
-
-        if (!isEmailVerified) {
-            throw new VerificationCodeMismatchException("이메일 인증이 완료되지 않았습니다."); // 인증 상태가 false일 경우
-        }
-
-        if (!member.getPassword().equals(memberDto.getCheckPassword())) {
-            throw new IncorrectPasswordException("비밀번호 불일치");
-        }
-
-        // 회원 저장
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
-        member.setMemberRole(MemberRole.MEMBER);
-        Member savedMember = memberRepository.save(member);
-        log.info("회원이 성공적으로 저장되었습니다. ID: {}", savedMember.getId());
-
-        // 저장된 회원의 ID 반환
-        return savedMember.getId();
     }
 
+    private void verifyEmailCertification(MemberDto memberDto) {
+        String value = redisService.getEmailCertificationFromRedis(memberDto.getEmail());
+        if (value == null || !Boolean.parseBoolean(value.split(":")[1])) {
+            throw new VerificationCodeMismatchException("이메일 인증이 완료되지 않았습니다.");
+        }
+    }
+
+    private void checkPasswordMatch(MemberDto memberDto) {
+        if (!memberDto.getPassword().equals(memberDto.getCheckPassword())) {
+            throw new IncorrectPasswordException("비밀번호 불일치");
+        }
+    }
+
+    private Member createMember(MemberDto memberDto) {
+        Member member = MemberMapper.INSTANCE.toEntity(memberDto);
+        member.setPassword(passwordEncoder.encode(member.getPassword())); // 비밀번호 암호화
+        member.setMemberRole(MemberRole.MEMBER);
+        return member;
+    }
+
+
     @Override
-    public void delete(MemberDto memberDto) throws MemberNotFoundException {
-
-        // 회원을 찾기
-        Member deleteMember = memberRepository.findById(memberDto.getId())
-                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다. ID: " + memberDto.getId()));
-
-        // 회원 삭제
-        memberRepository.delete(deleteMember);
-
+    public void delete(MemberDto memberDto) {
+        log.info("회원 삭제 요청: ID = {}", memberDto.getId());
+        Member deleteMember = findMemberById(memberDto.getId());
+        performDelete(deleteMember);
         log.info("회원 삭제 성공: ID = {}", deleteMember.getId());
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException("회원이 존재하지 않습니다. ID: " + memberId));
+    }
+
+    private void performDelete(Member member) {
+        memberRepository.delete(member);
     }
 
     @Override
     public Long update(MemberDto memberDto) {
 
+        Member updatedMember = findMemberAndUpdateMember(memberDto);
+
+        // 로그 추가
+        log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
+
+        return updatedMember.getId();
+    }
+
+    private Member findMemberAndUpdateMember(MemberDto memberDto) {
         // 회원 존재 여부 확인
         Member existingMember = memberRepository.findById(memberDto.getId())
                 .orElseThrow(() -> new MemberNotFoundException("업데이트할 회원이 존재하지 않습니다. ID: " + memberDto.getId()));
@@ -117,48 +134,50 @@ public class MemberServiceImpl implements MemberService {
         existingMember.setNickname(memberDto.getNickname());
 
         // 회원 정보 저장
-        Member updatedMember = memberRepository.save(existingMember);
-
-        // 로그 추가
-        log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
-
-        return updatedMember.getId();
+        return memberRepository.save(existingMember);
     }
 
     @Override
     public TokenDto login(LoginDto loginDto) {
-        log.info("loginDtoEmail = {} ", loginDto.getEmail());
-        Optional<Member> optionalMember = memberRepository.findByEmail(loginDto.getEmail());
-        log.info("optionalMember : {}", optionalMember.get().getEmail());
+        log.info("로그인 요청: 이메일 = {}", loginDto.getEmail());
 
-        // 회원 존재 여부 확인
-        Member member = optionalMember.orElseThrow(() -> new MemberNotFoundException("해당 이메일에 대한 회원이 존재하지 않습니다."));
+        Member member = findMemberByEmail(loginDto.getEmail());
+        verifyPassword(loginDto.getPassword(), member.getPassword());
 
-        // 입력한 비밀번호와 데이터베이스에 저장된 비밀번호가 일치하는지 확인
-        if (!passwordEncoder.matches(loginDto.getPassword(), member.getPassword())) {
+        Authentication authentication = authenticateUser(loginDto);
+        return generateToken(authentication, member);
+    }
+
+    private Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException("해당 이메일에 대한 회원이 존재하지 않습니다."));
+    }
+
+    private void verifyPassword(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
+    }
 
-        // 1. 로그인 ID/PW를 기반으로 AuthenticationToken 생성
+    private Authentication authenticateUser(LoginDto loginDto) {
         UsernamePasswordAuthenticationToken authenticationToken = loginDto.toAuthentication();
-
         try {
-            // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
             log.info("사용자 인증 완료: 사용자 아이디={}", authentication.getName());
-
-            // 3. 인증 정보를 기반으로 JWT 토큰 생성
-            TokenDto tokenDTO = tokenProvider.generateTokenDto(authentication);
-            log.info("JWT 토큰 생성 완료");
-
-            redisService.setStringValue(String.valueOf(member.getId()), tokenDTO.getRefreshToken(), REFRESH_TOKEN_EXPIRE_TIME); // 일주일
-            log.info("Redis에 RefreshToken 저장 완료: 사용자 아이디={}", authentication.getName());
-
-            return tokenDTO;
-
+            return authentication;
         } catch (BadCredentialsException e) {
             throw new IncorrectPasswordException("비밀번호가 일치하지 않습니다.");
         }
+    }
+
+    private TokenDto generateToken(Authentication authentication, Member member) {
+        TokenDto tokenDTO = tokenProvider.generateTokenDto(authentication);
+        log.info("JWT 토큰 생성 완료");
+
+        redisService.setStringValue(String.valueOf(member.getId()), tokenDTO.getRefreshToken(), REFRESH_TOKEN_EXPIRE_TIME); // 일주일
+        log.info("Redis에 RefreshToken 저장 완료: 사용자 아이디={}", authentication.getName());
+
+        return tokenDTO;
     }
 
     @Override
@@ -168,32 +187,45 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member findByRefreshToken(String refreshToken) {
-        // Redis에서 refreshToken으로 memberId 찾기
+        String memberId = getMemberIdFromRefreshToken(refreshToken);
+        return findMemberById(memberId);
+    }
+
+    private String getMemberIdFromRefreshToken(String refreshToken) {
         String memberId = redisService.findMemberIdByRefreshToken(refreshToken);
-        if (memberId != null) {
-            // memberId로 Member 정보 조회
-            return memberRepository.findById(Long.valueOf(memberId))
-                    .orElseThrow(() -> new IllegalArgumentException("해당하는 사용자를 찾을 수 없습니다."));
+        if (memberId == null) {
+            throw new IllegalArgumentException("유효하지 않은 refreshToken입니다.");
         }
-        throw new IllegalArgumentException("유효하지 않은 refreshToken입니다.");
+        return memberId;
+    }
+
+    private Member findMemberById(String memberId) {
+        return memberRepository.findById(Long.valueOf(memberId))
+                .orElseThrow(() -> new IllegalArgumentException("해당하는 사용자를 찾을 수 없습니다."));
     }
 
     @Override
     public Member getUserDetails(String accessToken) {
+        validateAccessToken(accessToken); // accessToken 유효성 검사
 
-        // accessToken이 유효하지 않을 경우 예외 발생
+        Authentication authentication = getAuthenticationFromToken(accessToken); // 인증 객체 가져오기
+        return findMemberByEmail(authentication); // 이메일로 회원 조회
+    }
+
+    private void validateAccessToken(String accessToken) {
         if (!tokenProvider.validate(accessToken)) {
             throw new UnauthorizedException("인증되지 않은 사용자입니다.");
         }
-
-        // accessToken을 통해 인증 객체를 가져옴
-        Authentication authentication = tokenProvider.getAuthentication(accessToken);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-
-        // 이메일을 통해 회원 조회
-        Optional<Member> optionalMember = memberRepository.findByEmail(userDetails.getUsername());
-
-        // Optional 처리
-        return optionalMember.orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
     }
+
+    private Authentication getAuthenticationFromToken(String accessToken) {
+        return tokenProvider.getAuthentication(accessToken);
+    }
+
+    private Member findMemberByEmail(Authentication authentication) {
+        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+        return memberRepository.findByEmail(userDetails.getUsername())
+                .orElseThrow(() -> new MemberNotFoundException("해당 사용자가 존재하지 않습니다."));
+    }
+
 }
