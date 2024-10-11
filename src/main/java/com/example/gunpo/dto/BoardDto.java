@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Data
 @Builder
@@ -39,4 +40,8 @@ public class BoardDto {
     @NotBlank(message = "카테고리는 필수입니다.") // 카테고리가 비어있지 않도록 검증
     @Size(max = 50, message = "카테고리는 50자 이내여야 합니다.") // 최대 길이 50자
     private String category; // 게시글 카테고리 (예: 잡담, 고민 등)
+
+    public String getFormattedCreatedAt() {
+        return this.createdAt != null ? this.createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "";
+    }
 }
