@@ -4,11 +4,14 @@ import com.example.gunpo.domain.Board;
 import com.example.gunpo.dto.BoardDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public interface BoardService {
 
     // 게시물 생성 메서드
-    Long createPost(BoardDto boardDto,String accessToken); // 게시물 ID를 반환
+    Long createPost(BoardDto boardDto, String accessToken, List<MultipartFile> images);// 게시물 ID를 반환
 
     Page<BoardDto> getPosts(Pageable pageable);
     // 게시물 조회 메서드

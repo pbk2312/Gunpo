@@ -1,25 +1,24 @@
 package com.example.gunpo.service;
 
 import com.example.gunpo.domain.Board;
+import com.example.gunpo.domain.BoardImage;
 import com.example.gunpo.domain.Category;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.exception.CannotFindBoardException;
-import com.example.gunpo.exception.MemberNotFoundException;
-import com.example.gunpo.exception.UnauthorizedException;
-import com.example.gunpo.exception.email.PostSaveException;
-import com.example.gunpo.mapper.BoardMapper;
 import com.example.gunpo.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,106 +28,129 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final MemberService memberService;
     private final RedisService redisService;
+    private final ImageService imageService;
 
     // 게시물 작성
     @Override
-    public Long createPost(BoardDto boardDto, String accessToken) {
-        return saveBoard(boardDto, accessToken);
+    public Long createPost(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
+        log.info("게시물 작성 요청 - 제목: {}, 사용자 토큰: {}", boardDto.getTitle(), accessToken);
+        return saveBoard(boardDto, accessToken, images);
     }
 
-    // 게시물 리스트 가져오기
+    public Long saveBoard(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
+        Member member = getUserDetails(accessToken); // 사용자 정보 조회
+        Board board = createBoardFromDto(boardDto, member); // 게시물 객체 생성
+
+        saveImages(images, board); // 이미지 저장
+        Long boardId = saveBoardToRepository(board); // 게시물 저장
+        saveViewCount(boardId); // 조회수 저장
+
+        log.info("게시물 저장 완료 - 게시물 ID: {}", boardId);
+        return boardId; // 게시물 ID 반환
+    }
+
+    private Member getUserDetails(String accessToken) {
+        return memberService.getUserDetails(accessToken); // 사용자 정보 조회
+    }
+
+    private void saveImages(List<MultipartFile> images, Board board) {
+        imageService.saveImages(images, board); // 이미지 저장
+    }
+
+
+    private void saveViewCount(Long boardId) {
+        redisService.saveViewCountToRedis(boardId); // 조회수 저장
+    }
+
+
+    private static Board createBoardFromDto(BoardDto boardDto, Member member) {
+        return Board.builder()
+                .title(boardDto.getTitle())
+                .content(boardDto.getContent())
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .viewCount(0)  // 초기 조회수 설정
+                .author(member)
+                .category(Category.valueOf(boardDto.getCategory().name()))
+                .build();
+    }
+
+    private Long saveBoardToRepository(Board board) {
+        return boardRepository.save(board).getId();
+    }
+
     @Override
     public Page<BoardDto> getPosts(Pageable pageable) {
         return convertToDto(fetchPosts(pageable));
     }
 
-    // 게시물 가져오기
-    @Override
-    public BoardDto getPost(Long postId) {
-        return BoardMapper.INSTANCE.toDto(findBoard(postId));
+    private Page<Board> fetchPosts(Pageable pageable) {
+        return descendingAndGetboardPage(pageable);
     }
 
-    @Override
-    public void updatePost(BoardDto boardDto) {
-
-    }
-
-    @Override
-    public void deletePost(Long postId) {
-
-    }
-
-
-    private Member validationAndRetrieveMember(String accessToken) {
-        Member member;
-        try {
-            member = memberService.getUserDetails(accessToken);
-        } catch (UnauthorizedException e) {
-            throw new UnauthorizedException("게시물을 작성할 수 없는 사용자입니다.");
-        } catch (MemberNotFoundException e) {
-            throw new MemberNotFoundException("게시물을 작성할 사용자를 찾을 수 없습니다.");
-        }
-        return member;
-    }
-
-    private static Board createBoardFromDto(BoardDto boardDto, Member member) {
-        Board board = BoardMapper.INSTANCE.toEntity(boardDto);
-        board.setCreatedAt(LocalDateTime.now());
-        board.setUpdatedAt(LocalDateTime.now());
-        board.setViewCount(0);  // 초기 조회수 설정
-        board.setAuthor(member);
-        board.setCategory(Category.valueOf(boardDto.getCategory()));
-        return board;
-    }
-
-    private Long saveBoard(BoardDto boardDto, String accessToken) {
-        try {
-            Member member = validateMember(accessToken);
-            Board board = convertDtoToBoard(boardDto, member);
-            Long boardId = saveBoardToRepository(board);
-            saveViewCountToRedis(boardId);
-            return boardId;
-        } catch (DataAccessException e) {
-            log.error("게시물 저장 중 오류 발생", e);
-            throw new PostSaveException("게시물을 저장하는 중 오류가 발생했습니다.");
-        }
-    }
-
-
-    // Board 최신 정보로 가져오게 정렬 기준 확립 및 가져오기
     private Page<Board> descendingAndGetboardPage(Pageable pageable) {
         Pageable sortedByCreatedAtDesc = PageRequest.of(
                 pageable.getPageNumber(),
                 pageable.getPageSize(),
                 Sort.by(Sort.Direction.DESC, "createdAt")
         );
-
+        log.info("게시물 정렬 기준 설정 및 조회 시작");
         return boardRepository.findAll(sortedByCreatedAtDesc);
     }
-    private Member validateMember(String accessToken) {
-        return validationAndRetrieveMember(accessToken);
-    }
-    private Board convertDtoToBoard(BoardDto boardDto, Member member) {
-        return createBoardFromDto(boardDto, member);
+
+    // 게시물 가져오기
+    @Override
+    public BoardDto getPost(Long postId) {
+        Board board = findBoard(postId);
+        return convertToDto(board);
     }
 
-    private Long saveBoardToRepository(Board board) {
-        return boardRepository.save(board).getId();
+    private BoardDto convertToDto(Board board) {
+        if (board == null) return null;
+
+        List<String> imagePaths = board.getImages().stream()
+                .map(BoardImage::getImagePath)
+                .collect(Collectors.toList());
+
+        return BoardDto.builder()
+                .id(board.getId())
+                .title(board.getTitle())
+                .content(board.getContent())
+                .authorId(board.getAuthor().getId())
+                .nickname(board.getAuthor().getNickname())
+                .createdAt(board.getCreatedAt())
+                .updatedAt(board.getUpdatedAt())
+                .viewCount(board.getViewCount())
+                .imagePaths(imagePaths)  // 이미지 경로 추가
+                .category(board.getCategory())
+                .build();
     }
-    private Page<Board> fetchPosts(Pageable pageable) {
-        return descendingAndGetboardPage(pageable);
+    // Board 최신 정보로 가져오게 정렬 기준 확립 및 가져오기
+    // 게시물 Repository 에서 가져오기
+
+    private Board findBoard(Long postId) {
+        log.info("게시물 조회 - 게시물 ID: {}", postId);
+        return boardRepository.findById(postId).orElseThrow(() -> {
+            log.error("CannotFindBoardException 발생 - 존재하는 Board를 찾을 수 없습니다.");
+            return new CannotFindBoardException("존재하는 Board를 찾을 수 없습니다.");
+        });
+    }
+
+    @Override
+    public void updatePost(BoardDto boardDto) {
+        log.info("게시물 업데이트 요청 - 제목: {}", boardDto.getTitle());
+        // Update logic can be implemented here
+    }
+
+    @Override
+    public void deletePost(Long postId) {
+        log.info("게시물 삭제 요청 - 게시물 ID: {}", postId);
+        // Delete logic can be implemented here
     }
 
     private Page<BoardDto> convertToDto(Page<Board> boardPage) {
-        return boardPage.map(BoardMapper.INSTANCE::toDto);
+        log.info("게시물 DTO 변환 시작 - 게시물 수: {}", boardPage.getNumberOfElements());
+        return boardPage.map(this::convertToDto);
     }
 
-
-    // 게시물 Repository 에서 가져오기
-    private Board findBoard(Long postId) {
-        return boardRepository.findById(postId).orElseThrow(() -> new CannotFindBoardException("존재하는 Board를 찾을 수 없습니다."));
-    }
-    private void saveViewCountToRedis(Long boardId) {
-        redisService.saveViewCountToRedis(boardId);
-    }
 }

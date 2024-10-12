@@ -1,15 +1,19 @@
 package com.example.gunpo.domain;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+import lombok.extern.log4j.Log4j2;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@Setter
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Log4j2
 public class Board {
 
     @Id
@@ -38,4 +42,23 @@ public class Board {
     @Enumerated(EnumType.STRING)
     private Category category; // 게시글 카테고리 (예: 잡담, 고민 등)
 
+
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<BoardImage> images = new ArrayList<>();  // 게시글에 연결된 이미지들
+
+
+    public void addImage(BoardImage image) {
+        if (image != null) {
+            if (images == null) {
+                images = new ArrayList<>();  // images가 null일 경우 초기화
+            }
+            images.add(image);
+        } else {
+            throw new IllegalArgumentException("이미지 객체는 null일 수 없습니다.");
+        }
+    }
 }
+
+
+
+

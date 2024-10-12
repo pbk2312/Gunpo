@@ -82,7 +82,7 @@ public class BoardViewController {
     private Page<BoardDto> getBoardPage(int page, int size) {
         // Pageable 객체 생성 (page는 0부터 시작)
         PageRequest pageable = PageRequest.of(page, size);
-        return boardService.getPosts(pageable);
+        return boardService .getPosts(pageable);
     }
 
     private void logBoardRequest(int page, int size, Page<BoardDto> boardPage) {
