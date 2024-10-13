@@ -41,9 +41,9 @@ public class BoardServiceImpl implements BoardService {
         Member member = getUserDetails(accessToken); // 사용자 정보 조회
         Board board = createBoardFromDto(boardDto, member); // 게시물 객체 생성
 
-        saveImages(images, board); // 이미지 저장
         Long boardId = saveBoardToRepository(board); // 게시물 저장
-        saveViewCount(boardId); // 조회수 저장
+        saveViewCount(boardId); // 조회수 0부터 저장
+        saveImages(images, board); // 이미지 저장
 
         log.info("게시물 저장 완료 - 게시물 ID: {}", boardId);
         return boardId; // 게시물 ID 반환
@@ -100,14 +100,22 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시물 가져오기
     @Override
-    public BoardDto getPost(Long postId) {
+    public BoardDto getPost(Long postId, String accessToken) {
+        Member member = memberService.getUserDetails(accessToken); // 사용자 정보 조회
+        String userId = member.getId().toString(); // 사용자 ID 가져오기
+
+        redisService.incrementViewCountIfNotExists(postId, userId);
+        // 게시물 조회 및 반환
         Board board = findBoard(postId);
         return convertToDto(board);
     }
 
-    private BoardDto convertToDto(Board board) {
-        if (board == null) return null;
 
+    private BoardDto convertToDto(Board board) {
+        if (board == null) {
+            return null;
+        }
+        int countFromRedis = redisService.getViewCountFromRedis(board.getId());
         List<String> imagePaths = board.getImages().stream()
                 .map(BoardImage::getImagePath)
                 .collect(Collectors.toList());
@@ -120,7 +128,7 @@ public class BoardServiceImpl implements BoardService {
                 .nickname(board.getAuthor().getNickname())
                 .createdAt(board.getCreatedAt())
                 .updatedAt(board.getUpdatedAt())
-                .viewCount(board.getViewCount())
+                .viewCount(countFromRedis)
                 .imagePaths(imagePaths)  // 이미지 경로 추가
                 .category(board.getCategory())
                 .build();

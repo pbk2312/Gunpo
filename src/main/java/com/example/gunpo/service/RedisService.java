@@ -23,17 +23,11 @@ public class RedisService {
     private final RedisTemplate<String, SmokingArea> redisTemplate;
     private final StringRedisTemplate stringRedisTemplate;
     private static final String REDIS_KEY_PREFIX = "smoking_area:";
-    private static final String BOARD_KEY_PREFIX = "board_id:";
+    private static final long VIEW_EXPIRE_TIME = 24 * 60 * 60L; // 24시간 (초 단위)
 
     // 흡연 구역 Redis에 저장
     public void saveToRedis(List<SmokingArea> smokingAreas) {
         smokingAreas.forEach(this::saveSmokingAreaToRedis);
-    }
-
-    // 흡연 구역들 key 로 가져오기
-    public List<SmokingAreaDto> getAllSmokingZonesFromRedis() {
-        Set<String> keys = getSmokingZoneKeys();
-        return getSmokingAreaDtos(keys);
     }
 
     // RefreshToken Redis 에 저장
@@ -53,8 +47,8 @@ public class RedisService {
         Set<String> keys = stringRedisTemplate.keys("*");
         return findMemberIdByToken(refreshToken, keys);
     }
-
     // 이메일 인증번호를 Redis에 저장하는 메서드
+
     public void saveEmailCertificationToRedis(String email, String certificationNumber) {
         String value = certificationNumber + ":false"; // 초기 상태는 false
         ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
@@ -76,23 +70,60 @@ public class RedisService {
 
     // Redis에 조회수 저장
     public void saveViewCountToRedis(Long boardId) {
-        log.info("boardId : {} " ,boardId);
+        log.info("boardId : {} ", boardId);
         String redisKey = createRedisKey(boardId); // Redis 키 생성
-        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
-        saveViewCountIfAbsent(boardId, redisKey, valueOperations);
+        saveViewCountIfAbsent(boardId, redisKey);
     }
 
     private String createRedisKey(Long boardId) {
         return String.format("boardId:%d", boardId); // Redis 키 생성 로직을 별도의 메서드로 분리
     }
 
-    private void saveViewCountIfAbsent(Long boardId, String redisKey, ValueOperations<String, String> valueOperations) {
+    // 사용자별로 조회 기록을 남기고 조회수 증가
+    public boolean incrementViewCountIfNotExists(Long boardId, String userId) {
+        String viewKey = "viewed:board:" + boardId + ":user:" + userId;
+        // 사용자별 조회 기록이 존재하지 않으면 조회수 증가
+        if (stringRedisTemplate.opsForValue().setIfAbsent(viewKey, "viewed")) {
+            stringRedisTemplate.expire(viewKey, VIEW_EXPIRE_TIME, TimeUnit.SECONDS); // 24시간 TTL 설정
+            incrementBoardViewCount(boardId); // 조회수 증가
+            return true;
+        }
+        return false; // 이미 조회한 기록이 있으면 조회수 증가하지 않음
+    }
+    // 게시물 조회수 증가
+
+    private void incrementBoardViewCount(Long boardId) {
+        String redisKey = createRedisKey(boardId);
+        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
+        valueOperations.increment(redisKey); // 조회수 1 증가
+        log.info("게시물 ID {}의 조회수가 증가했습니다.", boardId);
+    }
+
+    private void saveViewCountIfAbsent(Long boardId, String redisKey) {
         // 조회수의 초기값을 0으로 설정
         if (stringRedisTemplate.opsForValue().setIfAbsent(redisKey, "0")) {
             log.info("게시물 ID {}의 조회수를 Redis에 0으로 저장했습니다.", boardId);
         } else {
             log.info("게시물 ID {}의 조회수가 이미 Redis에 존재합니다.", boardId);
         }
+    }
+
+    // Redis에서 조회수를 가져오는 메서드
+
+    public int getViewCountFromRedis(Long boardId) {
+        String redisKey = createRedisKey(boardId);
+        ValueOperations<String, String> valueOperations = stringRedisTemplate.opsForValue();
+        String viewCountStr = valueOperations.get(redisKey);
+
+        // 조회수가 존재하면 int로 변환, 없으면 0 반환
+        if (viewCountStr != null) {
+            try {
+                return Integer.parseInt(viewCountStr);
+            } catch (NumberFormatException e) {
+                log.error("잘못된 조회수 형식입니다. boardId: {}", boardId, e);
+            }
+        }
+        return 0; // 조회수가 없을 경우 0 반환
     }
 
     private void saveSmokingAreaToRedis(SmokingArea smokingArea) {
@@ -103,6 +134,12 @@ public class RedisService {
         } else {
             logInfoForExistingArea(smokingArea);
         }
+    }
+
+    // 흡연 구역들 key 로 가져오기
+    public List<SmokingAreaDto> getAllSmokingZonesFromRedis() {
+        Set<String> keys = getSmokingZoneKeys();
+        return getSmokingAreaDtos(keys);
     }
 
     private String getRedisKey(SmokingArea smokingArea) {

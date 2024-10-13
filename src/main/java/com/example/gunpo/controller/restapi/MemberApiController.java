@@ -87,7 +87,8 @@ public class MemberApiController {
             return buildResponse(HttpStatus.OK, "로그인 성공", responseMap);
 
         } catch (MemberNotFoundException | IncorrectPasswordException e) {
-            return buildErrorResponse(e, e instanceof MemberNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.UNAUTHORIZED);
+            return buildErrorResponse(e,
+                    e instanceof MemberNotFoundException ? HttpStatus.NOT_FOUND : HttpStatus.UNAUTHORIZED);
         } catch (Exception e) {
             return buildErrorResponse(e, HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -107,7 +108,8 @@ public class MemberApiController {
     }
 
     // 응답 객체 생성 메서드
-    private ResponseEntity<ResponseDto<Map<String, String>>> buildResponse(HttpStatus status, String message, Map<String, String> data) {
+    private ResponseEntity<ResponseDto<Map<String, String>>> buildResponse(HttpStatus status, String message,
+                                                                           Map<String, String> data) {
         return ResponseEntity.status(status).body(new ResponseDto<>(message, data));
     }
 
@@ -119,7 +121,8 @@ public class MemberApiController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ResponseDto<?>> logout(@CookieValue(value = "accessToken", required = false) String accessToken, HttpServletResponse response) {
+    public ResponseEntity<ResponseDto<?>> logout(
+            @CookieValue(value = "accessToken", required = false) String accessToken, HttpServletResponse response) {
 
         // accessToken이 없을 경우 예외 처리
         if (accessToken == null) {
@@ -204,13 +207,15 @@ public class MemberApiController {
     }
 
     // 성공 응답 생성 메서드
-    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message, Map<String, Object> data) {
+    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message,
+                                                                                  Map<String, Object> data) {
         data.put("isLoggedIn", true);
         return ResponseEntity.ok(new ResponseDto<>(message, data));
     }
 
     // 실패 응답 생성 메서드
-    private ResponseEntity<ResponseDto<Map<String, Object>>> buildFailureResponse(String message, Map<String, Object> data) {
+    private ResponseEntity<ResponseDto<Map<String, Object>>> buildFailureResponse(String message,
+                                                                                  Map<String, Object> data) {
         data.put("isLoggedIn", false);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ResponseDto<>(message, data));
     }

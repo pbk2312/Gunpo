@@ -55,9 +55,10 @@ public class BoardViewController {
     }
 
     @GetMapping("/{id}")
-    public String getBoardPost(@PathVariable Long id, Model model) {
+    public String getBoardPost(@PathVariable Long id, Model model,
+                               @CookieValue(value = "accessToken", required = false) String accessToken) {
         // 게시물 ID를 사용하여 게시물 정보를 가져옵니다.
-        BoardDto boardDto = boardService.getPost(id);
+        BoardDto boardDto = boardService.getPost(id,accessToken);
 
         if (boardDto == null) {
             // 게시물이 존재하지 않을 경우 적절한 처리
@@ -82,7 +83,7 @@ public class BoardViewController {
     private Page<BoardDto> getBoardPage(int page, int size) {
         // Pageable 객체 생성 (page는 0부터 시작)
         PageRequest pageable = PageRequest.of(page, size);
-        return boardService .getPosts(pageable);
+        return boardService.getPosts(pageable);
     }
 
     private void logBoardRequest(int page, int size, Page<BoardDto> boardPage) {
@@ -99,7 +100,6 @@ public class BoardViewController {
             log.info("게시판에 게시물이 없습니다.");
         }
     }
-
 
 
 }
