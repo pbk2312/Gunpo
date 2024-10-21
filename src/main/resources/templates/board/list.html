@@ -1,104 +1,108 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <meta name="description" content="Gunpo Community 게시판 목록" />
-  <meta name="author" content="작성자 이름" />
-  <title>게시판 목록</title>
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
-  <!-- Core theme CSS (includes Bootstrap) -->
-  <link href="/css/styles.css" rel="stylesheet" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="Gunpo Community 게시판 목록"/>
+    <meta name="author" content="작성자 이름"/>
+    <title>게시판 목록</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
+    <!-- Core theme CSS (includes Bootstrap) -->
+    <link href="/css/styles.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="d-flex" id="wrapper">
-  <!-- Sidebar -->
-  <div class="border-end bg-white" id="sidebar-wrapper">
-    <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
-    <div class="list-group list-group-flush">
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연구역</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
-    </div>
-  </div>
-
-  <!-- Page content wrapper -->
-  <div id="page-content-wrapper">
-    <!-- Top navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container-fluid">
-        <!-- 왼쪽 로고 및 홈 버튼 -->
-        <a class="navbar-brand" href="/">
-          <span class="icon">🏠</span>
-          <span class="text">홈으로</span>
-        </a>
-
-        <!-- 오른쪽 로그인/회원가입 및 마이페이지 버튼 -->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-            <li class="nav-item">
-              <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
-            </li>
-            <li class="nav-item">
-              <button id="mypageButton" class="btn btn-outline-secondary" style="display:none;">마이페이지</button>
-            </li>
-          </ul>
+    <!-- Sidebar -->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
         </div>
-      </div>
-    </nav>
-
-    <!-- 게시물 목록 -->
-    <div class="container mt-4">
-      <div class="d-flex justify-content-between align-items-center">
-        <h2>게시판 목록</h2>
-        <!-- 게시물 작성 버튼 -->
-        <a href="/board/new" class="btn btn-primary">게시물 작성</a>
-      </div>
-
-      <table class="table table-hover mt-3">
-        <thead>
-        <tr>
-          <th>카테고리</th> <!-- 카테고리 표시 -->
-          <th>제목</th>
-          <th>작성자</th>
-          <th>작성일</th>
-          <th>조회수</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- 게시물 리스트 -->
-        <tr th:each="board : ${boardPage}">
-          <td th:text="${board.category}">카테고리</td> <!-- 카테고리 표시 -->
-          <td><a th:href="@{/board/{id}(id=${board.id})}" th:text="${board.title}">게시물 제목</a></td>
-          <td th:text="${board.nickname}">작성자</td>
-          <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
-          <td th:text="${board.viewCount}">0</td>
-        </tr>
-        </tbody>
-      </table>
     </div>
 
-    <!-- 페이지 네비게이션 -->
-    <nav aria-label="게시판 페이지 탐색">
-      <ul class="pagination justify-content-center">
-        <li class="page-item" th:classappend="${boardPage.number == 0} ? 'disabled'">
-          <a class="page-link" th:href="@{/board/list(page=${boardPage.number - 1}, size=${boardPage.size})}">이전</a>
-        </li>
-        <li class="page-item" th:each="i : ${#numbers.sequence(0, boardPage.totalPages - 1)}"
-            th:classappend="${i == boardPage.number} ? 'active'">
-          <a class="page-link" th:href="@{/board/list(page=${i}, size=${boardPage.size})}" th:text="${i + 1}">1</a>
-        </li>
-        <li class="page-item" th:classappend="${boardPage.number + 1 == boardPage.totalPages} ? 'disabled'">
-          <a class="page-link" th:href="@{/board/list(page=${boardPage.number + 1}, size=${boardPage.size})}">다음</a>
-        </li>
-      </ul>
-    </nav>
-  </div>
+    <!-- Page content wrapper -->
+    <div id="page-content-wrapper">
+        <!-- Top navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <!-- 왼쪽 로고 및 홈 버튼 -->
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text">홈으로</span>
+                </a>
+
+                <!-- 오른쪽 로그인/회원가입 및 마이페이지 버튼 -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="mypageButton" class="btn btn-outline-secondary" style="display:none;">마이페이지
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 게시물 목록 -->
+        <div class="container mt-4">
+            <div class="d-flex justify-content-between align-items-center">
+                <h2>게시판 목록</h2>
+                <!-- 게시물 작성 버튼 -->
+                <a href="/board/new" class="btn btn-primary">게시물 작성</a>
+            </div>
+
+            <table class="table table-hover mt-3">
+                <thead>
+                <tr>
+                    <th>카테고리</th> <!-- 카테고리 표시 -->
+                    <th>제목</th>
+                    <th>작성자</th>
+                    <th>작성일</th>
+                    <th>조회수</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- 게시물 리스트 -->
+                <tr th:each="board : ${boardPage}">
+                    <td th:text="${board.category}">카테고리</td> <!-- 카테고리 표시 -->
+                    <td>
+                        <a href="javascript:void(0);" th:text="${board.title}"
+                           th:onclick="'checkLoginAndView(' + ${board.id} + ')'">게시물 제목</a>
+                    </td>
+                    <td th:text="${board.nickname}">작성자</td>
+                    <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
+                    <td th:text="${board.viewCount}">0</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 페이지 네비게이션 -->
+        <nav aria-label="게시판 페이지 탐색">
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${boardPage.number == 0} ? 'disabled'">
+                    <a class="page-link" th:href="@{/board/list(page=${boardPage.number - 1}, size=${boardPage.size})}">이전</a>
+                </li>
+                <li class="page-item" th:each="i : ${#numbers.sequence(0, boardPage.totalPages - 1)}"
+                    th:classappend="${i == boardPage.number} ? 'active'">
+                    <a class="page-link" th:href="@{/board/list(page=${i}, size=${boardPage.size})}" th:text="${i + 1}">1</a>
+                </li>
+                <li class="page-item" th:classappend="${boardPage.number + 1 == boardPage.totalPages} ? 'disabled'">
+                    <a class="page-link" th:href="@{/board/list(page=${boardPage.number + 1}, size=${boardPage.size})}">다음</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
 </div>
 
 <!-- Bootstrap core JS -->
@@ -106,78 +110,104 @@
 <!-- Core theme JS -->
 <script src="/js/scripts.js"></script>
 <script>
-  // 로그아웃 확인 후 처리
-  function confirmLogout() {
-    if (confirm('로그아웃 하시겠습니까?')) {
-      logout();
+    // 로그아웃 확인 후 처리
+    function confirmLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            logout();
+        }
     }
-  }
 
-  // 로그아웃 처리 함수
-  function logout() {
-    // 서버에 로그아웃 요청
-    fetch('/api/member/logout', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
+    // 로그아웃 처리 함수
+    function logout() {
+        // 서버에 로그아웃 요청
+        fetch('/api/member/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
             .then(response => {
-              if (response.ok) {
-                // 쿠키에서 accessToken 삭제
-                document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                window.location.reload(); // 페이지 새로고침
-              } else {
-                console.error('로그아웃 요청 실패');
-              }
+                if (response.ok) {
+                    // 쿠키에서 accessToken 삭제
+                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.reload(); // 페이지 새로고침
+                } else {
+                    console.error('로그아웃 요청 실패');
+                }
             })
             .catch(error => console.error('로그아웃 요청 중 오류 발생:', error));
-  }
+    }
 
-  function checkAuth() {
-    fetch('/api/member/validateToken', {
-      method: 'GET',
-      credentials: 'include'
-    })
+    function checkAuth() {
+        fetch('/api/member/validateToken', {
+            method: 'GET',
+            credentials: 'include'
+        })
             .then(response => response.json())
             .then(responseData => {
-              const message = responseData.message; // 응답 메시지
-              const data = responseData.data; // 실제 데이터
+                const message = responseData.message; // 응답 메시지
+                const data = responseData.data; // 실제 데이터
 
-              const isLoggedIn = data.isLoggedIn; // 로그인 상태 확인
-              const authButton = document.getElementById('authButton');
-              const mypageButton = document.getElementById('mypageButton');
+                const isLoggedIn = data.isLoggedIn; // 로그인 상태 확인
+                const authButton = document.getElementById('authButton');
+                const mypageButton = document.getElementById('mypageButton');
 
-              if (isLoggedIn) {
-                // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
-                authButton.innerText = '로그아웃';
-                authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
-                authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
-                mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
-                mypageButton.removeEventListener('click', () => {}); // 기존 이벤트 리스너 제거
-                mypageButton.addEventListener('click', () => {
-                  window.location.href = '/mypage/check'; // 마이페이지로 이동
-                });
-              } else {
-                // 로그아웃 상태: 로그인 버튼으로 전환
-                authButton.innerText = '로그인/회원가입';
-                authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
-                authButton.addEventListener('click', function () {
-                  window.location.href = '/login'; // 로그인 페이지로 이동
-                });
-                mypageButton.style.display = 'none'; // 마이페이지 버튼 숨기기
-              }
+                if (isLoggedIn) {
+                    // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
+                    authButton.innerText = '로그아웃';
+                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
+                    authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
+                    mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
+                    mypageButton.removeEventListener('click', () => {
+                    }); // 기존 이벤트 리스너 제거
+                    mypageButton.addEventListener('click', () => {
+                        window.location.href = '/mypage/check'; // 마이페이지로 이동
+                    });
+                } else {
+                    // 로그아웃 상태: 로그인 버튼으로 전환
+                    authButton.innerText = '로그인/회원가입';
+                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
+                    authButton.addEventListener('click', function () {
+                        window.location.href = '/login'; // 로그인 페이지로 이동
+                    });
+                    mypageButton.style.display = 'none'; // 마이페이지 버튼 숨기기
+                }
             })
             .catch(error => {
-              // 토큰 검증 중 오류 발생 시
-              console.error('로그인 상태 확인 중 오류 발생:', error);
-              // 여기서 추가적인 오류 처리를 할 수 있습니다 (예: 사용자에게 메시지 표시 등)
+                // 토큰 검증 중 오류 발생 시
+                console.error('로그인 상태 확인 중 오류 발생:', error);
+                // 여기서 추가적인 오류 처리를 할 수 있습니다 (예: 사용자에게 메시지 표시 등)
             });
-  }
-  // 페이지 로드 시 인증 상태 및 팝업 표시 확인
-  window.onload = function () {
-    checkAuth();
-  };
+    }
+
+    function checkLoginAndView(boardId) {
+        fetch('/api/member/validateToken', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => response.json())
+            .then(responseData => {
+                const isLoggedIn = responseData.data.isLoggedIn;
+
+                if (isLoggedIn) {
+                    // 로그인 상태일 때 게시물 상세 페이지로 이동
+                    window.location.href = `/board/${boardId}`;
+                } else {
+                    // 로그인이 안 되어 있으면 경고창을 띄우고 로그인 페이지로 이동
+                    alert('로그인이 필요한 기능입니다. 로그인 페이지로 이동합니다.');
+                    window.location.href = '/login';
+                }
+            })
+            .catch(error => {
+                console.error('로그인 상태 확인 중 오류 발생:', error);
+                alert('로그인 상태를 확인하는 중 오류가 발생했습니다.');
+            });
+    }
+
+    // 페이지 로드 시 인증 상태 및 팝업 표시 확인
+    window.onload = function () {
+        checkAuth();
+    };
 </script>
 </body>
 </html>
