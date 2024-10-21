@@ -42,6 +42,29 @@ public class BoardApiController {
         }
     }
 
+    // 게시글 수정 API 추가
+    @PutMapping("/{id}/edit")
+    public ResponseEntity<ResponseDto<Object>> boardUpdatePost(
+            @PathVariable Long id,
+            @CookieValue(value = "accessToken", required = false) String accessToken,
+            @RequestParam String title,
+            @RequestParam String content,
+            @RequestParam String category,
+            @RequestParam(required = false) List<MultipartFile> newImages) {
+        try {
+
+            BoardDto boardDto = new BoardDto(title, content, Category.valueOf(category));
+
+            // 게시물 수정 서비스 호출
+            boardService.updatePost(boardDto, newImages, accessToken);
+
+            return createResponseEntity(HttpStatus.OK, "게시글이 성공적으로 수정되었습니다.", id);
+        } catch (Exception e) {
+            return createErrorResponseEntity("게시글 수정에 실패했습니다: " + e.getMessage());
+        }
+
+    }
+
     private ResponseEntity<ResponseDto<Object>> createResponseEntity(HttpStatus status, String message, Object data) {
         ResponseDto<Object> responseDto = new ResponseDto<>(message, data);
         return ResponseEntity.status(status).body(responseDto);
