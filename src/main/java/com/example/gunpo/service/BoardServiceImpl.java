@@ -6,7 +6,9 @@ import com.example.gunpo.domain.Category;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.exception.CannotFindBoardException;
+import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.repository.BoardRepository;
+import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -14,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
@@ -80,6 +83,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
+    @Transactional
     public Page<BoardDto> getPosts(Pageable pageable) {
         return convertToDto(fetchPosts(pageable));
     }
@@ -100,6 +104,7 @@ public class BoardServiceImpl implements BoardService {
 
     // 게시물 가져오기
     @Override
+    @Transactional
     public BoardDto getPost(Long postId, String accessToken) {
         Member member = memberService.getUserDetails(accessToken); // 사용자 정보 조회
         String userId = member.getId().toString(); // 사용자 ID 가져오기
@@ -133,8 +138,6 @@ public class BoardServiceImpl implements BoardService {
                 .category(board.getCategory())
                 .build();
     }
-    // Board 최신 정보로 가져오게 정렬 기준 확립 및 가져오기
-    // 게시물 Repository 에서 가져오기
 
     private Board findBoard(Long postId) {
         log.info("게시물 조회 - 게시물 ID: {}", postId);
@@ -144,10 +147,84 @@ public class BoardServiceImpl implements BoardService {
         });
     }
 
+
     @Override
-    public void updatePost(BoardDto boardDto) {
-        log.info("게시물 업데이트 요청 - 제목: {}", boardDto.getTitle());
-        // Update logic can be implemented here
+    @Transactional
+    public void updatePost(BoardDto boardDto, List<MultipartFile> newImages, List<String> deleteImages,
+                           String accessToken) {
+
+        log.info("게시물 업데이트 요청 - 제목: {}, 내용: {}, 카테고리: {}", boardDto.getTitle(), boardDto.getContent(), boardDto.getCategory());
+        // 기존 게시물 조회 및 작성자 권한 확인
+        Board existingBoard = findBoardWithAuthorization(boardDto.getId(), accessToken);
+
+        // 삭제할 이미지 처리
+        processDeletedImages(deleteImages, existingBoard);
+
+        // 새 이미지 처리
+        List<BoardImage> updatedImages = processNewImages(newImages, existingBoard);
+
+        // 게시물 업데이트
+        Board updatedBoard = createUpdatedBoard(existingBoard, boardDto, updatedImages);
+
+        // 게시물 저장
+        saveUpdatedBoard(updatedBoard);
+    }
+
+    // 기존 게시물 조회 및 작성자 권한 확인
+    private Board findBoardWithAuthorization(Long postId, String accessToken) {
+        Board board = findBoard(postId);
+        verifyAuthor(board, accessToken);
+        return board;
+    }
+
+    // 작성자 권한 확인
+    private void verifyAuthor(Board board, String accessToken) {
+        Member member = memberService.getUserDetails(accessToken);
+        if (!board.getAuthor().getEmail().equals(member.getEmail())) {
+            log.error("게시물 수정 권한이 없습니다. 작성자: {}, 요청자: {}", board.getAuthor().getEmail(), member.getEmail());
+            throw new UnauthorizedException("게시물 수정 권한이 없습니다.");
+        }
+    }
+
+    // 이미지 삭제 처리
+    private void processDeletedImages(List<String> deleteImages, Board board) {
+        if (deleteImages != null && !deleteImages.isEmpty()) {
+            log.info("이미지 삭제 시작 - 삭제할 이미지 수: {}", deleteImages.size());
+            for (String imagePath : deleteImages) {
+                imageService.deleteImage(imagePath);
+                board.getImages().removeIf(image -> image.getImagePath().equals(imagePath));
+                log.info("이미지 삭제 완료 - 경로: {}", imagePath);
+            }
+        }
+    }
+
+    // 새 이미지 처리
+    private List<BoardImage> processNewImages(List<MultipartFile> newImages, Board board) {
+        if (newImages == null || newImages.isEmpty()) {
+            return board.getImages();
+        }
+
+        log.info("새 이미지 저장 시작");
+        return imageService.saveImages(newImages, board);
+    }
+
+    // 업데이트된 게시물 객체 생성
+    private Board createUpdatedBoard(Board existingBoard, BoardDto boardDto, List<BoardImage> updatedImages) {
+        return Board.builder()
+                .id(existingBoard.getId())
+                .content(boardDto.getContent())
+                .createdAt(existingBoard.getCreatedAt())
+                .updatedAt(LocalDateTime.now())
+                .viewCount(existingBoard.getViewCount())
+                .author(existingBoard.getAuthor())
+                .category(boardDto.getCategory())
+                .images(updatedImages)
+                .build();
+    }
+
+    private void saveUpdatedBoard(Board updatedBoard) {
+        boardRepository.save(updatedBoard);
+        log.info("게시물 업데이트 완료 - 게시물 ID: {}", updatedBoard.getId());
     }
 
     @Override

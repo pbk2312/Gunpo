@@ -20,7 +20,8 @@ public interface BoardService {
 
 
     // 게시물 수정 메서드 (추가적인 예시)
-    void updatePost(BoardDto boardDto, List<MultipartFile> newImages,String accessToken); // 수정할 게시물 ID와 내용을 인수로 받음
+    void updatePost(BoardDto boardDto, List<MultipartFile> newImages, List<String> deleteImages,
+                    String accessToken); // 수정할 게시물 ID와 내용을 인수로 받음
 
     // 게시물 삭제 메서드 (추가적인 예시)
     void deletePost(Long postId); // 삭제할 게시물 ID
