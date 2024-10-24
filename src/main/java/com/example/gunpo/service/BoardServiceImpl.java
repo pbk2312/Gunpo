@@ -9,6 +9,7 @@ import com.example.gunpo.exception.CannotFindBoardException;
 import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.repository.BoardRepository;
 import java.util.ArrayList;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -235,10 +236,22 @@ public class BoardServiceImpl implements BoardService {
     }
 
     @Override
-    public void deletePost(Long postId) {
+    public void deletePost(Long postId, String accessToken) {
         log.info("게시물 삭제 요청 - 게시물 ID: {}", postId);
-        // Delete logic can be implemented here
+
+        // 게시물 조회 후 없으면 예외 발생
+        Board board = boardRepository.findById(postId)
+                .orElseThrow(() -> new CannotFindBoardException("게시물을 찾을 수 없습니다. ID: " + postId));
+
+        // 작성자 권한 확인 (토큰을 통해 요청자가 작성자인지 확인)
+        verifyAuthor(board, accessToken);
+
+        // 게시물 삭제
+        boardRepository.delete(board);
+
+        log.info("게시물이 성공적으로 삭제되었습니다. ID: {}", postId);
     }
+
 
     private Page<BoardDto> convertToDto(Page<Board> boardPage) {
         log.info("게시물 DTO 변환 시작 - 게시물 수: {}", boardPage.getNumberOfElements());

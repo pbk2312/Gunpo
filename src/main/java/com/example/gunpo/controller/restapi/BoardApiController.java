@@ -1,6 +1,5 @@
 package com.example.gunpo.controller.restapi;
 
-
 import com.example.gunpo.domain.Category;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.dto.ResponseDto;
@@ -42,7 +41,6 @@ public class BoardApiController {
         }
     }
 
-
     @PutMapping("/update")
     public ResponseEntity<ResponseDto<Object>> boardUpdatePost(
             @RequestParam Long id,
@@ -53,7 +51,7 @@ public class BoardApiController {
             @RequestParam List<MultipartFile> newImages,
             @RequestParam(required = false) List<String> deleteImages) {
         try {
-            BoardDto boardDto = new BoardDto(id,title, content, Category.valueOf(category));
+            BoardDto boardDto = new BoardDto(id, title, content, Category.valueOf(category));
 
             log.info("BoardDto for update: {}", boardDto.toString());
 
@@ -67,6 +65,21 @@ public class BoardApiController {
         }
     }
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<ResponseDto<Object>> boardDeletePost(
+            @PathVariable Long id,
+            @CookieValue(value = "accessToken", required = false) String accessToken) {
+        try {
+            // 삭제 요청 - 작성자 권한 확인
+            log.info("게시물 삭제 요청 - 게시물 ID: {}", id);
+            boardService.deletePost(id, accessToken);
+
+            return createResponseEntity(HttpStatus.OK, "게시글이 성공적으로 삭제되었습니다.", id);
+        } catch (Exception e) {
+            log.error("게시글 삭제에 실패했습니다: {}", e.getMessage());
+            return createErrorResponseEntity("게시글 삭제에 실패했습니다: " + e.getMessage());
+        }
+    }
 
     private ResponseEntity<ResponseDto<Object>> createResponseEntity(HttpStatus status, String message, Object data) {
         ResponseDto<Object> responseDto = new ResponseDto<>(message, data);
@@ -77,4 +90,5 @@ public class BoardApiController {
         ResponseDto<Object> errorResponse = new ResponseDto<>(null, errorMessage);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
+
 }

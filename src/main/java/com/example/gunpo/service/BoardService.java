@@ -24,5 +24,5 @@ public interface BoardService {
                     String accessToken); // 수정할 게시물 ID와 내용을 인수로 받음
 
     // 게시물 삭제 메서드 (추가적인 예시)
-    void deletePost(Long postId); // 삭제할 게시물 ID
+    void deletePost(Long postId,String accessToken); // 삭제할 게시물 ID
 }
