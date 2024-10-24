@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="Gunpo Community 게시물 수정"/>
+    <meta name="author" content="작성자 이름"/>
+    <title>게시물 수정 - Gunpo Community</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
+    <!-- Core theme CSS (includes Bootstrap) -->
+    <link href="/css/styles.css" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #f7f7f9;
+            color: #495057;
+        }
+
+        .content-container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 30px;
+        }
+
+        .card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            background-color: #ffffff;
+        }
+
+        .navbar {
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #212529;
+            font-weight: 700;
+        }
+
+        .form-group label {
+            font-weight: 600;
+        }
+
+        .btn-secondary, .btn-primary {
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .image-container {
+            position: relative;
+            display: inline-block;
+            margin: 10px;
+        }
+
+        .image-container img {
+            max-height: 150px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-container input[type="checkbox"] {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transform: scale(1.5); /* 커진 체크박스 */
+        }
+
+        .image-container label {
+            display: block;
+            text-align: center;
+            margin-top: 5px;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .image-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: start;
+        }
+
+    </style>
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
+        </div>
+    </div>
+
+    <!-- Page content wrapper -->
+    <div id="page-content-wrapper">
+        <!-- Top navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text">홈으로</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- 수정 페이지 컨텐츠 -->
+        <div class="container-fluid mt-4 content-container">
+            <!-- 게시물 수정 제목 -->
+            <h1 class="mb-4 text-center">게시물 수정</h1>
+
+            <!-- 게시물 수정 폼 -->
+            <div class="card">
+                <div class="card-body">
+                    <form action="/api/board/update" method="post" enctype="multipart/form-data">
+                        <!-- PUT method 사용 -->
+                        <input type="hidden" name="_method" value="PUT"/>
+                        <input type="hidden" name="id" th:value="${board.id}"/>
+
+                        <div class="form-group mb-3">
+                            <label for="title">제목</label>
+                            <input type="text" class="form-control" id="title" name="title" th:value="${board.title}"
+                                   required maxlength="255"/>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="content">내용</label>
+                            <textarea class="form-control" id="content" name="content" rows="8" required
+                                      th:text="${board.content}"></textarea>
+                        </div>
+
+                        <!-- 카테고리 선택 부분 -->
+                        <div class="form-group mb-3">
+                            <label for="category">카테고리</label>
+                            <select class="form-control" id="category" name="category" required>
+                                <option value="잡담" th:selected="${board.category == '잡담'}">잡담</option>
+                                <option value="고민" th:selected="${board.category == '고민'}">고민</option>
+                                <option value="질문" th:selected="${board.category == '질문'}">질문</option>
+                                <option value="정보공유" th:selected="${board.category == '정보공유'}">정보공유</option>
+                                <option value="일상" th:selected="${board.category == '일상'}">일상</option>
+                            </select>
+                        </div>
+
+
+                        <!-- 기존 이미지 표시 및 삭제 선택 -->
+                        <div class="form-group mb-3">
+                            <label>이미지 삭제</label>
+                            <div class="image-row">
+                                <div class="image-container" th:each="imagePath, iterStat : ${board.imagePaths}">
+                                    <img th:src="${imagePath}" alt="게시물 이미지" class="img-fluid mb-2"/>
+                                    <input type="checkbox" id="deleteImage__${iterStat.index}" name="deleteImages"
+                                           th:value="${imagePath}"/>
+                                    <label th:for="'deleteImage__' + ${iterStat.index}"></label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 새 이미지 추가 -->
+                        <div class="form-group mb-3">
+                            <label for="newImages">새 이미지 추가</label>
+                            <input type="file" class="form-control" id="newImages" name="newImages" multiple
+                                   accept="image/*"/>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-block">게시물 수정</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 목록으로 돌아가기 버튼 -->
+            <div class="text-center mt-3">
+                <a href="/board/list" class="btn btn-secondary">목록으로 돌아가기</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bootstrap core JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

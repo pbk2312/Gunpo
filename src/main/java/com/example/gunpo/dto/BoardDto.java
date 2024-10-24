@@ -50,7 +50,12 @@ public class BoardDto {
         this.category = category;
     }
 
-
+    public BoardDto(Long id, String title, String content, Category category) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.category = category;
+    }
 
     public String getFormattedCreatedAt() {
         return this.createdAt != null ? this.createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "";

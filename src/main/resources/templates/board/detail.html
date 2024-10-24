@@ -46,6 +46,9 @@
     .btn-secondary:hover {
       background-color: #5a6268;
     }
+    .btn-primary:hover {
+      background-color: #0056b3;
+    }
     img {
       max-width: 100%; /* 이미지 가로 최대 너비 */
       height: auto; /* 높이는 가로 비율에 맞게 자동 조정 */
@@ -53,17 +56,17 @@
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
-
     .post-images {
       margin-top: 20px;
     }
-
     .post-images .col {
       padding: 10px;
     }
-
     .back-to-list {
       margin-top: 30px;
+    }
+    .post-buttons {
+      margin-top: 20px;
     }
   </style>
 </head>
@@ -113,21 +116,26 @@
 
           <!-- 이미지 표시 -->
           <div class="mt-3 text-center">
-            <h5>첨부된 이미지</h5>
             <div class="row">
               <div class="col" th:each="imagePath : ${board.imagePaths}">
-                <img th:src="@{${imagePath}}" alt="게시물 이미지" class="img-fluid mb-2" />
+                <img th:src="${imagePath}" alt="게시물 이미지" class="img-fluid mb-2" />
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- 수정하기, 삭제하기 버튼 -->
+      <div class="post-buttons text-center mt-3">
+        <a th:href="@{/board/update/{id}(id=${board.id})}" class="btn btn-primary btn-lg">수정하기</a>
+        <form action="/board/delete/${board.id}" method="post" style="display: inline;">
+          <button type="submit" class="btn btn-danger btn-lg">삭제하기</button>
+        </form>
+      </div>
+
       <!-- 목록으로 돌아가기 버튼 -->
       <div class="back-to-list text-center">
-        <a href="/board/list" class="btn btn-secondary btn-lg">
-          목록으로 돌아가기
-        </a>
+        <a href="/board/list" class="btn btn-secondary btn-lg">목록으로 돌아가기</a>
       </div>
     </div>
   </div>

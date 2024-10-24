@@ -58,7 +58,7 @@ public class BoardViewController {
     public String getBoardPost(@PathVariable Long id, Model model,
                                @CookieValue(value = "accessToken", required = false) String accessToken) {
         // 게시물 ID를 사용하여 게시물 정보를 가져옵니다.
-        BoardDto boardDto = boardService.getPost(id,accessToken);
+        BoardDto boardDto = boardService.getPost(id, accessToken);
 
         if (boardDto == null) {
             // 게시물이 존재하지 않을 경우 적절한 처리
@@ -71,6 +71,26 @@ public class BoardViewController {
         return "board/detail"; // 게시물 상세 페이지로 반환
     }
 
+    @GetMapping("/update/{id}")
+    public String updateBoardPage(@PathVariable Long id, Model model,
+                                  @CookieValue(value = "accessToken", required = false) String accessToken
+    ) {
+
+        BoardDto boardDto = boardService.getPost(id, accessToken);
+
+        if (boardDto == null) {
+            // 게시물이 존재하지 않을 경우 적절한 처리
+            return "redirect:/board/list"; // 목록 페이지로 리다이렉트
+        }
+
+        // 모델에 게시물 정보를 추가
+        model.addAttribute("board", boardDto);
+
+        return "board/update"; // 게시물 상세 페이지로 반환
+
+
+    }
+
 
     private boolean isAccessTokenMissing(String accessToken) {
         return accessToken == null;
@@ -81,7 +101,7 @@ public class BoardViewController {
     }
 
     private Page<BoardDto> getBoardPage(int page, int size) {
-        // Pageable 객체 생성 (page는 0부터 시작)
+        // Pageable 객체 생성가 (page는 0부터 시작)
         PageRequest pageable = PageRequest.of(page, size);
         return boardService.getPosts(pageable);
     }

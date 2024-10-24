@@ -166,7 +166,8 @@ public class BoardServiceImpl implements BoardService {
         // 게시물 업데이트
         Board updatedBoard = createUpdatedBoard(existingBoard, boardDto, updatedImages);
 
-        // 게시물 저장
+
+
         saveUpdatedBoard(updatedBoard);
     }
 
@@ -200,18 +201,24 @@ public class BoardServiceImpl implements BoardService {
 
     // 새 이미지 처리
     private List<BoardImage> processNewImages(List<MultipartFile> newImages, Board board) {
-        if (newImages == null || newImages.isEmpty()) {
-            return board.getImages();
+        // 기존 이미지가 있는 경우 해당 이미지 유지
+        List<BoardImage> existingImages = new ArrayList<>(board.getImages());
+
+        // 새로운 이미지가 있으면 추가
+        if (newImages != null && !newImages.isEmpty()) {
+            log.info("새 이미지 저장 시작");
+            List<BoardImage> newSavedImages = imageService.saveImages(newImages, board);
+            existingImages.addAll(newSavedImages); // 기존 이미지에 새 이미지를 추가
         }
 
-        log.info("새 이미지 저장 시작");
-        return imageService.saveImages(newImages, board);
+        return existingImages; // 기존 이미지와 새로운 이미지를 모두 포함한 리스트 반환
     }
 
     // 업데이트된 게시물 객체 생성
     private Board createUpdatedBoard(Board existingBoard, BoardDto boardDto, List<BoardImage> updatedImages) {
         return Board.builder()
                 .id(existingBoard.getId())
+                .title(boardDto.getTitle())
                 .content(boardDto.getContent())
                 .createdAt(existingBoard.getCreatedAt())
                 .updatedAt(LocalDateTime.now())

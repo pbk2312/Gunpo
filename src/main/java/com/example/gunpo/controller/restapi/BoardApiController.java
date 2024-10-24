@@ -53,7 +53,7 @@ public class BoardApiController {
             @RequestParam List<MultipartFile> newImages,
             @RequestParam(required = false) List<String> deleteImages) {
         try {
-            BoardDto boardDto = new BoardDto(title, content, Category.valueOf(category));
+            BoardDto boardDto = new BoardDto(id,title, content, Category.valueOf(category));
 
             log.info("BoardDto for update: {}", boardDto.toString());
 
