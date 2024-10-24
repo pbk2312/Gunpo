@@ -83,6 +83,37 @@ public class ImageService {
         }
     }
 
+    // 이미지 삭제 메서드
+    public void deleteImage(String imagePath) {
+        try {
+            // 파일 경로에서 실제 파일 삭제
+            String filePath = uploadDir + imagePath.substring(imagePath.lastIndexOf("/"));
+            File file = new File(filePath);
+
+            if (file.exists()) {
+                if (file.delete()) {
+                    log.info("이미지 파일 삭제 성공 - 경로: {}", filePath);
+                } else {
+                    log.warn("이미지 파일 삭제 실패 - 경로: {}", filePath);
+                }
+            } else {
+                log.warn("이미지 파일을 찾을 수 없음 - 경로: {}", filePath);
+            }
+
+            // 데이터베이스에서 이미지 정보 삭제
+            BoardImage boardImage = boardImageRepository.findByImagePath(imagePath);
+            if (boardImage != null) {
+                boardImageRepository.delete(boardImage);
+                log.info("이미지 정보 삭제 완료 - 경로: {}", imagePath);
+            } else {
+                log.warn("이미지 데이터베이스에서 찾을 수 없음 - 경로: {}", imagePath);
+            }
+
+        } catch (Exception e) {
+            log.error("이미지 삭제 중 오류 발생: {}", e.getMessage());
+            throw new RuntimeException("이미지 삭제 중 오류가 발생했습니다.");
+        }
+    }
 
 
     // BoardImage 객체 생성
