@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="" />
+    <meta name="author" content="" />
+    <title>Gunpo Community - Real-time Chat</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">뉴스</a>
+        </div>
+    </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Top navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text">홈으로</span>
+                </a>
+            </div>
+        </nav>
+        <!-- Page content-->
+        <div class="container-fluid">
+            <h1 class="my-5 text-center display-4">실시간 채팅</h1>
+
+            <p class="text-center text-muted mb-4" style="font-size: 1.1rem;">
+                로그인 없이도 군포 시민 여러분이 자유롭게 이야기할 수 있는 공간입니다.
+            </p>
+
+            <!-- Chat box area -->
+            <div id="chat-box" class="border rounded shadow-sm p-4 mb-4 bg-white" style="height: 500px; overflow-y: auto; font-size: 1.2rem;">
+                <!-- Messages will appear here -->
+            </div>
+
+            <!-- Chat input area -->
+            <div class="input-group input-group-lg mb-3">
+                <input type="text" class="form-control" id="message" placeholder="Type your message here..." aria-label="Message" aria-describedby="send-button">
+                <button class="btn btn-primary px-4" id="send-button" onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
+<!-- WebSocket and REST for real-time chat -->
+<script>
+    var ws = new WebSocket("ws://localhost:8080/ws/chat");
+
+    // 페이지가 로드될 때 Redis에서 저장된 채팅 메시지 불러오기
+    window.onload = function() {
+        fetch('/api/chat/messages')
+            .then(response => response.json())
+            .then(messages => {
+                var chatBox = document.getElementById('chat-box');
+                messages.forEach(message => {
+                    var messageElement = document.createElement('p');
+                    messageElement.textContent = message;
+                    chatBox.appendChild(messageElement);
+                });
+            });
+    };
+
+    // WebSocket으로 새 메시지 받기
+    ws.onmessage = function(event) {
+        var chatBox = document.getElementById('chat-box');
+        var message = document.createElement('p');
+        message.textContent = event.data;
+        chatBox.appendChild(message);
+    };
+
+    function sendMessage() {
+        var messageInput = document.getElementById('message');
+        var messageContent = messageInput.value;
+
+        // WebSocket으로 메시지 전송
+        ws.send(messageContent);
+
+        // Redis에 메시지 저장
+        fetch('/api/chat/messages', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(messageContent),
+        });
+
+        messageInput.value = '';
+    }
+</script>
+</body>
+</html>
