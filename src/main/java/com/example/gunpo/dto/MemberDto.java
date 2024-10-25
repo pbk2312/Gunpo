@@ -5,6 +5,7 @@ import com.example.gunpo.domain.MemberRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
@@ -36,7 +37,7 @@ public class MemberDto {
     @NotBlank(message = "닉네임은 필수 입력 값입니다.")
     private String nickname;
 
-    @FutureOrPresent(message = "생년월일은 현재 날짜 이전이어야 합니다.")
+    @PastOrPresent(message = "생년월일은 현재 날짜 이전이어야 합니다.")
     private LocalDate dateOfBirth;
 
     private String certificationNumber;
