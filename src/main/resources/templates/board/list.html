@@ -88,7 +88,7 @@
         </div>
 
         <!-- 페이지 네비게이션 -->
-        <nav aria-label="게시판 페이지 탐색">
+        <nav aria-label="게시판 페이지 탐색" th:if="${boardPage.totalElements > 0}">
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:classappend="${boardPage.number == 0} ? 'disabled'">
                     <a class="page-link" th:href="@{/board/list(page=${boardPage.number - 1}, size=${boardPage.size})}">이전</a>
