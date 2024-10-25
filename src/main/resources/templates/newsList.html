@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <title>Gunpo Community - 시민을 위한 정보</title>
+  <!-- Favicon-->
+  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+  <!-- Core theme CSS (includes Bootstrap)-->
+  <link href="css/styles.css" rel="stylesheet" />
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+  <!-- Sidebar-->
+  <div class="border-end bg-white" id="sidebar-wrapper">
+    <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+    <div class="list-group list-group-flush">
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">커뮤니티 게시판</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연구역</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
+    </div>
+  </div>
+  <!-- Page content wrapper-->
+  <div id="page-content-wrapper">
+    <!-- Top navigation-->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">
+          <span class="icon">🏠</span>
+          <span class="text text-muted">홈으로</span>
+        </a>
+      </div>
+    </nav>
+    <!-- Page content-->
+    <div class="container-fluid mt-4">
+      <h1 class="text-center">군포 시민을 위한 정보</h1>
+      <p class="text-center text-muted">군포시의 최신 소식을 확인하세요</p>
+
+      <!-- 뉴스 카드 레이아웃 -->
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        <div th:each="news : ${newsList}" class="col">
+          <div class="card h-100 shadow-sm">
+            <img th:src="${news.imageUrl}" class="card-img-top" alt="News Image" style="height: 200px; object-fit: cover;">
+            <div class="card-body">
+              <h5 th:text="${news.title}" class="card-title"></h5>
+              <p th:text="${news.summary}" class="card-text"></p>
+              <a th:href="${news.link}" class="btn btn-outline-primary btn-sm" target="_blank">더 읽기</a>
+            </div>
+          </div>
+        </div>
+      </div>
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script src="js/scripts.js"></script>
+</body>
+</html>
