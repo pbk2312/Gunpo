@@ -27,7 +27,6 @@ out/
 !**/src/test/**/out/
 
 application.properties
-Gunpo
 
 ### NetBeans ###
 /nbproject/private/
