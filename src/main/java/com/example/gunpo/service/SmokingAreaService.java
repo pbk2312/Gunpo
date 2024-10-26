@@ -1,5 +1,6 @@
 package com.example.gunpo.service;
 
+import com.example.gunpo.constants.ApiConstants;
 import com.example.gunpo.domain.SmokingArea;
 import com.example.gunpo.dto.SmokingAreaDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -36,15 +37,14 @@ public class SmokingAreaService {
 
     public void fetchAllDataAndSaveToRedis() {
         int page = 1;
-        int size = 100; // 페이지당 데이터 수 조정
+        int size = ApiConstants.DEFAULT_PAGE_SIZE;
 
         while (true) {
             List<SmokingArea> smokingAreas = getDataFromAPI(page, size);
             if (smokingAreas.isEmpty()) {
                 log.info("더 이상 흡연 구역 데이터가 없습니다. 데이터 수집 종료.");
-                break; // 데이터가 없으면 종료
+                break;
             }
-            // Redis에 데이터 저장
             redisService.saveToRedis(smokingAreas);
             log.info("{} 페이지의 흡연 구역 데이터가 Redis에 저장되었습니다.", page);
             page++;
@@ -57,7 +57,7 @@ public class SmokingAreaService {
 
         try {
             ResponseEntity<String> responseEntity = restTemplate.getForEntity(new URI(url), String.class);
-            log.info("응답 상태 코드: {}", responseEntity.getStatusCode());
+            log.info("응답 상태 코드: {}", responseEntity.getStatusCode().value());
             return handleApiResponse(responseEntity);
         } catch (URISyntaxException e) {
             log.error("URI 문법 오류: {}", e.getMessage());
@@ -75,11 +75,12 @@ public class SmokingAreaService {
             String responseBody = responseEntity.getBody();
             return parseResponse(responseBody);
         } else {
-            log.warn("API 호출이 실패했습니다. 상태 코드: {}", responseEntity.getStatusCodeValue());
+            log.warn("API 호출이 실패했습니다. 상태 코드: {}", responseEntity.getStatusCode().value());
             return Collections.emptyList();
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<SmokingArea> parseResponse(String response) {
         if (response == null || response.isEmpty()) {
             log.warn("응답이 null이거나 비어 있습니다.");
@@ -128,13 +129,11 @@ public class SmokingAreaService {
 
     private String buildApiUrl(int page, int size) {
         String encodedServiceKey = serviceKey.replace("+", "%2B");
-        return String.format("https://api.odcloud.kr/api/15122343/v1/uddi:20726a37-6b6a-4b28-8370-9097991eca6a?returnType=json&serviceKey=%s&page=%d&size=%d",
-                encodedServiceKey, page, size);
+        return ApiConstants.BASE_API_URL + String.format(ApiConstants.API_QUERY_TEMPLATE, encodedServiceKey, page, size);
     }
 
-    public List<SmokingAreaDto> getAllSmokingZones(){
+    public List<SmokingAreaDto> getAllSmokingZones() {
         return redisService.getAllSmokingZonesFromRedis();
     }
-
 
 }
