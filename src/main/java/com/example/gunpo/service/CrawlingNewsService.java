@@ -1,5 +1,6 @@
 package com.example.gunpo.service;
 
+import com.example.gunpo.constants.NewsConstants;
 import com.example.gunpo.dto.NewsData;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -16,30 +17,13 @@ public class CrawlingNewsService {
 
     public List<NewsData> getAllNews() {
         List<NewsData> newsList = new ArrayList<>();
-
         try {
-            // 웹 페이지 연결
-            Document doc = Jsoup.connect("https://www.mediagunpo.co.kr").get();
+            Document doc = fetchDocument(NewsConstants.BASE_URL);
+            Elements newsElements = doc.select(NewsConstants.NEWS_SECTION_SELECTOR);
 
-            // 메인 뉴스 섹션 선택
-            Elements newsElements = doc.select("#main_news121 .news_box");
-
-            // 각 뉴스 아이템에서 데이터 추출
             for (Element newsElement : newsElements) {
-                // 이미지 URL 추출
-                String imageUrl = newsElement.select(".thumb_img img").attr("src");
-
-                // 뉴스 제목 추출
-                String title = newsElement.select(".title a").text();
-
-                // 본문 내용의 일부 추출
-                String summary = newsElement.select(".sbody a").text();
-
-                // 링크 추출
-                String link = "https://www.mediagunpo.co.kr" + newsElement.select(".title a").attr("href");
-
-                // 추출한 정보를 NewsData 객체에 담아 리스트에 추가
-                newsList.add(new NewsData(title, imageUrl, summary, link));
+                NewsData newsData = extractNewsData(newsElement);
+                newsList.add(newsData);
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,5 +31,20 @@ public class CrawlingNewsService {
         return newsList;
     }
 
+    private Document fetchDocument(String url) throws IOException {
+        return Jsoup.connect(url)
+                .timeout(5000)
+                .userAgent("Mozilla/5.0")
+                .get();
+    }
+
+    private NewsData extractNewsData(Element newsElement) {
+        String imageUrl = newsElement.select(".thumb_img img").attr("src");
+        String title = newsElement.select(".title a").text();
+        String summary = newsElement.select(".sbody a").text();
+        String link = NewsConstants.BASE_URL + newsElement.select(".title a").attr("href");
+
+        return new NewsData(title, imageUrl, summary, link);
+    }
 
 }
