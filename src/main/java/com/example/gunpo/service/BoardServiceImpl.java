@@ -9,6 +9,7 @@ import com.example.gunpo.exception.CannotFindBoardException;
 import com.example.gunpo.handler.AuthorizationHandler;
 import com.example.gunpo.repository.BoardRepository;
 
+import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.validator.AccessTokenValidator;
 import com.example.gunpo.validator.BoardValidator;
 import com.example.gunpo.validator.PostIdValidator;
@@ -31,10 +32,10 @@ import java.util.List;
 public class BoardServiceImpl implements BoardService {
 
     private final BoardRepository boardRepository;
-    private final MemberService memberService;
     private final RedisService redisService;
     private final AuthorizationHandler authorizationHandler;
     private final ImageProcessor imageProcessor;
+    private final AuthenticationService authenticationService;
 
     private final Validator<BoardDto> boardValidator = new BoardValidator();
     private final Validator<String> accessTokenValidator = new AccessTokenValidator();
@@ -51,7 +52,7 @@ public class BoardServiceImpl implements BoardService {
     }
 
     private Long saveBoardWithDetails(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
-        Member member = memberService.getUserDetails(accessToken);
+        Member member = authenticationService.getUserDetails(accessToken);
         Board board = BoardFactory.createBoard(boardDto, member);
 
         Long boardId = boardRepository.save(board).getId();
@@ -82,7 +83,7 @@ public class BoardServiceImpl implements BoardService {
 
         log.info("게시물 조회 요청 - 게시물 ID: {}, 사용자 토큰: {}", postId, accessToken);
 
-        Member member = memberService.getUserDetails(accessToken);
+        Member member = authenticationService.getUserDetails(accessToken);
         String userId = member.getId().toString();
 
         redisService.incrementViewCountIfNotExists(postId, userId);

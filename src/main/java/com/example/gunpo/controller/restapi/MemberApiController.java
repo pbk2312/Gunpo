@@ -11,7 +11,8 @@ import com.example.gunpo.exception.MemberNotFoundException;
 import com.example.gunpo.exception.MemberSaveException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.jwt.TokenProvider;
-import com.example.gunpo.service.MemberService;
+import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.service.member.MemberManagementService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,13 +33,14 @@ import java.util.Map;
 @RequestMapping("/api/member")
 public class MemberApiController {
 
-    private final MemberService memberService;
     private final TokenProvider tokenProvider;
+    private final AuthenticationService authenticationService;
+    private final MemberManagementService memberManagementService;
 
     @PostMapping("/sign-up")
     public ResponseEntity<ResponseDto<?>> signUp(@Valid @RequestBody MemberDto memberDto) {
         try {
-            Long saveMemberId = memberService.save(memberDto);
+            Long saveMemberId = memberManagementService.save(memberDto);
             log.info("저장된 회원 아이디: {}", saveMemberId);
             return createSuccessResponse(saveMemberId);
         } catch (MemberSaveException e) {
@@ -75,7 +77,7 @@ public class MemberApiController {
         Map<String, String> responseMap = new HashMap<>();
         try {
             // 로그인 서비스 호출 및 토큰 처리
-            TokenDto tokenDto = memberService.login(loginDto);
+            TokenDto tokenDto = authenticationService.login(loginDto);
             setTokensInCookies(response, tokenDto);
 
             // 리다이렉트 URL 처리
@@ -131,10 +133,10 @@ public class MemberApiController {
         }
 
         // 회원 정보 가져오기
-        Member member = memberService.getUserDetails(accessToken);
+        Member member = authenticationService.getUserDetails(accessToken);
 
         // 로그아웃 처리
-        memberService.logout(member);
+        authenticationService.logout(member.getId());
 
         // 쿠키 제거
         removeCookie(response, "accessToken");
@@ -186,7 +188,7 @@ public class MemberApiController {
     private ResponseEntity<ResponseDto<Map<String, Object>>> handleRefreshTokenValidation(
             String refreshToken, HttpServletResponse response, Map<String, Object> data) throws Exception {
 
-        Member member = memberService.findByRefreshToken(refreshToken);
+        Member member = authenticationService.findByRefreshToken(refreshToken);
         if (member != null) {
             // 새 Access Token 발급 및 쿠키 저장
             TokenDto newTokenDTO = generateNewAccessToken(refreshToken, response);
