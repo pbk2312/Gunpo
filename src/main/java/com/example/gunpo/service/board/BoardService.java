@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.board;
 
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.dto.BoardDto;
