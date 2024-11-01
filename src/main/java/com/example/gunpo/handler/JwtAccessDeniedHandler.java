@@ -17,7 +17,7 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
         // 권한이 없으면 사용자 정의 오류 페이지로 리다이렉트
         String errorMessage = "고객님의 등급은 접근할수없습니다.";
-        String encodedMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8.toString());
+        String encodedMessage = URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
         response.sendRedirect("/error?message=" + encodedMessage);
     }
 }
