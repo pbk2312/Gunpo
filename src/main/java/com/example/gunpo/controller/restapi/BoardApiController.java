@@ -3,7 +3,7 @@ package com.example.gunpo.controller.restapi;
 import com.example.gunpo.domain.Category;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.dto.ResponseDto;
-import com.example.gunpo.service.BoardService;
+import com.example.gunpo.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
