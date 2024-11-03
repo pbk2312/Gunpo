@@ -1,4 +1,4 @@
-package com.example.gunpo.validator;
+package com.example.gunpo.validator.member;
 
 import com.example.gunpo.constants.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
@@ -6,6 +6,7 @@ import com.example.gunpo.exception.MemberNotFoundException;
 import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.repository.MemberRepository;
+import com.example.gunpo.service.RedisService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,15 +16,19 @@ public class AuthenticationValidator {
 
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
+    private final RedisService redisService;
 
-    // 이메일로 회원 찾기 검증 (통합)
+    // 이메일로 회원 찾기 검증
     public Member validateMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_EMAIL.getMessage()));
     }
 
-    // Access Token 유효성 검증
+    // Access Token 유효성 검증 (null 및 빈 문자열 체크 포함)
     public void validateAccessToken(String accessToken) {
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new IllegalArgumentException("액세스 토큰이 유효하지 않습니다.");
+        }
         if (!tokenProvider.validate(accessToken)) {
             throw new UnauthorizedException(MemberErrorMessage.UNAUTHORIZED_USER.getMessage());
         }
@@ -32,7 +37,17 @@ public class AuthenticationValidator {
     // 회원 ID로 회원 찾기 검증
     public Member validateExistingMember(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_ID.getMessage() + memberId));
+                .orElseThrow(() -> new MemberNotFoundException(
+                        MemberErrorMessage.MEMBER_NOT_FOUND_ID.getMessage() + memberId));
+    }
+
+    // Refresh Token을 통해 회원 찾기 검증
+    public Member validateMemberByRefreshToken(String refreshToken) {
+        String memberId = redisService.findMemberIdByRefreshToken(refreshToken);
+        if (memberId == null) {
+            throw new UnauthorizedException(MemberErrorMessage.INVALID_REFRESH_TOKEN.getMessage());
+        }
+        return validateExistingMember(Long.parseLong(memberId));
     }
 
 }
