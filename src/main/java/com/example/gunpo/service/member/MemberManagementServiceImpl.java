@@ -5,7 +5,8 @@ import com.example.gunpo.domain.MemberRole;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.repository.MemberRepository;
-import com.example.gunpo.validator.MemberRegistrationValidator;
+import com.example.gunpo.validator.member.AuthenticationValidator;
+import com.example.gunpo.validator.member.MemberRegistrationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -20,20 +21,26 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
     private final MemberRegistrationValidator memberRegistrationValidator;
+    private final AuthenticationValidator authenticationValidator;
 
     @Override
     public Long save(@Valid MemberDto memberDto) {
         log.info("회원 저장 요청: {}", memberDto);
-        memberRegistrationValidator.validateNewMember(memberDto);
-        Member member = createMember(memberDto);
-        Member savedMember = memberRepository.save(member);
-        log.info("회원 저장 성공, ID: {}", savedMember.getId());
-        return savedMember.getId();
+        try {
+            memberRegistrationValidator.validateNewMember(memberDto);
+            Member member = createMember(memberDto);
+            Member savedMember = memberRepository.save(member);
+            log.info("회원 저장 성공, ID: {}", savedMember.getId());
+            return savedMember.getId();
+        } catch (Exception e) {
+            log.error("회원 저장 실패: {} - {}", memberDto, e.getMessage());
+            throw e; // 예외를 다시 던져 호출자에게 알림
+        }
     }
 
     @Override
     public void delete(Long memberId) {
-        Member member = memberRegistrationValidator.validateExistingMember(memberId);
+        Member member = authenticationValidator.validateExistingMember(memberId);
         memberRepository.delete(member);
         log.info("회원 삭제 성공, ID: {}", member.getId());
     }
@@ -45,19 +52,19 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     }
 
     private Member findAndUpdateMemberFields(MemberDto memberDto) {
-        Member existingMember = memberRegistrationValidator.validateExistingMember(memberDto.getId());
-        existingMember.setEmail(memberDto.getEmail());
-        existingMember.setDateOfBirth(memberDto.getDateOfBirth());
-        existingMember.setMemberRole(memberDto.getMemberRole());
-        existingMember.setNickname(memberDto.getNickname());
+        Member existingMember = authenticationValidator.validateExistingMember(memberDto.getId());
+        MemberMapper.INSTANCE.updateEntity(existingMember, memberDto);
         return memberRepository.save(existingMember);
     }
 
     private Member createMember(MemberDto memberDto) {
         Member member = MemberMapper.INSTANCE.toEntity(memberDto);
-        member.setPassword(passwordEncoder.encode(memberDto.getPassword()));
+        encodePassword(member);
         member.setMemberRole(MemberRole.MEMBER);
         return member;
     }
 
+    private void encodePassword(Member member) {
+        member.setPassword(passwordEncoder.encode(member.getPassword()));
+    }
 }
