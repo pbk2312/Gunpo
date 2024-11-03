@@ -3,6 +3,7 @@ package com.example.gunpo.service;
 import com.example.gunpo.constants.ApiConstants;
 import com.example.gunpo.domain.SmokingArea;
 import com.example.gunpo.dto.SmokingAreaDto;
+import com.example.gunpo.service.redis.RedisSmokingAreaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +34,7 @@ public class SmokingAreaService {
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final RedisService redisService;
-
+    private final RedisSmokingAreaService redisSmokingAreaService;
     public void fetchAllDataAndSaveToRedis() {
         int page = 1;
         int size = ApiConstants.DEFAULT_PAGE_SIZE;
@@ -45,7 +45,7 @@ public class SmokingAreaService {
                 log.info("더 이상 흡연 구역 데이터가 없습니다. 데이터 수집 종료.");
                 break;
             }
-            redisService.saveToRedis(smokingAreas);
+            redisSmokingAreaService.saveToRedis(smokingAreas);
             log.info("{} 페이지의 흡연 구역 데이터가 Redis에 저장되었습니다.", page);
             page++;
         }
@@ -133,7 +133,7 @@ public class SmokingAreaService {
     }
 
     public List<SmokingAreaDto> getAllSmokingZones() {
-        return redisService.getAllSmokingZonesFromRedis();
+        return redisSmokingAreaService.getAllSmokingZonesFromRedis();
     }
 
 }
