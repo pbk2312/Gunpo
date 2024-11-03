@@ -1,18 +1,23 @@
-package com.example.gunpo.handler;
+package com.example.gunpo.validator.board;
 
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.Member;
+import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.service.member.AuthenticationService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AuthorizationHandler {
+@RequiredArgsConstructor
+public class BoardValidator {
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
-    public AuthorizationHandler(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public void validate(BoardDto boardDto) {
+        if (boardDto == null || boardDto.getTitle().isEmpty() || boardDto.getContent().isEmpty()) {
+            throw new IllegalArgumentException("게시물 제목 및 내용은 필수입니다.");
+        }
     }
 
     public void verifyAuthor(Board board, String accessToken) {
@@ -21,5 +26,4 @@ public class AuthorizationHandler {
             throw new UnauthorizedException("게시물 수정 권한이 없습니다.");
         }
     }
-
 }
