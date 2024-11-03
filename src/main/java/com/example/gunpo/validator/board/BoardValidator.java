@@ -3,7 +3,7 @@ package com.example.gunpo.validator.board;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.BoardDto;
-import com.example.gunpo.exception.UnauthorizedException;
+import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.member.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -26,4 +26,12 @@ public class BoardValidator {
             throw new UnauthorizedException("게시물 수정 권한이 없습니다.");
         }
     }
+
+    // 게시물 ID 검증
+    public void validatePostId(Long postId) {
+        if (postId == null || postId <= 0) {
+            throw new IllegalArgumentException("유효하지 않은 게시물 ID입니다.");
+        }
+    }
+
 }
