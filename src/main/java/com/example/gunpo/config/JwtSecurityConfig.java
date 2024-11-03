@@ -1,6 +1,7 @@
-package com.example.gunpo.jwt;
+package com.example.gunpo.config;
 
 import com.example.gunpo.infrastructure.TokenProvider;
+import com.example.gunpo.handler.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -19,4 +20,5 @@ public class JwtSecurityConfig extends SecurityConfigurerAdapter<DefaultSecurity
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
     }
+
 }
