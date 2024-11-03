@@ -8,6 +8,7 @@ import com.example.gunpo.exception.email.EmailSendFailedException;
 import com.example.gunpo.exception.email.VerificationCodeExpiredException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.repository.MemberRepository;
+import com.example.gunpo.service.email.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

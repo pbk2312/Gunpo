@@ -4,7 +4,7 @@ package com.example.gunpo.controller.restapi;
 import com.example.gunpo.dto.EmailDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.exception.email.EmailSendFailedException;
-import com.example.gunpo.service.EmailService;
+import com.example.gunpo.service.email.EmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
