@@ -6,11 +6,10 @@ import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
-import com.example.gunpo.exception.UnauthorizedException;
 import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.service.RedisService;
 import com.example.gunpo.util.CookieUtils;
-import com.example.gunpo.validator.AuthenticationValidator;
+import com.example.gunpo.validator.member.AuthenticationValidator;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -60,11 +59,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public Member findByRefreshToken(String refreshToken) {
-        String memberId = redisService.findMemberIdByRefreshToken(refreshToken);
-        if (memberId == null) {
-            throw new UnauthorizedException(MemberErrorMessage.INVALID_REFRESH_TOKEN.getMessage());
-        }
-        return authenticationValidator.validateExistingMember(Long.parseLong(memberId));
+        return authenticationValidator.validateMemberByRefreshToken(refreshToken);
     }
 
     @Override
@@ -129,7 +124,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return newTokenDto;
     }
 
-    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message, Map<String, Object> data) {
+    private ResponseEntity<ResponseDto<Map<String, Object>>> buildSuccessResponse(String message,
+                                                                                  Map<String, Object> data) {
         data.put("isLoggedIn", true);
         return ResponseEntity.ok(new ResponseDto<>(message, data));
     }
@@ -144,4 +140,5 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return authenticationValidator.validateMemberByEmail(userDetails.getUsername());
     }
+
 }
