@@ -1,16 +1,14 @@
-package com.example.gunpo.validator;
+package com.example.gunpo.validator.member;
 
 import com.example.gunpo.constants.MemberErrorMessage;
-import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.exception.MemberNotFoundException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.service.RedisService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class MemberRegistrationValidator {
 
@@ -43,10 +41,5 @@ public class MemberRegistrationValidator {
         }
     }
 
-    public Member validateExistingMember(Long memberId) {
-        return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(
-                        MemberErrorMessage.MEMBER_NOT_FOUND_ID.getMessage() + memberId));
-    }
 
 }
