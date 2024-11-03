@@ -31,8 +31,9 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // /upload/** 경로를 파일 시스템의 /Users/park/upload/ 디렉토리로 매핑
-        registry.addResourceHandler("/upload/**")
-                .addResourceLocations("file:/Users/park/upload/");
+        // /Gunpo/** 경로를 실제 파일 시스템 경로로 매핑
+        registry.addResourceHandler("/Gunpo/**")
+                .addResourceLocations("file:/Users/park/IdeaProjects/Gunpo/src/main/resources/static/Gunpo/");
     }
+
 }
