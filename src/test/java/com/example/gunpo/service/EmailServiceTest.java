@@ -2,7 +2,7 @@ package com.example.gunpo.service;
 
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.EmailDto;
-import com.example.gunpo.email.EmailProvider;
+import com.example.gunpo.infrastructure.EmailProvider;
 import com.example.gunpo.exception.email.EmailAlreadyVerifiedException;
 import com.example.gunpo.exception.email.EmailSendFailedException;
 import com.example.gunpo.exception.email.VerificationCodeExpiredException;

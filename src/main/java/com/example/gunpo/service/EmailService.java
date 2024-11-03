@@ -2,9 +2,8 @@ package com.example.gunpo.service;
 
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.EmailDto;
-import com.example.gunpo.email.EmailProvider;
+import com.example.gunpo.infrastructure.EmailProvider;
 import com.example.gunpo.exception.email.EmailAlreadyVerifiedException;
-import com.example.gunpo.exception.email.EmailSendFailedException;
 import com.example.gunpo.exception.email.VerificationCodeExpiredException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.repository.MemberRepository;
@@ -31,15 +30,12 @@ public class EmailService {
 
         Optional<Member> optionalMember = memberRepository.findByEmail(emailDto.getEmail());
 
-        if (optionalMember.isPresent()){
+        if (optionalMember.isPresent()) {
             throw new IllegalArgumentException("이미 사용 중인 이메일입니다.");
         }
 
         String certificationNumber = generateCertificationNumber();
-        boolean emailsuccess = emailProvider.sendCertificationMail(emailDto.getEmail(), certificationNumber);
-        if (!emailsuccess) {
-            throw new EmailSendFailedException("이메일 발송 실패");
-        }
+        emailProvider.sendCertificationMail(emailDto.getEmail(), certificationNumber);
 
         redisService.saveEmailCertificationToRedis(emailDto.getEmail(), certificationNumber); // 60분
 

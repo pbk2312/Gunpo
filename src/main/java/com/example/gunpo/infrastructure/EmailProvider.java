@@ -1,24 +1,25 @@
-package com.example.gunpo.email;
+package com.example.gunpo.infrastructure;
 
-
+import com.example.gunpo.exception.email.EmailSendFailedException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class EmailProvider {
 
     private final JavaMailSender javaMailSender;
 
-    private final String SUBJECT = "[Gunpo]"; // 인증 메일 제목
+    private static final String SUBJECT = "[Gunpo]"; // 인증 메일 제목
 
-    public boolean sendCertificationMail(String email, String certificationNumber) {
+    public void sendCertificationMail(String email, String certificationNumber) {
 
         try {
-
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper messageHelper = new MimeMessageHelper(message, true);
 
@@ -31,17 +32,16 @@ public class EmailProvider {
             javaMailSender.send(message);
 
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            log.error("Failed to send email to {}: {}", email, e.getMessage(), e);
+            throw new EmailSendFailedException("이메일 발송 실패");
         }
-        return true;
-
-
     }
+
     private String getCertificationMessage(String certificationNumber) {
-        String certificationMessage = "";
-        certificationMessage += "<h1 style='text-align: center;'> [Gunpo] 인증메일</h1>";
-        certificationMessage += "<h3 style='text-align: center;'> 인증코드 : <strong style='font-size:32px;letter-spacing:8px;'>" + certificationNumber + "</strong></h3>";
-        return certificationMessage;
+        return String.format(
+                "<h1 style='text-align: center;'>[Gunpo] 인증메일</h1>" +
+                        "<h3 style='text-align: center;'>인증코드 : <strong style='font-size:32px;letter-spacing:8px;'>%s</strong></h3>",
+                certificationNumber
+        );
     }
 }
