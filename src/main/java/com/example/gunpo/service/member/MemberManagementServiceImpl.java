@@ -5,7 +5,7 @@ import com.example.gunpo.domain.MemberRole;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.repository.MemberRepository;
-import com.example.gunpo.validator.MemberValidator;
+import com.example.gunpo.validator.MemberRegistrationValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -19,12 +19,12 @@ public class MemberManagementServiceImpl implements MemberManagementService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
-    private final MemberValidator memberValidator;
+    private final MemberRegistrationValidator memberRegistrationValidator;
 
     @Override
     public Long save(@Valid MemberDto memberDto) {
         log.info("회원 저장 요청: {}", memberDto);
-        memberValidator.validateNewMember(memberDto);
+        memberRegistrationValidator.validateNewMember(memberDto);
         Member member = createMember(memberDto);
         Member savedMember = memberRepository.save(member);
         log.info("회원 저장 성공, ID: {}", savedMember.getId());
@@ -33,7 +33,7 @@ public class MemberManagementServiceImpl implements MemberManagementService {
 
     @Override
     public void delete(Long memberId) {
-        Member member = memberValidator.validateExistingMember(memberId);
+        Member member = memberRegistrationValidator.validateExistingMember(memberId);
         memberRepository.delete(member);
         log.info("회원 삭제 성공, ID: {}", member.getId());
     }
@@ -45,7 +45,7 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     }
 
     private Member findAndUpdateMemberFields(MemberDto memberDto) {
-        Member existingMember = memberValidator.validateExistingMember(memberDto.getId());
+        Member existingMember = memberRegistrationValidator.validateExistingMember(memberDto.getId());
         existingMember.setEmail(memberDto.getEmail());
         existingMember.setDateOfBirth(memberDto.getDateOfBirth());
         existingMember.setMemberRole(memberDto.getMemberRole());
