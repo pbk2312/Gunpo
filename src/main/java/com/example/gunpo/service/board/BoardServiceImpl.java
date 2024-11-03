@@ -3,9 +3,10 @@ package com.example.gunpo.service.board;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.exception.CannotFindBoardException;
-import com.example.gunpo.handler.AuthorizationHandler;
 import com.example.gunpo.mapper.BoardMapper;
 import com.example.gunpo.repository.BoardRepository;
+import com.example.gunpo.validator.board.BoardValidator;
+import com.example.gunpo.validator.board.PostIdValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -26,13 +27,9 @@ public class BoardServiceImpl implements BoardService {
     private final BoardRepository boardRepository;
     private final BoardMapper boardMapper;
     private final BoardUpdateService boardUpdateService;
-    private final BoardCreationService boardCreationService;
-    private final AuthorizationHandler authorizationHandler;
+    private final PostIdValidator postIdValidator;
+    private final BoardValidator boardValidator;
 
-    @Override
-    public Long createPost(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
-        return boardCreationService.create(boardDto, accessToken, images);
-    }
 
     @Override
     @Transactional
@@ -48,16 +45,10 @@ public class BoardServiceImpl implements BoardService {
 
     @Override
     @Transactional
-    public BoardDto getPost(Long postId,String accessToken) {
-        Board board = boardRepository.findById(postId)
-                .orElseThrow(() -> new CannotFindBoardException("존재하는 게시물을 찾을 수 없습니다."));
+    public BoardDto getPost(Long postId, String accessToken) {
+        postIdValidator.validate(postId);
+        Board board = boardRepository.findById(postId).orElseThrow(() -> new CannotFindBoardException("찾을 수 없다."));
         return boardMapper.toDto(board);
-    }
-
-    @Override
-    @Transactional
-    public void updatePost(BoardDto boardDto, List<MultipartFile> newImages, List<String> deleteImages, String accessToken) {
-        boardUpdateService.updatePost(boardDto, newImages, deleteImages, accessToken);
     }
 
     @Override
@@ -66,7 +57,7 @@ public class BoardServiceImpl implements BoardService {
 
         Board board = boardRepository.findById(postId)
                 .orElseThrow(() -> new CannotFindBoardException("게시물을 찾을 수 없습니다."));
-        authorizationHandler.verifyAuthor(board, accessToken);
+        boardValidator.verifyAuthor(board, accessToken);
 
         boardRepository.delete(board);
         log.info("게시물이 성공적으로 삭제되었습니다. ID: {}", postId);
