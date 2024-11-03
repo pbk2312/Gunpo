@@ -2,8 +2,7 @@ package com.example.gunpo.controller.view;
 
 
 import com.example.gunpo.dto.BoardDto;
-import com.example.gunpo.service.BoardService;
-import jakarta.servlet.http.HttpServletResponse;
+import com.example.gunpo.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
