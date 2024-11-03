@@ -60,12 +60,6 @@ public class MemberApiController {
         }
     }
 
-    private String getRedirectUrlFromSession(HttpServletRequest request) {
-        String redirectUrl = (String) request.getSession().getAttribute("redirectUrl");
-        request.getSession().removeAttribute("redirectUrl");
-        return redirectUrl != null ? redirectUrl : "/";
-    }
-
     @PostMapping("/logout")
     public ResponseEntity<ResponseDto<String>> logout(
             @CookieValue(value = "accessToken", required = false) String accessToken, HttpServletResponse response) {
@@ -100,5 +94,9 @@ public class MemberApiController {
                 .body(new ResponseDto<>("Error occurred during token validation", data));
     }
 
-
+    private String getRedirectUrlFromSession(HttpServletRequest request) {
+        String redirectUrl = (String) request.getSession().getAttribute("redirectUrl");
+        request.getSession().removeAttribute("redirectUrl");
+        return redirectUrl != null ? redirectUrl : "/";
+    }
 }
