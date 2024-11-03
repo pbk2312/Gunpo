@@ -2,21 +2,19 @@ package com.example.gunpo.Factory;
 
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.BoardImage;
-import com.example.gunpo.service.ImageService;
+import com.example.gunpo.service.image.ImageService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 @Component
+@RequiredArgsConstructor
 public class ImageProcessor {
     private final ImageService imageService;
-
-    public ImageProcessor(ImageService imageService) {
-        this.imageService = imageService;
-    }
 
     public void processDeletedImages(List<String> deleteImages, Board board) {
         if (deleteImages == null || deleteImages.isEmpty()) return;
@@ -37,7 +35,6 @@ public class ImageProcessor {
         return existingImages;
     }
 
-    // 추가된 메서드
     public List<String> extractImagePaths(Board board) {
         if (board.getImages() == null || board.getImages().isEmpty()) {
             return Collections.emptyList();
@@ -46,4 +43,5 @@ public class ImageProcessor {
                 .map(BoardImage::getImagePath)
                 .collect(Collectors.toList());
     }
+
 }

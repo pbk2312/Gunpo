@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.image;
 
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.BoardImage;
@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -26,6 +27,7 @@ public class ImageService {
 
     private final BoardImageRepository boardImageRepository;
 
+    @Transactional
     public List<BoardImage> saveImages(List<MultipartFile> images, Board board) {
         List<BoardImage> savedImages = new ArrayList<>();
 
@@ -59,7 +61,6 @@ public class ImageService {
         return Optional.of(boardImage);
     }
 
-    // 실제 파일을 저장하는 로직
     private String storeImage(MultipartFile file) {
         String fileName = generateUniqueFileName(file.getOriginalFilename());
         File uploadFile = new File(uploadDir, fileName);
@@ -86,6 +87,7 @@ public class ImageService {
         return UUID.randomUUID() + "_" + originalFilename;
     }
 
+    @Transactional
     public void deleteImage(String imagePath) {
         String filePath = getFilePathFromImagePath(imagePath);
         deleteFile(filePath);
@@ -126,4 +128,5 @@ public class ImageService {
                 .board(board)
                 .build();
     }
+
 }
