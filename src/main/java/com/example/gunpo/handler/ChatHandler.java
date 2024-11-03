@@ -1,5 +1,6 @@
 package com.example.gunpo.handler;
 
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -12,22 +13,27 @@ import java.util.List;
 @Component
 public class ChatHandler extends TextWebSocketHandler {
 
-    private List<WebSocketSession> sessions = new ArrayList<>();
+    private final List<WebSocketSession> sessions = new ArrayList<>();
 
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) {
         sessions.add(session);
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) {
         for (WebSocketSession webSocketSession : sessions) {
-            webSocketSession.sendMessage(new TextMessage(message.getPayload()));
+            try {
+                webSocketSession.sendMessage(new TextMessage(message.getPayload()));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+    public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
         sessions.remove(session);
     }
+
 }
