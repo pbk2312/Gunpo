@@ -1,9 +1,10 @@
-package com.example.gunpo.jwt;
+package com.example.gunpo.infrastructure;
 
 
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.InvalidTokenException;
 import com.example.gunpo.exception.MemberNotFoundException;
+import com.example.gunpo.jwt.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;

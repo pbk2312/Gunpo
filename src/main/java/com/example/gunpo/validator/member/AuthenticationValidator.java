@@ -4,7 +4,7 @@ import com.example.gunpo.constants.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.exception.MemberNotFoundException;
 import com.example.gunpo.exception.UnauthorizedException;
-import com.example.gunpo.jwt.TokenProvider;
+import com.example.gunpo.infrastructure.TokenProvider;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.service.RedisService;
 import lombok.RequiredArgsConstructor;

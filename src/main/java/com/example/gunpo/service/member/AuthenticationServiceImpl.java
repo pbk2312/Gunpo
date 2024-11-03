@@ -6,7 +6,7 @@ import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.IncorrectPasswordException;
-import com.example.gunpo.jwt.TokenProvider;
+import com.example.gunpo.infrastructure.TokenProvider;
 import com.example.gunpo.service.RedisService;
 import com.example.gunpo.util.CookieUtils;
 import com.example.gunpo.validator.member.AuthenticationValidator;

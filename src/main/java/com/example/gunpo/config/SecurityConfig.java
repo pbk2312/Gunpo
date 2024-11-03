@@ -4,7 +4,7 @@ package com.example.gunpo.config;
 import com.example.gunpo.handler.JwtAccessDeniedHandler;
 import com.example.gunpo.handler.JwtAuthenticationEntryPoint;
 import com.example.gunpo.jwt.JwtSecurityConfig;
-import com.example.gunpo.jwt.TokenProvider;
+import com.example.gunpo.infrastructure.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
