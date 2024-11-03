@@ -3,7 +3,9 @@ package com.example.gunpo.controller.restapi;
 import com.example.gunpo.domain.Category;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.dto.ResponseDto;
+import com.example.gunpo.service.board.BoardCreationService;
 import com.example.gunpo.service.board.BoardService;
+import com.example.gunpo.service.board.BoardUpdateService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,8 @@ import java.util.List;
 public class BoardApiController {
 
     private final BoardService boardService;
+    private final BoardCreationService boardCreationService;
+    private final BoardUpdateService boardUpdateService;
 
     @PostMapping("/new")
     public ResponseEntity<ResponseDto<Object>> boardCreatePost(
@@ -34,7 +38,7 @@ public class BoardApiController {
             // DTO가 제대로 생성되었는지 확인하는 로그 추가
             log.info("BoardDto created: {}", boardDto.toString());
 
-            Long postId = boardService.createPost(boardDto, accessToken, images);
+            Long postId = boardCreationService.create(boardDto, accessToken, images);
             return createResponseEntity(HttpStatus.CREATED, "게시글이 성공적으로 작성되었습니다.", postId);
         } catch (Exception e) {
             return createErrorResponseEntity("게시글 작성에 실패했습니다: " + e.getMessage());
@@ -55,14 +59,14 @@ public class BoardApiController {
 
             log.info("BoardDto for update: {}", boardDto.toString());
 
-            // 게시물 수정
-            boardService.updatePost(boardDto, newImages, deleteImages, accessToken);
+            boardUpdateService.updatePost(boardDto, newImages, deleteImages, accessToken);
 
             return createResponseEntity(HttpStatus.OK, "게시글이 성공적으로 수정되었습니다.", boardDto.getId());
         } catch (Exception e) {
             log.error("게시글 수정에 실패했습니다: {}", e.getMessage());
             return createErrorResponseEntity("게시글 수정에 실패했습니다: " + e.getMessage());
         }
+
     }
 
     @DeleteMapping("/delete/{id}")
