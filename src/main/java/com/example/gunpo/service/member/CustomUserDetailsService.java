@@ -1,4 +1,4 @@
-package com.example.gunpo.jwt;
+package com.example.gunpo.service.member;
 
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.repository.MemberRepository;

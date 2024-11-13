@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.member;
 
 import org.springframework.stereotype.Component;
 
@@ -17,4 +17,5 @@ public class CertificationNumberGenerator {
         }
         return sb.toString();
     }
+
 }

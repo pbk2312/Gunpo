@@ -6,8 +6,8 @@ import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.repository.BoardRepository;
-import com.example.gunpo.service.RedisService;
 import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.service.redis.RedisViewCountService;
 import com.example.gunpo.validator.board.BoardValidator;
 import com.example.gunpo.validator.member.AuthenticationValidator;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ import java.util.List;
 @Log4j2
 public class BoardCreationService {
     private final BoardRepository boardRepository;
-    private final RedisService redisService;
+    private final RedisViewCountService redisViewCountService;
     private final AuthenticationService authenticationService;
     private final ImageProcessor imageProcessor;
     private final AuthenticationValidator authenticationValidator;
@@ -43,7 +43,7 @@ public class BoardCreationService {
         Board board = BoardFactory.createBoard(boardDto, member);
 
         Long boardId = boardRepository.save(board).getId();
-        redisService.saveViewCountToRedis(boardId);
+        redisViewCountService.saveViewCountToRedis(boardId);
         imageProcessor.processNewImages(images, board);
 
         log.info("게시물 저장 완료 - 게시물 ID: {}", boardId);

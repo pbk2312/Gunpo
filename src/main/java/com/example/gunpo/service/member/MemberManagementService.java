@@ -1,7 +1,7 @@
 package com.example.gunpo.service.member;
 
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.exception.MemberNotFoundException;
+import com.example.gunpo.exception.member.MemberNotFoundException;
 
 public interface MemberManagementService {
 
