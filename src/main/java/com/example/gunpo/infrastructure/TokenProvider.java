@@ -2,8 +2,8 @@ package com.example.gunpo.infrastructure;
 
 
 import com.example.gunpo.dto.TokenDto;
-import com.example.gunpo.exception.InvalidTokenException;
-import com.example.gunpo.exception.MemberNotFoundException;
+import com.example.gunpo.exception.member.InvalidTokenException;
+import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.service.member.CustomUserDetailsService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -167,7 +167,5 @@ public class TokenProvider {
             return e.getClaims();  // 만료된 토큰이라도 클레임 반환
         }
     }
-
-
 
 }
