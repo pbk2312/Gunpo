@@ -5,9 +5,9 @@ import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
-import com.example.gunpo.exception.IncorrectPasswordException;
+import com.example.gunpo.exception.member.IncorrectPasswordException;
 import com.example.gunpo.infrastructure.TokenProvider;
-import com.example.gunpo.service.RedisService;
+import com.example.gunpo.service.redis.RedisTokenService;
 import com.example.gunpo.util.CookieUtils;
 import com.example.gunpo.validator.member.AuthenticationValidator;
 import jakarta.servlet.http.HttpServletResponse;
@@ -33,8 +33,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final TokenProvider tokenProvider;
-    private final RedisService redisService;
     private final AuthenticationValidator authenticationValidator;
+    private final RedisTokenService redisTokenService;
 
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;
 
@@ -54,7 +54,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public void logout(String accessToken) {
         Member member = getUserDetails(accessToken);
-        redisService.deleteStringValue(String.valueOf(member.getId()));
+        redisTokenService.deleteStringValue(String.valueOf(member.getId()));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     private void storeRefreshToken(Member member, String refreshToken) {
-        redisService.setStringValue(String.valueOf(member.getId()), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        redisTokenService.setStringValue(String.valueOf(member.getId()), refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
     }
 
     private boolean isTokenValid(String token) {
