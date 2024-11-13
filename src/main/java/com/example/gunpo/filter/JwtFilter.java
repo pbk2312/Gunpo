@@ -1,4 +1,4 @@
-package com.example.gunpo.handler;
+package com.example.gunpo.filter;
 
 import com.example.gunpo.infrastructure.TokenProvider;
 import jakarta.servlet.FilterChain;
