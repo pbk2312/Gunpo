@@ -2,11 +2,11 @@ package com.example.gunpo.validator.member;
 
 import com.example.gunpo.constants.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.exception.MemberNotFoundException;
-import com.example.gunpo.exception.UnauthorizedException;
+import com.example.gunpo.exception.member.MemberNotFoundException;
+import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.infrastructure.TokenProvider;
 import com.example.gunpo.repository.MemberRepository;
-import com.example.gunpo.service.RedisService;
+import com.example.gunpo.service.redis.RedisTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -16,8 +16,7 @@ public class AuthenticationValidator {
 
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
-    private final RedisService redisService;
-
+    private final RedisTokenService redisTokenService;
     // 이메일로 회원 찾기 검증
     public Member validateMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
@@ -43,7 +42,7 @@ public class AuthenticationValidator {
 
     // Refresh Token을 통해 회원 찾기 검증
     public Member validateMemberByRefreshToken(String refreshToken) {
-        String memberId = redisService.findMemberIdByRefreshToken(refreshToken);
+        String memberId = redisTokenService.findMemberIdByRefreshToken(refreshToken);
         if (memberId == null) {
             throw new UnauthorizedException(MemberErrorMessage.INVALID_REFRESH_TOKEN.getMessage());
         }
