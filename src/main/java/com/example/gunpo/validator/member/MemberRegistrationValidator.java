@@ -4,7 +4,7 @@ import com.example.gunpo.constants.MemberErrorMessage;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.repository.MemberRepository;
-import com.example.gunpo.service.RedisService;
+import com.example.gunpo.service.redis.RedisEmailCertificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,8 +13,7 @@ import org.springframework.stereotype.Component;
 public class MemberRegistrationValidator {
 
     private final MemberRepository memberRepository;
-    private final RedisService redisService;
-
+    private final RedisEmailCertificationService emailCertificationService;
     public void validateNewMember(MemberDto memberDto) {
         validateEmailAndPasswordNotNull(memberDto); // 이메일 및 비밀번호 null 체크
         checkEmailDuplication(memberDto.getEmail()); // 이메일 중복 확인
@@ -28,7 +27,7 @@ public class MemberRegistrationValidator {
     }
 
     private void validateEmailCertification(MemberDto memberDto) {
-        String value = redisService.getEmailCertificationFromRedis(memberDto.getEmail());
+        String value = emailCertificationService.getEmailCertificationFromRedis(memberDto.getEmail());
         if (value == null || !Boolean.parseBoolean(value.split(":")[1])) {
             throw new VerificationCodeMismatchException(
                     MemberErrorMessage.EMAIL_VERIFICATION_FAILED_MESSAGE.getMessage());
