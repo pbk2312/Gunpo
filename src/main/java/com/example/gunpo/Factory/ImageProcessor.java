@@ -6,7 +6,6 @@ import com.example.gunpo.service.image.ImageService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +40,7 @@ public class ImageProcessor {
         }
         return board.getImages().stream()
                 .map(BoardImage::getImagePath)
-                .collect(Collectors.toList());
+                .toList();
     }
 
 }
