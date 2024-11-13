@@ -1,4 +1,4 @@
-package com.example.gunpo.exception;
+package com.example.gunpo.exception.board;
 
 public class CannotFindBoardException extends RuntimeException{
 
