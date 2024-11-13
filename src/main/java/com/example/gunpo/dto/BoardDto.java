@@ -14,6 +14,7 @@ import java.util.List;
 
 @Getter
 @Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class BoardDto {
@@ -75,4 +76,5 @@ public class BoardDto {
                 ", category=" + category +
                 '}';
     }
+
 }
