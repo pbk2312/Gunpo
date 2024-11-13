@@ -1,4 +1,4 @@
-package com.example.gunpo.exception;
+package com.example.gunpo.exception.member;
 
 public class UnauthorizedException extends RuntimeException{
 
