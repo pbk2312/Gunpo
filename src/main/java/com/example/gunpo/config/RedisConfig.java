@@ -1,7 +1,7 @@
 package com.example.gunpo.config;
 
-//
 import com.example.gunpo.domain.SmokingArea;
+import com.example.gunpo.dto.RegionMnyFacltStusDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,6 @@ import org.springframework.data.redis.repository.configuration.EnableRedisReposi
 import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-// Redis 설정
 @Configuration
 @EnableRedisRepositories
 public class RedisConfig {
@@ -23,21 +22,27 @@ public class RedisConfig {
     @Value("${spring.data.redis.port}")
     private int port;
 
-
-
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
-
         return new LettuceConnectionFactory(host, port);
     }
 
     @Bean
-    public RedisTemplate<String, SmokingArea> redisTemplate() { // 키 값 , SmokingArea : 객체
+    public RedisTemplate<String, SmokingArea> redisTemplate() {
         RedisTemplate<String, SmokingArea> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
-        // 키는 String으로, 값은 JSON 형식으로 직렬화
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         return template;
     }
+
+    @Bean
+    public RedisTemplate<String, RegionMnyFacltStusDto> regionMnyFacltStusDtoRedisTemplate() {
+        RedisTemplate<String, RegionMnyFacltStusDto> template = new RedisTemplate<>();
+        template.setConnectionFactory(redisConnectionFactory());
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        return template;
+    }
+
 }
