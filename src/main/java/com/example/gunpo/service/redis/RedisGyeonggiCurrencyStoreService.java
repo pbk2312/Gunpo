@@ -19,15 +19,18 @@ public class RedisGyeonggiCurrencyStoreService {
     private static final String REDIS_KEY_PREFIX = "GYEONGGI_MERCHANT:";
 
     public void saveToRedis(List<GyeonggiCurrencyStoreDto> merchants) {
+        // Redis에 데이터가 하나라도 있는지 확인
+        Set<String> existingKeys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+        if (existingKeys != null && !existingKeys.isEmpty()) {
+            log.info("Redis에 이미 데이터가 존재하므로 저장을 중단합니다.");
+            return;
+        }
+
+        // Redis에 데이터가 없으면 저장 진행
         merchants.forEach(merchant -> {
             String redisKey = REDIS_KEY_PREFIX + merchant.getBizRegNo();
-            Boolean exists = redisTemplate.hasKey(redisKey);
-            if (Boolean.FALSE.equals(exists)) {
-                saveMerchantToRedis(merchant);
-                log.info("새 가맹점 정보 저장: {}", redisKey);
-            } else {
-                log.info("이미 저장된 가맹점: {}", redisKey);
-            }
+            saveMerchantToRedis(merchant);
+            log.info("새 가맹점 정보 저장: {}", redisKey);
         });
     }
 

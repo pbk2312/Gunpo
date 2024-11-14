@@ -6,9 +6,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,17 @@ public class GyeonggiCurrencyStoreService {
     private final ObjectMapper objectMapper;
     private final RedisGyeonggiCurrencyStoreService redisService;
 
+    private final RedisTemplate<String, GyeonggiCurrencyStoreDto> redisTemplate;
+    private static final String REDIS_KEY_PREFIX = "GYEONGGI_MERCHANT:";
+
     public void fetchAllDataAndSaveToRedis() {
+        // Redis에 데이터가 하나라도 있으면 API 호출을 중단
+        Set<String> existingKeys = getKeysWithPrefix();
+        if (existingKeys != null && !existingKeys.isEmpty()) {
+            log.info("Redis에 이미 데이터가 존재하므로 API 호출을 중단합니다.");
+            return;
+        }
+
         int page = 1;
         int size = 10;
 
@@ -48,6 +60,11 @@ public class GyeonggiCurrencyStoreService {
             page++;
         }
     }
+
+    public Set<String> getKeysWithPrefix() {
+        return redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+    }
+
 
     private List<GyeonggiCurrencyStoreDto> getDataFromAPI(int page, int size) {
         String url = buildApiUrl(page, size);
