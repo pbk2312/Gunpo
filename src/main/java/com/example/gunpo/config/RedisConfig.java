@@ -1,7 +1,7 @@
 package com.example.gunpo.config;
 
 import com.example.gunpo.domain.SmokingArea;
-import com.example.gunpo.dto.RegionMnyFacltStusDto;
+import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +37,8 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, RegionMnyFacltStusDto> regionMnyFacltStusDtoRedisTemplate() {
-        RedisTemplate<String, RegionMnyFacltStusDto> template = new RedisTemplate<>();
+    public RedisTemplate<String, GyeonggiCurrencyStoreDto> regionMnyFacltStusDtoRedisTemplate() {
+        RedisTemplate<String, GyeonggiCurrencyStoreDto> template = new RedisTemplate<>();
         template.setConnectionFactory(redisConnectionFactory());
         template.setKeySerializer(new StringRedisSerializer());
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());

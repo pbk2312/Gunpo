@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class RegionMnyFacltStusDto {
+public class GyeonggiCurrencyStoreDto {
 
     @JsonProperty("BIZREGNO")
     private String bizRegNo; // 사업자 등록번호

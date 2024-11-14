@@ -1,7 +1,7 @@
 package com.example.gunpo.service;
 
-import com.example.gunpo.dto.RegionMnyFacltStusDto;
-import com.example.gunpo.service.redis.RedisGyeonggiMerchantService;
+import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.service.redis.RedisGyeonggiCurrencyStoreService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.URLEncoder;
@@ -25,21 +25,21 @@ import java.util.stream.Collectors;
 @Service
 @Log4j2
 @RequiredArgsConstructor
-public class GyeonggiMerchantService {
+public class GyeonggiCurrencyStoreService {
 
     @Value("${gyeonggi.currency.data.key}")
     private String apiKey;
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
-    private final RedisGyeonggiMerchantService redisService;
+    private final RedisGyeonggiCurrencyStoreService redisService;
 
     public void fetchAllDataAndSaveToRedis() {
         int page = 1;
         int size = 10;
 
         while (true) {
-            List<RegionMnyFacltStusDto> merchants = getDataFromAPI(page, size);
+            List<GyeonggiCurrencyStoreDto> merchants = getDataFromAPI(page, size);
             if (merchants.isEmpty()) {
                 log.info("데이터 수집 종료.");
                 break;
@@ -50,7 +50,7 @@ public class GyeonggiMerchantService {
         }
     }
 
-    private List<RegionMnyFacltStusDto> getDataFromAPI(int page, int size) {
+    private List<GyeonggiCurrencyStoreDto> getDataFromAPI(int page, int size) {
         String url = buildApiUrl(page, size);
         log.info("요청 URL: {}", url);
 
@@ -66,7 +66,7 @@ public class GyeonggiMerchantService {
         return Collections.emptyList();
     }
 
-    private List<RegionMnyFacltStusDto> handleApiResponse(ResponseEntity<String> responseEntity) {
+    private List<GyeonggiCurrencyStoreDto> handleApiResponse(ResponseEntity<String> responseEntity) {
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             return parseResponse(responseEntity.getBody());
         } else {
@@ -75,7 +75,7 @@ public class GyeonggiMerchantService {
         }
     }
 
-    private List<RegionMnyFacltStusDto> parseResponse(String response) {
+    private List<GyeonggiCurrencyStoreDto> parseResponse(String response) {
         if (response == null || response.isEmpty()) {
             log.warn("응답이 비어 있습니다.");
             return Collections.emptyList();
@@ -117,8 +117,8 @@ public class GyeonggiMerchantService {
         }
     }
 
-    private RegionMnyFacltStusDto mapToDto(Map<String, Object> itemMap) {
-        RegionMnyFacltStusDto dto = new RegionMnyFacltStusDto();
+    private GyeonggiCurrencyStoreDto mapToDto(Map<String, Object> itemMap) {
+        GyeonggiCurrencyStoreDto dto = new GyeonggiCurrencyStoreDto();
         dto.setBizRegNo((String) itemMap.get("BIZREGNO"));
         dto.setCmpnmNm((String) itemMap.get("CMPNM_NM"));
         dto.setIndutypeNm((String) itemMap.get("INDUTYPE_NM"));
