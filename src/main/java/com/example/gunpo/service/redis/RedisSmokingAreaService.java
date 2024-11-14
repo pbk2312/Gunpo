@@ -35,7 +35,7 @@ public class RedisSmokingAreaService {
 
     private void saveSmokingAreaToRedis(SmokingArea smokingArea) {
         String redisKey = RedisConstants.REDIS_KEY_PREFIX + smokingArea.getBoothName();
-        if (!redisTemplate.hasKey(redisKey)) {
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
             redisTemplate.opsForValue().set(redisKey, smokingArea);
         }
     }
