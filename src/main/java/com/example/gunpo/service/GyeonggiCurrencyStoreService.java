@@ -19,8 +19,7 @@ import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
+
 
 @Service
 @Log4j2
@@ -75,6 +74,7 @@ public class GyeonggiCurrencyStoreService {
         }
     }
 
+    @SuppressWarnings("unchecked")
     private List<GyeonggiCurrencyStoreDto> parseResponse(String response) {
         if (response == null || response.isEmpty()) {
             log.warn("응답이 비어 있습니다.");
@@ -109,8 +109,7 @@ public class GyeonggiCurrencyStoreService {
 
             return itemsList.stream()
                     .map(this::mapToDto)
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+                    .toList();
         } catch (JsonProcessingException e) {
             log.error("JSON 파싱 오류: {}", e.getMessage());
             return Collections.emptyList();
