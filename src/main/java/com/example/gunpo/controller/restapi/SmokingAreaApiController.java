@@ -18,7 +18,7 @@ import java.util.List;
 @Log4j2
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class SmokingAreaController {
+public class SmokingAreaApiController {
 
     private final SmokingAreaService smokingAreaService;
     @GetMapping("/smoking-area")
@@ -38,5 +38,4 @@ public class SmokingAreaController {
         // 응답을 반환합니다.
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
-
 }
