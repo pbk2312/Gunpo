@@ -1,12 +1,12 @@
 package com.example.gunpo.service.redis;
 
 import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -18,36 +18,40 @@ public class RedisGyeonggiCurrencyStoreService {
     private final RedisTemplate<String, GyeonggiCurrencyStoreDto> redisTemplate;
     private static final String REDIS_KEY_PREFIX = "GYEONGGI_MERCHANT:";
 
+    public boolean isDataPresent() {
+        Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+        return keys != null && !keys.isEmpty();
+    }
 
     public void saveToRedis(List<GyeonggiCurrencyStoreDto> merchants) {
         merchants.forEach(merchant -> {
             String redisKey = buildRedisKey(merchant);
-            saveMerchantToRedis(merchant, redisKey);
-            log.info("새 가맹점 정보 저장: {}", redisKey);
+            redisTemplate.opsForValue().set(redisKey, merchant);
+            log.info("Redis에 저장 완료: {}", redisKey);
         });
     }
 
-    private String buildRedisKey(GyeonggiCurrencyStoreDto merchant) {
-        // 상호명과 사업자 등록번호를 조합하여 키 생성
-        return REDIS_KEY_PREFIX + merchant.getCmpnmNm() + ":" + merchant.getBizRegNo();
-    }
-
-    private void saveMerchantToRedis(GyeonggiCurrencyStoreDto merchant, String redisKey) {
-        redisTemplate.opsForValue().set(redisKey, merchant);
-    }
-
-    public List<GyeonggiCurrencyStoreDto> getAllMerchantsFromRedis() {
+    public List<GyeonggiCurrencyStoreDto> getAllMerchants() {
         Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
-        List<GyeonggiCurrencyStoreDto> merchantList = new ArrayList<>();
-        if (keys != null) {
-            keys.forEach(key -> {
-                GyeonggiCurrencyStoreDto merchant = redisTemplate.opsForValue().get(key);
-                if (merchant != null) {
-                    merchantList.add(merchant);
-                }
-            });
+        if (keys == null || keys.isEmpty()) {
+            log.info("Redis에 저장된 데이터가 없습니다.");
+            return Collections.emptyList();
         }
-        return merchantList;
+
+        return keys.stream()
+                .map(key -> redisTemplate.opsForValue().get(key))
+                .filter(merchant -> merchant != null)
+                .toList();
+    }
+
+    public List<GyeonggiCurrencyStoreDto> findByCmpnmNm(String cmpnmNm) {
+        return getAllMerchants().stream()
+                .filter(merchant -> merchant.getCmpnmNm() != null && merchant.getCmpnmNm().contains(cmpnmNm))
+                .toList();
+    }
+
+    private String buildRedisKey(GyeonggiCurrencyStoreDto merchant) {
+        return REDIS_KEY_PREFIX + merchant.getCmpnmNm() + ":" + merchant.getBizRegNo();
     }
 
 }
