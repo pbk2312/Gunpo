@@ -22,7 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-
 @Service
 @Log4j2
 @RequiredArgsConstructor
@@ -35,21 +34,13 @@ public class GyeonggiCurrencyStoreService {
     private final ObjectMapper objectMapper;
     private final RedisGyeonggiCurrencyStoreService redisService;
 
-    private final RedisTemplate<String, GyeonggiCurrencyStoreDto> redisTemplate;
-    private static final String REDIS_KEY_PREFIX = "GYEONGGI_MERCHANT:";
-
     public void fetchAllDataAndSaveToRedis() {
-        if (isRedisDataExist()) {
+        if (redisService.isDataPresent()) {
             log.info("Redis에 데이터가 이미 존재하므로 API 호출을 중단합니다.");
             return;
         }
 
         collectAndSaveDataToRedis();
-    }
-
-    private boolean isRedisDataExist() {
-        Set<String> existingKeys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
-        return existingKeys != null && !existingKeys.isEmpty();
     }
 
     private void collectAndSaveDataToRedis() {
@@ -62,7 +53,8 @@ public class GyeonggiCurrencyStoreService {
                 log.info("데이터 수집 종료.");
                 break;
             }
-            saveDataToRedis(merchants, page);
+            redisService.saveToRedis(merchants);
+            log.info("{} 페이지 데이터가 Redis에 저장되었습니다.", page);
             page++;
         }
     }
@@ -155,11 +147,6 @@ public class GyeonggiCurrencyStoreService {
         dto.setRefineWgs84Lat((String) itemMap.get("REFINE_WGS84_LAT"));
         dto.setSigunNm((String) itemMap.get("SIGUN_NM"));
         return dto;
-    }
-
-    private void saveDataToRedis(List<GyeonggiCurrencyStoreDto> merchants, int page) {
-        redisService.saveToRedis(merchants);
-        log.info("{} 페이지 데이터가 Redis에 저장되었습니다.", page);
     }
 
     private String buildApiUrl(int page, int size) {

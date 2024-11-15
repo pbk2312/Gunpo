@@ -23,7 +23,7 @@ public class GyeonggiCurrencyStoreApiController {
     @GetMapping("/GyeonggiCurrencyStoreInfo")
     public ResponseEntity<ResponseDto<List<GyeonggiCurrencyStoreDto>>> getGyeonggiCurrencyStoreInfo() {
         // Redis에서 경기 지역 화폐 가맹점 정보를 가져옵니다.
-        List<GyeonggiCurrencyStoreDto> allMerchantsFromRedis = redisGyeonggiCurrencyStoreService.getAllMerchantsFromRedis();
+        List<GyeonggiCurrencyStoreDto> allMerchantsFromRedis = redisGyeonggiCurrencyStoreService.getAllMerchants();
 
         String message = allMerchantsFromRedis.isEmpty() ? "경기 지역 화폐 가맹점 정보가 없습니다." : "경기 지역 화폐 가맹점 정보를 성공적으로 가져왔습니다.";
         log.info("응답 메시지 설정: {}", message);
