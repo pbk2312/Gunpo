@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <title>Gunpo - 경기 지역화폐 가맹점</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet"/>
+</head>
+<style>
+    .alert {
+        background-color: #f0f8ff;
+        border: 1px solid #007bff;
+        border-radius: 8px;
+        padding: 20px;
+    }
+
+    .alert h3 {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #007bff;
+    }
+
+    .alert p {
+        font-size: 1.1rem;
+        color: #333;
+    }
+</style>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">이벤트</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">사진 갤러리</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
+        </div>
+    </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Top navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text">홈으로</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Description Section -->
+        <div class="container mt-4">
+            <div class="alert alert-info" role="alert">
+                <h3 class="mb-3">Gunpo - 경기 지역화폐 가맹점</h3>
+                <p>이 지도는 군포시에 위치한 경기 지역화폐 가맹점을 표시합니다.</p>
+            </div>
+        </div>
+
+        <div id="map" style="width:100%;height:600px;"></div>
+    </div>
+</div>
+
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Kakao Map JS API -->
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=24041f4fcf6aacc6f4709847750e76c2"></script>
+<script>
+    // Fetch data from the server
+    async function fetchCurrencyStores() {
+        try {
+            const response = await fetch('/api/GyeonggiCurrencyStoreInfo');
+            if (!response.ok) {
+                throw new Error('Failed to fetch data from the server');
+            }
+            const result = await response.json();
+            return result.data; // API의 data 부분 반환
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            return [];
+        }
+    }
+
+    // Initialize Kakao Map
+    async function initMap() {
+        const stores = await fetchCurrencyStores();
+
+        const mapContainer = document.getElementById('map'); // 지도를 표시할 div
+        const mapOption = {
+            center: new kakao.maps.LatLng(37.3625, 126.9357), // 군포시 중심
+            level: 5 // 지도 확대 레벨
+        };
+        const map = new kakao.maps.Map(mapContainer, mapOption);
+
+        // Add markers to the map
+        stores.forEach(store => {
+            const lat = parseFloat(store.REFINE_WGS84_LAT);
+            const lng = parseFloat(store.REFINE_WGS84_LOGT);
+
+            if (!isNaN(lat) && !isNaN(lng)) {
+                const position = new kakao.maps.LatLng(lat, lng);
+                const marker = new kakao.maps.Marker({
+                    map: map,
+                    position: position
+                });
+
+                // Add info window to marker
+                const infoWindow = new kakao.maps.InfoWindow({
+                    content: `<div style="padding:5px;">
+                                <strong>${store.CMPNM_NM}</strong><br/>
+                                ${store.INDUTYPE_NM}
+                              </div>`
+                });
+
+                // Show info window on hover
+                kakao.maps.event.addListener(marker, 'mouseover', function () {
+                    infoWindow.open(map, marker);
+                });
+
+                // Hide info window on mouse out
+                kakao.maps.event.addListener(marker, 'mouseout', function () {
+                    infoWindow.close();
+                });
+            }
+        });
+    }
+
+    // Initialize the map when the window loads
+    window.onload = initMap;
+</script>
+</body>
+</html>
