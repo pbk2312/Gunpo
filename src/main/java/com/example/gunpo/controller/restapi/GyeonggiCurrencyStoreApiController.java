@@ -9,7 +9,9 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequiredArgsConstructor
@@ -32,6 +34,19 @@ public class GyeonggiCurrencyStoreApiController {
         log.info("ResponseDto 생성: {}", responseDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/getStoreByName")
+    public ResponseEntity<ResponseDto<List<GyeonggiCurrencyStoreDto>>> getGyeonggiCurrencyStoreInfoByCmpnmNm(
+            @RequestParam("cmpnmNm") String cmpnmNm
+    ) {
+        List<GyeonggiCurrencyStoreDto> stores = redisGyeonggiCurrencyStoreService.findByCmpnmNm(cmpnmNm);
+
+        if (stores.isEmpty()) {
+            return ResponseEntity.ok(new ResponseDto<>("해당 상호명을 가진 가맹점이 없습니다.", stores));
+        }
+
+        return ResponseEntity.ok(new ResponseDto<>("조회 성공", stores));
     }
 
 }
