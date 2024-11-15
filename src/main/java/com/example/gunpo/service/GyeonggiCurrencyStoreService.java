@@ -39,10 +39,9 @@ public class GyeonggiCurrencyStoreService {
     private static final String REDIS_KEY_PREFIX = "GYEONGGI_MERCHANT:";
 
     public void fetchAllDataAndSaveToRedis() {
-        // Redis에 데이터가 하나라도 있으면 API 호출을 중단
-        Set<String> existingKeys = getKeysWithPrefix();
-        if (existingKeys != null && !existingKeys.isEmpty()) {
-            log.info("Redis에 이미 데이터가 존재하므로 API 호출을 중단합니다.");
+        // Redis에 데이터가 하나라도 있는지 확인
+        if (isRedisDataExist()) {
+            log.info("Redis에 데이터가 이미 존재하므로 API 호출을 중단합니다.");
             return;
         }
 
@@ -61,8 +60,9 @@ public class GyeonggiCurrencyStoreService {
         }
     }
 
-    public Set<String> getKeysWithPrefix() {
-        return redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+    private boolean isRedisDataExist() {
+        Set<String> existingKeys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+        return existingKeys != null && !existingKeys.isEmpty();
     }
 
 
