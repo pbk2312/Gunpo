@@ -1,16 +1,13 @@
 package com.example.gunpo.service;
 
 import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.mapper.GyeonggiCurrencyStoreMapper;
 import com.example.gunpo.service.redis.RedisGyeonggiCurrencyStoreService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,6 +15,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -27,81 +26,103 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GyeonggiCurrencyStoreService {
 
+    private static final int DEFAULT_PAGE_SIZE = 10;
+
     @Value("${gyeonggi.currency.data.key}")
     private String apiKey;
 
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final RedisGyeonggiCurrencyStoreService redisService;
+    private final GyeonggiCurrencyStoreMapper mapper;
 
     public void fetchAllDataAndSaveToRedis() {
         if (redisService.isDataPresent()) {
             log.info("Redis에 데이터가 이미 존재하므로 API 호출을 중단합니다.");
             return;
         }
-
         collectAndSaveDataToRedis();
     }
 
     private void collectAndSaveDataToRedis() {
         int page = 1;
-        int size = 10;
 
         while (true) {
-            List<GyeonggiCurrencyStoreDto> merchants = getDataFromAPI(page, size);
+            List<GyeonggiCurrencyStoreDto> merchants = fetchMerchantsFromApi(page);
             if (merchants.isEmpty()) {
                 log.info("데이터 수집 종료.");
                 break;
             }
-            redisService.saveToRedis(merchants);
-            log.info("{} 페이지 데이터가 Redis에 저장되었습니다.", page);
+            saveMerchantsToRedis(merchants, page);
             page++;
         }
     }
 
-    private List<GyeonggiCurrencyStoreDto> getDataFromAPI(int page, int size) {
-        String url = buildApiUrl(page, size);
+    private List<GyeonggiCurrencyStoreDto> fetchMerchantsFromApi(int page) {
+        String url = buildApiUrl(page, DEFAULT_PAGE_SIZE);
         log.info("요청 URL: {}", url);
 
+        ResponseEntity<String> responseEntity = getApiResponse(url);
+        if (responseEntity == null) {
+            return Collections.emptyList();
+        }
+
+        return handleApiResponse(responseEntity);
+    }
+
+    private ResponseEntity<String> getApiResponse(String url) {
         try {
-            ResponseEntity<String> responseEntity = restTemplate.getForEntity(new URI(url), String.class);
-            log.info("응답 상태 코드: {}", responseEntity.getStatusCode().value());
-            return parseApiResponse(responseEntity);
+            return restTemplate.getForEntity(new URI(url), String.class);
         } catch (URISyntaxException e) {
             log.error("URI 문법 오류: {}", e.getMessage());
         } catch (Exception e) {
             log.error("API 호출 중 오류: {}", e.getMessage());
         }
-
-        return Collections.emptyList();
+        return null; // 오류 시 null 반환
     }
 
-    private List<GyeonggiCurrencyStoreDto> parseApiResponse(ResponseEntity<String> responseEntity) {
+    private List<GyeonggiCurrencyStoreDto> handleApiResponse(ResponseEntity<String> responseEntity) {
+        if (!isResponseSuccessful(responseEntity)) {
+            return Collections.emptyList();
+        }
+        return parseResponseBody(responseEntity.getBody());
+    }
+
+    private boolean isResponseSuccessful(ResponseEntity<String> responseEntity) {
         if (responseEntity.getStatusCode() != HttpStatus.OK) {
             log.warn("API 호출 실패, 상태 코드: {}", responseEntity.getStatusCode().value());
-            return Collections.emptyList();
+            return false;
         }
-
-        return extractDataFromResponse(responseEntity.getBody());
+        return true;
     }
 
-    private List<GyeonggiCurrencyStoreDto> extractDataFromResponse(String response) {
-        if (response == null || response.isEmpty()) {
-            log.warn("응답이 비어 있습니다.");
+    private List<GyeonggiCurrencyStoreDto> parseResponseBody(String responseBody) {
+        if (isEmptyResponse(responseBody)) {
             return Collections.emptyList();
         }
 
+        Map<String, Object> responseMap = parseJsonToMap(responseBody);
+        if (responseMap == null || isNoDataResponse(responseMap)) {
+            return Collections.emptyList();
+        }
+
+        return extractItemsFromResponse(responseMap);
+    }
+
+    private boolean isEmptyResponse(String responseBody) {
+        if (responseBody == null || responseBody.isEmpty()) {
+            log.warn("응답이 비어 있습니다.");
+            return true;
+        }
+        return false;
+    }
+
+    private Map<String, Object> parseJsonToMap(String jsonString) {
         try {
-            Map<String, Object> responseMap = objectMapper.readValue(response, Map.class);
-
-            if (isNoDataResponse(responseMap)) {
-                return Collections.emptyList();
-            }
-
-            return extractItemsFromResponse(responseMap);
+            return objectMapper.readValue(jsonString, Map.class);
         } catch (JsonProcessingException e) {
             log.error("JSON 파싱 오류: {}", e.getMessage());
-            return Collections.emptyList();
+            return null;
         }
     }
 
@@ -115,15 +136,15 @@ public class GyeonggiCurrencyStoreService {
     }
 
     private List<GyeonggiCurrencyStoreDto> extractItemsFromResponse(Map<String, Object> responseMap) {
-        List<Map<String, Object>> regionMnyFacltStusList = (List<Map<String, Object>>) responseMap.get(
-                "RegionMnyFacltStus");
+        List<Map<String, Object>> regionMnyFacltStusList = getRegionMnyFacltStusList(responseMap);
+
         if (regionMnyFacltStusList == null || regionMnyFacltStusList.size() < 2) {
             log.warn("RegionMnyFacltStus 배열에 예상된 데이터가 없습니다.");
             return Collections.emptyList();
         }
 
         Map<String, Object> rowData = regionMnyFacltStusList.get(1);
-        List<Map<String, Object>> itemsList = (List<Map<String, Object>>) rowData.get("row");
+        List<Map<String, Object>> itemsList = getItemsList(rowData);
 
         if (itemsList == null) {
             log.warn("row 데이터가 응답에 없습니다.");
@@ -131,28 +152,32 @@ public class GyeonggiCurrencyStoreService {
         }
 
         return itemsList.stream()
-                .map(this::mapToDto)
+                .map(mapper::mapToDto)
                 .toList();
     }
 
-    private GyeonggiCurrencyStoreDto mapToDto(Map<String, Object> itemMap) {
-        GyeonggiCurrencyStoreDto dto = new GyeonggiCurrencyStoreDto();
-        dto.setBizRegNo((String) itemMap.get("BIZREGNO"));
-        dto.setCmpnmNm((String) itemMap.get("CMPNM_NM"));
-        dto.setIndutypeNm((String) itemMap.get("INDUTYPE_NM"));
-        dto.setRefineLotnoAddr((String) itemMap.get("REFINE_LOTNO_ADDR"));
-        dto.setRefineRoadnmAddr((String) itemMap.get("REFINE_ROADNM_ADDR"));
-        dto.setRefineZipNo((String) itemMap.get("REFINE_ZIPNO"));
-        dto.setRefineWgs84Logt((String) itemMap.get("REFINE_WGS84_LOGT"));
-        dto.setRefineWgs84Lat((String) itemMap.get("REFINE_WGS84_LAT"));
-        dto.setSigunNm((String) itemMap.get("SIGUN_NM"));
-        return dto;
+    private List<Map<String, Object>> getRegionMnyFacltStusList(Map<String, Object> responseMap) {
+        return (List<Map<String, Object>>) responseMap.get("RegionMnyFacltStus");
+    }
+
+    private List<Map<String, Object>> getItemsList(Map<String, Object> rowData) {
+        return (List<Map<String, Object>>) rowData.get("row");
     }
 
     private String buildApiUrl(int page, int size) {
         String sigunNm = URLEncoder.encode("군포시", StandardCharsets.UTF_8);
-        return "https://openapi.gg.go.kr/RegionMnyFacltStus?KEY=" + apiKey + "&pIndex=" + page + "&pSize=" + size
-                + "&SIGUN_NM=" + sigunNm + "&Type=json";
+        return String.format(
+                "https://openapi.gg.go.kr/RegionMnyFacltStus?KEY=%s&pIndex=%d&pSize=%d&SIGUN_NM=%s&Type=json",
+                apiKey,
+                page,
+                size,
+                sigunNm
+        );
+    }
+
+    private void saveMerchantsToRedis(List<GyeonggiCurrencyStoreDto> merchants, int page) {
+        redisService.saveToRedis(merchants);
+        log.info("{} 페이지 데이터가 Redis에 저장되었습니다.", page);
     }
 
 }
