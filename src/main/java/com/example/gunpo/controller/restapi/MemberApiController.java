@@ -87,6 +87,24 @@ public class MemberApiController {
         }
     }
 
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDto<Map<String, Object>>> updateMember(
+            @RequestBody MemberDto memberDto
+    ) {
+        try {
+            memberManagementService.update(memberDto);
+
+            Map<String, Object> data = new HashMap<>();
+            return ResponseEntity.ok(new ResponseDto<>("성공적으로 업데이트 성공", data));
+
+        } catch (Exception e) {
+            log.error("회원 정보 수정 중 오류 발생", e);
+            return buildFailureResponse();
+        }
+
+    }
+
+
     private ResponseEntity<ResponseDto<Map<String, Object>>> buildFailureResponse() {
         Map<String, Object> data = new HashMap<>();
         data.put("isLoggedIn", false);
