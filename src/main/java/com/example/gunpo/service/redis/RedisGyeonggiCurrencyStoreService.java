@@ -1,5 +1,6 @@
 package com.example.gunpo.service.redis;
 
+import com.example.gunpo.constants.RedisConstants;
 import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
 import java.util.Collections;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +17,9 @@ import java.util.Set;
 public class RedisGyeonggiCurrencyStoreService {
 
     private final RedisTemplate<String, GyeonggiCurrencyStoreDto> redisTemplate;
-    private static final String REDIS_KEY_PREFIX = "GYEONGGI_MERCHANT:";
 
     public boolean isDataPresent() {
-        Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+        Set<String> keys = redisTemplate.keys(RedisConstants.GYEONGGI_MERCHANT_KEY_PREFIX + "*");
         return keys != null && !keys.isEmpty();
     }
 
@@ -32,7 +32,7 @@ public class RedisGyeonggiCurrencyStoreService {
     }
 
     public List<GyeonggiCurrencyStoreDto> getAllMerchants() {
-        Set<String> keys = redisTemplate.keys(REDIS_KEY_PREFIX + "*");
+        Set<String> keys = redisTemplate.keys(RedisConstants.GYEONGGI_MERCHANT_KEY_PREFIX + "*");
         if (keys == null || keys.isEmpty()) {
             log.info("Redis에 저장된 데이터가 없습니다.");
             return Collections.emptyList();
@@ -51,7 +51,7 @@ public class RedisGyeonggiCurrencyStoreService {
     }
 
     private String buildRedisKey(GyeonggiCurrencyStoreDto merchant) {
-        return REDIS_KEY_PREFIX + merchant.getCmpnmNm() + ":" + merchant.getBizRegNo();
+        return RedisConstants.GYEONGGI_MERCHANT_KEY_PREFIX + merchant.getCmpnmNm() + ":" + merchant.getBizRegNo();
     }
 
 }
