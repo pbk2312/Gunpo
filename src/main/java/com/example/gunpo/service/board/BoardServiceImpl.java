@@ -77,4 +77,5 @@ public class BoardServiceImpl implements BoardService {
         int viewCount = redisViewCountService.getViewCountFromRedis(boardId);
         boardDto.setViewCount(viewCount);
     }
+
 }
