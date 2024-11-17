@@ -15,4 +15,5 @@ public class ResponseBuilder {
         ResponseDto<T> response = new ResponseDto<>(message, null);
         return ResponseEntity.status(status).body(response);
     }
+
 }

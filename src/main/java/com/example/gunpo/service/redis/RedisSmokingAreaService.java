@@ -22,7 +22,8 @@ public class RedisSmokingAreaService {
     }
 
     public List<SmokingAreaDto> getAllSmokingZonesFromRedis() {
-        Set<String> keys = Optional.ofNullable(redisTemplate.keys(RedisConstants.REDIS_KEY_PREFIX + "*")).orElse(Set.of());
+        Set<String> keys = Optional.ofNullable(redisTemplate.keys(RedisConstants.REDIS_KEY_PREFIX + "*"))
+                .orElse(Set.of());
         List<SmokingAreaDto> smokingZoneList = new ArrayList<>();
         keys.forEach(key -> {
             SmokingAreaDto dto = getSmokingAreaDtoFromRedis(key);
@@ -44,4 +45,5 @@ public class RedisSmokingAreaService {
         SmokingArea smokingArea = redisTemplate.opsForValue().get(key);
         return smokingArea != null ? SmokingZoneMapper.INSTANCE.toDto(smokingArea) : null;
     }
+
 }

@@ -29,6 +29,6 @@ public class Member {
     private LocalDate dateOfBirth;
 
     @OneToMany(mappedBy = "author")
-    private List<Board> boards = new ArrayList<>();  // 작성한 게시글 리스트
+    private List<Board> boards = new ArrayList<>();
 
 }

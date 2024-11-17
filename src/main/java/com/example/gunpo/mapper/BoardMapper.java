@@ -26,4 +26,5 @@ public class BoardMapper {
                 .imagePaths(imagePaths)
                 .build();
     }
+
 }

@@ -18,45 +18,46 @@ public class Board {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // 게시글 ID (Primary Key)
+    private Long id;
 
-    @Column(length = 255, nullable = false) // 제목 길이 제한
-    private String title;  // 게시글 제목
+    @Column(length = 255, nullable = false)
+    private String title;
 
-    @Lob // 큰 텍스트를 위한 애너테이션
-    @Column(nullable = false) // 내용 필수
-    private String content;  // 게시글 내용
+    @Lob
+    @Column(nullable = false)
+    private String content;
 
-    @ManyToOne(optional = false) // 작성자는 필수
+    @ManyToOne(optional = false)
     @JoinColumn(name = "member_id")
-    private Member author;  // 글쓴이 (작성자)
+    private Member author;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime createdAt;  // 작성일자
+    private LocalDateTime createdAt;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private LocalDateTime updatedAt;  // 수정일자
+    private LocalDateTime updatedAt;
 
-    private int viewCount;  // 조회수
+    private int viewCount;
 
     @Enumerated(EnumType.STRING)
-    private Category category; // 게시글 카테고리 (예: 잡담, 고민 등)
+    private Category category;
 
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BoardImage> images = new ArrayList<>();  // 게시글에 연결된 이미지들
+    private List<BoardImage> images = new ArrayList<>();
 
 
     public void addImage(BoardImage image) {
         if (image != null) {
             if (images == null) {
-                images = new ArrayList<>();  // images가 null일 경우 초기화
+                images = new ArrayList<>();
             }
             images.add(image);
         } else {
             throw new IllegalArgumentException("이미지 객체는 null일 수 없습니다.");
         }
     }
+
 }
 
 

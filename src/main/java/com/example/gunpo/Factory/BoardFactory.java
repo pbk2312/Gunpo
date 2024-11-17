@@ -34,4 +34,5 @@ public class BoardFactory {
                 .images(updatedImages)
                 .build();
     }
+
 }

@@ -34,7 +34,7 @@ public class MemberManagementServiceImpl implements MemberManagementService {
             return savedMember.getId();
         } catch (Exception e) {
             log.error("회원 저장 실패: {} - {}", memberDto, e.getMessage());
-            throw e; // 예외를 다시 던져 호출자에게 알림
+            throw e;
         }
     }
 
@@ -67,4 +67,5 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     private void encodePassword(Member member) {
         member.setPassword(passwordEncoder.encode(member.getPassword()));
     }
+
 }

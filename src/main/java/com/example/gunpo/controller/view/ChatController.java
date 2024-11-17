@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class ChatController {
     @GetMapping("/chat")
     public String chat() {
-        return "chat"; // templates/chat.html을 반환
+        return "chat";
     }
 
 }

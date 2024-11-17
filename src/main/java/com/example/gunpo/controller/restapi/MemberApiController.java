@@ -48,7 +48,6 @@ public class MemberApiController {
             CookieUtils.addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600);
             CookieUtils.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000);
 
-            // 리다이렉트 URL 처리
             String redirectUrl = getRedirectUrlFromSession(request);
 
             Map<String, String> responseData = new HashMap<>();
@@ -117,4 +116,5 @@ public class MemberApiController {
         request.getSession().removeAttribute("redirectUrl");
         return redirectUrl != null ? redirectUrl : "/";
     }
+
 }

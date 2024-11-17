@@ -37,7 +37,7 @@ public class TokenProvider {
     // refreshToken 유효 기간
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
 
-    private final Key key; // 시크릿키 저장
+    private final Key key;
 
     public TokenProvider(@Value("${jwt.secret}") String secretKey, CustomUserDetailsService customUserDetailsService) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);

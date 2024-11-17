@@ -6,5 +6,4 @@ public class DuplicateEmailException extends RuntimeException {
         super(message);
     }
 
-
 }

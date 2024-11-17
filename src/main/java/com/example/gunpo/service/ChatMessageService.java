@@ -26,6 +26,4 @@ public class ChatMessageService {
         return redisTemplate.opsForList().range(CHAT_MESSAGES_KEY, 0, -1);
     }
 
-
-
 }

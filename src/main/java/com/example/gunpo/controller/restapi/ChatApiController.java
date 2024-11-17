@@ -27,5 +27,4 @@ public class ChatApiController {
         chatMessageService.saveMessage(message);
     }
 
-
 }

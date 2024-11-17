@@ -49,7 +49,7 @@ public class JwtFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(jwt)) {
                 log.info("Request ID: {} - 유효하지 않은 JWT 토큰", requestId);
                 response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 JWT 토큰");
-                return; // 유효하지 않은 경우 요청을 종료
+                return;
             }
         }
 
@@ -75,4 +75,5 @@ public class JwtFilter extends OncePerRequestFilter {
 
         return null;
     }
+
 }

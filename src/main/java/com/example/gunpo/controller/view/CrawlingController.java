@@ -19,11 +19,11 @@ public class CrawlingController {
         this.crawlingNewsService = crawlingNewsService;
     }
 
-    // 모든 뉴스 데이터 가져오기
     @GetMapping("/news")
     public String getNewsPage(Model model) {
         List<NewsData> newsList = crawlingNewsService.getAllNews();
         model.addAttribute("newsList", newsList);
-        return "newsList";  // newsList.html 템플릿을 렌더링
+        return "newsList";
     }
+
 }

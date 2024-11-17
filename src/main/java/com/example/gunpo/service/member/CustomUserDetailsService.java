@@ -22,7 +22,6 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
 
-    // 이메일로 사용자 정보를 로드
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return memberRepository.findByEmail(email)
@@ -31,9 +30,9 @@ public class CustomUserDetailsService implements UserDetailsService {
     }
 
     private UserDetails createUserDetails(Member member) {
-        String role = member.getMemberRole().toString(); // 사용자 역할 가져오기
+        String role = member.getMemberRole().toString();
         log.info("사용자 권한: " + role);
-        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role); // 권한 객체 생성
+        GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role);
 
         return new User( // UserDetails 객체 반환
                 member.getEmail(),
@@ -41,4 +40,5 @@ public class CustomUserDetailsService implements UserDetailsService {
                 Collections.singletonList(grantedAuthority)
         );
     }
+
 }

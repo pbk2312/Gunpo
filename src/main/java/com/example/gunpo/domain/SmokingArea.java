@@ -19,4 +19,6 @@ public class SmokingArea {
     private String managementAgency; // 관리기관
     private String dataDate;  // 데이터기준일자
     private String location;   // 소재지
+
 }
+

@@ -34,4 +34,5 @@ public class EmailValidator {
             throw new EmailAlreadyVerifiedException("이미 인증된 이메일입니다.");
         }
     }
+
 }

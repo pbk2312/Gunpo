@@ -15,7 +15,7 @@ public class EmailProvider {
 
     private final JavaMailSender javaMailSender;
 
-    private static final String SUBJECT = "[Gunpo]"; // 인증 메일 제목
+    private static final String SUBJECT = "[Gunpo]";
 
     public void sendCertificationMail(String email, String certificationNumber) {
 
@@ -44,4 +44,5 @@ public class EmailProvider {
                 certificationNumber
         );
     }
+
 }

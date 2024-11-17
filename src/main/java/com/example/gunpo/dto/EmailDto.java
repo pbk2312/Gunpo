@@ -15,4 +15,5 @@ public class EmailDto {
     private String email;
 
     private String certificationNumber;
+
 }

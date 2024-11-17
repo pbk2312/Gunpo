@@ -5,4 +5,5 @@ public class CannotFindBoardException extends RuntimeException{
     public CannotFindBoardException(String message) {
         super(message);
     }
+
 }

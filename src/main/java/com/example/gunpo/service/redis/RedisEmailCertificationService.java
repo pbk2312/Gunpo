@@ -31,4 +31,5 @@ public class RedisEmailCertificationService {
         Optional.ofNullable(stringRedisTemplate.opsForValue())
                 .ifPresent(valueOps -> valueOps.set(RedisConstants.EMAIL_CERTIFICATION_PREFIX + email, updatedValue));
     }
+
 }
