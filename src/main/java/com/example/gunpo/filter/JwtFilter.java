@@ -15,6 +15,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.UUID;
+import reactor.util.annotation.NonNull;
 
 
 @Log4j2
@@ -28,7 +29,9 @@ public class JwtFilter extends OncePerRequestFilter {
     private final TokenProvider tokenProvider;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain) throws ServletException, IOException {
         String requestId = UUID.randomUUID().toString();
         long startTime = System.currentTimeMillis();
 
