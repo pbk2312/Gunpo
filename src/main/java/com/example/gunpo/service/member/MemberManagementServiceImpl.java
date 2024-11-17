@@ -3,6 +3,7 @@ package com.example.gunpo.service.member;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.domain.MemberRole;
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.validator.member.AuthenticationValidator;
@@ -46,14 +47,15 @@ public class MemberManagementServiceImpl implements MemberManagementService {
     }
 
     @Override
-    public void update(MemberDto memberDto) {
-        Member updatedMember = findAndUpdateMemberFields(memberDto);
+    public void update(MemberUpdateDto updateDto) {
+        Member updatedMember = findAndUpdateMemberFields(updateDto);
         log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
     }
 
-    private Member findAndUpdateMemberFields(MemberDto memberDto) {
-        Member existingMember = authenticationValidator.validateExistingMember(memberDto.getId());
-        MemberMapper.INSTANCE.updateEntity(existingMember, memberDto);
+    private Member findAndUpdateMemberFields(MemberUpdateDto updateDto) {
+        Member existingMember = authenticationValidator.validateExistingMember(updateDto.getId());
+        existingMember.setNickname(updateDto.getNickname());
+        existingMember.setDateOfBirth(updateDto.getDateOfBirth());
         return memberRepository.save(existingMember);
     }
 

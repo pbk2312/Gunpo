@@ -17,6 +17,7 @@ public class AuthenticationValidator {
     private final MemberRepository memberRepository;
     private final TokenProvider tokenProvider;
     private final RedisTokenService redisTokenService;
+
     // 이메일로 회원 찾기 검증
     public Member validateMemberByEmail(String email) {
         return memberRepository.findByEmail(email)

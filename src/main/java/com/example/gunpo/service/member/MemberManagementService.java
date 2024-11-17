@@ -1,6 +1,7 @@
 package com.example.gunpo.service.member;
 
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.exception.member.MemberNotFoundException;
 
 public interface MemberManagementService {
@@ -21,8 +22,8 @@ public interface MemberManagementService {
 
     /**
      * 회원 정보를 업데이트합니다.
-     * @param memberDto 업데이트할 회원 정보
+     * @param updateDto 업데이트할 회원 정보
      */
-    void update(MemberDto memberDto);
+    void update(MemberUpdateDto updateDto);
 
 }
