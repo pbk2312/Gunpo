@@ -27,7 +27,7 @@ public class AuthenticationValidator {
     // Access Token 유효성 검증 (null 및 빈 문자열 체크 포함)
     public void validateAccessToken(String accessToken) {
         if (accessToken == null || accessToken.isEmpty()) {
-            throw new IllegalArgumentException("액세스 토큰이 유효하지 않습니다.");
+            throw new UnauthorizedException(MemberErrorMessage.UNAUTHORIZED_USER.getMessage());
         }
         if (!tokenProvider.validate(accessToken)) {
             throw new UnauthorizedException(MemberErrorMessage.UNAUTHORIZED_USER.getMessage());
