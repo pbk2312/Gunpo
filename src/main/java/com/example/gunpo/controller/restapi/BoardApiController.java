@@ -35,8 +35,6 @@ public class BoardApiController {
         try {
             BoardDto boardDto = new BoardDto(title, content, Category.valueOf(category));
 
-            // DTO가 제대로 생성되었는지 확인하는 로그 추가
-            log.info("BoardDto created: {}", boardDto.toString());
 
             Long postId = boardCreationService.create(boardDto, accessToken, images);
             return createResponseEntity(HttpStatus.CREATED, "게시글이 성공적으로 작성되었습니다.", postId);
