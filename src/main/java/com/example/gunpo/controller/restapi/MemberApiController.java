@@ -3,6 +3,7 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.service.member.AuthenticationService;
@@ -88,10 +89,10 @@ public class MemberApiController {
 
     @PutMapping("/update")
     public ResponseEntity<ResponseDto<Map<String, Object>>> updateMember(
-            @RequestBody MemberDto memberDto
+            @RequestBody @Valid  MemberUpdateDto updateDto
     ) {
         try {
-            memberManagementService.update(memberDto);
+            memberManagementService.update(updateDto);
 
             Map<String, Object> data = new HashMap<>();
             return ResponseEntity.ok(new ResponseDto<>("성공적으로 업데이트 성공", data));

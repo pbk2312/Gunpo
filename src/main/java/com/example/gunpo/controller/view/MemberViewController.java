@@ -4,9 +4,11 @@ package com.example.gunpo.controller.view;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.service.member.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
+import java.time.format.DateTimeFormatter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
@@ -40,14 +42,35 @@ public class MemberViewController {
         return "member/login";
     }
 
+
     @GetMapping("/update")
     public String update(@CookieValue(value = "accessToken", required = false) String accessToken,
-                         Model model
-    ) {
+                         Model model) {
         Member member = authenticationService.getUserDetails(accessToken);
-        MemberDto memberDto = MemberMapper.INSTANCE.toDto(member);
+
+        MemberUpdateDto memberDto = getMemberUpdateDto(member);
+
+        String formattedDate = getFormattedDate(member);
+
         model.addAttribute("memberDto", memberDto);
+        model.addAttribute("formattedDateOfBirth", formattedDate);
         return "member/update";
+    }
+
+    private static MemberUpdateDto getMemberUpdateDto(Member member) {
+        MemberUpdateDto memberDto = new MemberUpdateDto();
+        memberDto.setId(member.getId());
+        memberDto.setNickname(member.getNickname());
+        memberDto.setDateOfBirth(member.getDateOfBirth());
+        return memberDto;
+    }
+
+    private static String getFormattedDate(Member member) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String formattedDate = member.getDateOfBirth() != null
+                ? member.getDateOfBirth().format(formatter)
+                : "";
+        return formattedDate;
     }
 
 }
