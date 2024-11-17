@@ -59,19 +59,6 @@ public class BoardDto {
         return this.createdAt != null ? this.createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "";
     }
 
-    @Override
-    public String toString() {
-        return "BoardDto{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", content='" + content + '\'' +
-                ", authorId=" + authorId +
-                ", nickname='" + nickname + '\'' +
-                ", createdAt=" + createdAt +
-                ", updatedAt=" + updatedAt +
-                ", viewCount=" + viewCount +
-                ", category=" + category +
-                '}';
-    }
+
 
 }
