@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <meta name="description" content="멤버 프로필 - Gunpo Community"/>
+    <meta name="author" content="Gunpo Community"/>
+    <title>멤버 프로필 - Gunpo Community</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <!-- Core theme CSS (includes Bootstrap) -->
+    <link href="/css/styles.css" rel="stylesheet" />
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+        label span {
+            color: red; /* 필수 항목 표시 */
+        }
+        .profile-container {
+            max-width: 500px;
+            margin: auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .profile-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #007bff;
+        }
+
+        .profile-info {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .profile-info strong {
+            color: #555;
+        }
+
+        .icon {
+            font-size: 36px;
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .edit-button {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <aside class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
+        </div>
+    </aside>
+    <!-- Page content wrapper -->
+    <div id="page-content-wrapper">
+        <!-- Top navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span> <!-- 상시 보이는 홈 아이콘 -->
+                    <span class="text">홈으로</span> <!-- 아이콘보다 작고 회색 글씨 -->
+                </a>
+            </div>
+        </nav>
+        <!-- Main content -->
+        <main class="container-fluid">
+            <div class="profile-container mt-5">
+                <div class="icon">👤</div>
+                <div class="profile-title">프로필</div>
+                <div class="profile-info"><strong>이메일:</strong> <span th:text="${memberDto.email}">user@example.com</span></div>
+                <div class="profile-info"><strong>닉네임:</strong> <span th:text="${memberDto.nickname}">nickname</span></div>
+                <div class="profile-info"><strong>생년월일:</strong> <span th:text="${memberDto.dateOfBirth}">2000-01-01</span></div>
+
+                <!-- Update Information Button -->
+                <a href="/update" class="btn btn-primary edit-button">정보 수정</a>
+            </div>
+        </main>
+    </div>
+</div>
+<!-- Bootstrap core JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
