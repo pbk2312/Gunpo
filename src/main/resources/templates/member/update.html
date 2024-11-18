@@ -1,20 +1,21 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="회원 정보 수정 - Gunpo Community" />
-    <meta name="author" content="Gunpo Community" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="회원 정보 수정 - Gunpo Community"/>
+    <meta name="author" content="Gunpo Community"/>
     <title>회원 정보 수정 - Gunpo Community</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Core theme CSS (includes Bootstrap) -->
-    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet"/>
     <style>
         body {
             background-color: #f8f9fa;
             font-family: 'Arial', sans-serif;
         }
+
         .update-container {
             max-width: 500px;
             margin: auto;
@@ -23,10 +24,12 @@
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
+
         .btn-primary {
             background-color: #007bff;
             border-color: #007bff;
         }
+
         label span {
             color: red; /* 필수 항목 표시 */
         }
@@ -40,7 +43,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
@@ -63,7 +67,7 @@
                 <h2 class="text-center mb-4">회원 정보 수정</h2>
                 <form id="updateForm">
                     <!-- 숨겨진 ID 필드 -->
-                    <input type="hidden" id="id" name="id" th:value="${memberDto.id}" />
+                    <input type="hidden" id="id" name="id" th:value="${memberDto.id}"/>
 
                     <!-- 닉네임 필드 -->
                     <div class="form-group mb-3">
@@ -108,7 +112,7 @@
         event.preventDefault();
 
         const formData = {
-            id : document.getElementById('id').value,
+            id: document.getElementById('id').value,
             nickname: document.getElementById('nickname').value,
             dateOfBirth: document.getElementById('dateOfBirth').value
         };
@@ -127,14 +131,15 @@
                 throw new Error('회원 정보 업데이트 중 오류 발생');
             })
             .then(data => {
-                alert(data.message || '업데이트 성공!');
-                // 성공 후 원하는 동작 추가 (예: 다른 페이지로 이동)
+                alert(data.message || '수정 완료!');
+                window.location.href = '/mypage/profile';
             })
             .catch(error => {
                 console.error(error);
-                alert('업데이트 실패: ' + error.message);
+                alert('수정 실패: ' + error.message);
             });
     });
+
 </script>
 </body>
 </html>
