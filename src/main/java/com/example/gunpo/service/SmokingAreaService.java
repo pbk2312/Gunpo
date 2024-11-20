@@ -6,6 +6,8 @@ import com.example.gunpo.dto.SmokingAreaDto;
 import com.example.gunpo.service.redis.RedisSmokingAreaService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
@@ -35,6 +37,7 @@ public class SmokingAreaService {
     private final RestTemplate restTemplate;
     private final ObjectMapper objectMapper;
     private final RedisSmokingAreaService redisSmokingAreaService;
+
     public void fetchAllDataAndSaveToRedis() {
         int page = 1;
         int size = ApiConstants.DEFAULT_PAGE_SIZE;
@@ -128,8 +131,9 @@ public class SmokingAreaService {
     }
 
     private String buildApiUrl(int page, int size) {
-        String encodedServiceKey = serviceKey.replace("+", "%2B");
-        return ApiConstants.BASE_API_URL + String.format(ApiConstants.API_QUERY_TEMPLATE, encodedServiceKey, page, size);
+        String encodedServiceKey = URLEncoder.encode(serviceKey, StandardCharsets.UTF_8);
+        return ApiConstants.SmokingArea.BASE_API_URL +
+                String.format(ApiConstants.SmokingArea.QUERY_TEMPLATE, encodedServiceKey, page, size);
     }
 
     public List<SmokingAreaDto> getAllSmokingZones() {
