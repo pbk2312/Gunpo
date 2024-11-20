@@ -3,7 +3,10 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.EmailDto;
 import com.example.gunpo.dto.ResponseDto;
+import com.example.gunpo.exception.email.DuplicateEmailException;
+import com.example.gunpo.exception.email.EmailAlreadyVerifiedException;
 import com.example.gunpo.exception.email.EmailSendFailedException;
+import com.example.gunpo.exception.email.VerificationCodeExpiredException;
 import com.example.gunpo.service.email.EmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,24 +30,21 @@ public class EmailController {
     @PostMapping("/sendCertificationMail")
     public ResponseEntity<ResponseDto<?>> sendCertificationMail(@Valid @RequestBody EmailDto emailDto) {
         try {
-            // 이메일 전송 서비스 호출
             String message = emailService.sendCertificationMail(emailDto);
-            ResponseDto<String> response = new ResponseDto<>(message, null);
+            log.info("이메일 인증 메일 전송 성공: 이메일 = {}", emailDto.getEmail());
+            ResponseDto<String> response = new ResponseDto<>(message, null, true);
             return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            // 사용자 정의 예외 처리
-            log.error("이메일 전송 오류: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null);
+        } catch (DuplicateEmailException e) {
+            log.error("이메일 전송 오류 - 중복 이메일: 이메일 = {}, 오류 메시지 = {}", emailDto.getEmail(), e.getMessage());
+            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null, false);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (EmailSendFailedException e) {
-            // 이메일 전송 실패 시 처리
-            log.error("이메일 전송 실패: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null);
+            log.error("이메일 전송 실패: 이메일 = {}, 오류 메시지 = {}", emailDto.getEmail(), e.getMessage(), e);
+            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null, false);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         } catch (Exception e) {
-            // 일반적인 예외 처리
-            log.error("알 수 없는 오류 발생: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>("이메일 전송 중 알 수 없는 오류가 발생했습니다.", null);
+            log.error("알 수 없는 오류 발생: 이메일 = {}, 오류 메시지 = {}", emailDto.getEmail(), e.getMessage(), e);
+            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null, false);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
@@ -54,13 +54,23 @@ public class EmailController {
     @PostMapping("/verifyEmail")
     public ResponseEntity<ResponseDto<?>> verifyEmail(@RequestBody EmailDto emailDto) {
         try {
+            log.info("이메일 인증 요청: 이메일 = {}, 인증번호 = {}", emailDto.getEmail(), emailDto.getCertificationNumber());
             emailService.verifyEmail(emailDto.getEmail(), emailDto.getCertificationNumber());
-            ResponseDto<String> response = new ResponseDto<>("인증번호 인증이 완료 되었습니다.", null);
+            log.info("이메일 인증 성공: 이메일 = {}", emailDto.getEmail());
+            ResponseDto<String> response = new ResponseDto<>("인증번호 인증이 완료 되었습니다.", null, true);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            log.error("이메일 인증 실패: {}", e.getMessage());
-            ResponseDto<String> response = new ResponseDto<>("인증번호 인증 실패", null);
+        } catch (VerificationCodeExpiredException e) {
+            log.error("이메일 인증 실패 - 인증번호 만료: 이메일 = {}, 오류 메시지 = {}", emailDto.getEmail(), e.getMessage());
+            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null, true);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (EmailAlreadyVerifiedException e) {
+            log.warn("이메일 인증 실패 - 이미 인증된 이메일: 이메일 = {}, 오류 메시지 = {}", emailDto.getEmail(), e.getMessage());
+            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null, true);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        } catch (Exception e) {
+            log.error("이메일 인증 중 예기치 않은 오류 발생: 이메일 = {}, 오류 메시지 = {}", emailDto.getEmail(), e.getMessage(), e);
+            ResponseDto<String> response = new ResponseDto<>(e.getMessage(), null, true);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
     }
 

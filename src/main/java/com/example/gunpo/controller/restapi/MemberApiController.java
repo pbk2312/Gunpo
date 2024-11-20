@@ -3,7 +3,6 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
@@ -39,21 +38,26 @@ public class MemberApiController {
     @PostMapping("/sign-up")
     public ResponseEntity<ResponseDto<String>> signUp(@Valid @RequestBody MemberDto memberDto) {
         try {
+            log.info("회원가입 요청: 이메일 = {}, 닉네임 = {}", memberDto.getEmail(), memberDto.getNickname());
             memberManagementService.save(memberDto);
+            log.info("회원가입 성공: 이메일 = {}", memberDto.getEmail());
             return ResponseEntity.ok(new ResponseDto<>("회원가입 성공", null, true));
         } catch (IllegalArgumentException e) {
+            log.error("회원가입 실패 - 잘못된 요청: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new ResponseDto<>(e.getMessage(), null, false));
         } catch (VerificationCodeMismatchException e) {
+            log.warn("회원가입 실패 - 인증 코드 불일치: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .body(new ResponseDto<>(e.getMessage(), null, false));
         } catch (EmailDuplicationException e) {
+            log.warn("회원가입 실패 - 이메일 중복: 이메일 = {}, 오류 메시지 = {}", memberDto.getEmail(), e.getMessage());
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body(new ResponseDto<>(e.getMessage(), null, false));
         } catch (Exception e) {
-            log.error("Unexpected error during sign-up: {}", e.getMessage(), e);
+            log.error("회원가입 중 알 수 없는 오류 발생: 이메일 = {}, 오류 메시지 = {}", memberDto.getEmail(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto<>("예기치 못한 오류가 발생했습니다. 잠시 후 다시 시도해주세요.", null, false));
+                    .body(new ResponseDto<>(e.getMessage(), null, false));
         }
     }
 
@@ -61,19 +65,21 @@ public class MemberApiController {
     public ResponseEntity<ResponseDto<String>> login(
             @RequestBody LoginDto loginDto, HttpServletResponse response, HttpServletRequest request) {
         try {
+            log.info("로그인 요청: 이메일 = {}", loginDto.getEmail());
             TokenDto tokenDto = authenticationService.login(loginDto);
             CookieUtils.addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600);
             CookieUtils.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000);
             String redirectUrl = getRedirectUrlFromSession(request);
-
+            log.info("로그인 성공: 이메일 = {}, 리디렉션 URL = {}", loginDto.getEmail(), redirectUrl);
             return ResponseEntity.ok(new ResponseDto<>("로그인 성공", redirectUrl, true));
         } catch (MemberNotFoundException | IncorrectPasswordException e) {
+            log.error("로그인 실패 - 사용자 정보 불일치: 이메일 = {}, 오류 메시지 = {}", loginDto.getEmail(), e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseDto<>(e.getMessage(), null, false));
         } catch (Exception e) {
-            log.error("Unexpected error during login: {}", e.getMessage(), e);
+            log.error("로그인 중 알 수 없는 오류 발생: 이메일 = {}, 오류 메시지 = {}", loginDto.getEmail(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto<>("로그인 중 예기치 못한 오류가 발생했습니다.", null, false));
+                    .body(new ResponseDto<>(e.getMessage(), null, false));
         }
     }
 
@@ -81,48 +87,20 @@ public class MemberApiController {
     public ResponseEntity<ResponseDto<String>> logout(
             @CookieValue(value = "accessToken", required = false) String accessToken, HttpServletResponse response) {
         try {
+            log.info("로그아웃 요청: 액세스 토큰 = {}", accessToken);
             authenticationService.logout(accessToken);
             CookieUtils.removeCookie(response, "accessToken");
             CookieUtils.removeCookie(response, "refreshToken");
+            log.info("로그아웃 성공: 액세스 토큰 = {}", accessToken);
             return ResponseEntity.ok(new ResponseDto<>("로그아웃 성공", null, true));
         } catch (UnauthorizedException e) {
-            ResponseDto<String> responseDto = new ResponseDto<>(e.getMessage(), null, false);
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responseDto);
-        } catch (Exception e) {
-            ResponseDto<String> responseDto = new ResponseDto<>("서버 문제", null, false);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(responseDto);
-        }
-    }
-
-    @PutMapping("/update")
-    public ResponseEntity<ResponseDto<String>> updateMember(
-            @RequestBody @Valid MemberUpdateDto updateDto) {
-        try {
-            memberManagementService.update(updateDto);
-            return ResponseEntity.ok(new ResponseDto<>("성공적으로 업데이트 성공", null, true));
-        } catch (MemberNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ResponseDto<>(e.getMessage(), null, false));
-        } catch (Exception e) {
-            log.error("Unexpected error during member update: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto<>("회원 정보 업데이트 중 오류가 발생했습니다.", null, false));
-        }
-    }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto<String>> deleteMember(
-            @CookieValue(value = "accessToken", required = false) String accessToken) {
-        try {
-            memberManagementService.delete(accessToken);
-            return ResponseEntity.ok(new ResponseDto<>("회원 탈퇴 성공", null, true));
-        } catch (UnauthorizedException e) {
+            log.error("로그아웃 실패 - 인증되지 않은 사용자: 오류 메시지 = {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(new ResponseDto<>(e.getMessage(), null, false));
         } catch (Exception e) {
-            log.error("Unexpected error during member deletion: {}", e.getMessage(), e);
+            log.error("로그아웃 중 알 수 없는 오류 발생: 오류 메시지 = {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto<>("회원 탈퇴 중 예기치 못한 오류가 발생했습니다.", null, false));
+                    .body(new ResponseDto<>(e.getMessage(), null, false));
         }
     }
 
@@ -132,8 +110,8 @@ public class MemberApiController {
             @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response) {
         try {
+            log.info("토큰 검증 요청: 액세스 토큰 = {}, 리프레시 토큰 = {}", accessToken, refreshToken);
             TokenValidationResult validationResult = authenticationService.validateTokens(accessToken, refreshToken);
-
             Map<String, Object> data = new HashMap<>();
             data.put("isAccessTokenValid", validationResult.isAccessTokenValid());
             data.put("isRefreshTokenValid", validationResult.isRefreshTokenValid());
@@ -143,14 +121,16 @@ public class MemberApiController {
                 CookieUtils.addCookie(response, "accessToken", validationResult.getNewAccessToken(), 3600);
             }
 
+            log.info("토큰 검증 성공: 액세스 토큰 유효성 = {}, 리프레시 토큰 유효성 = {}", validationResult.isAccessTokenValid(),
+                    validationResult.isRefreshTokenValid());
             return ResponseEntity.ok(new ResponseDto<>(validationResult.getMessage(), data, true));
         } catch (Exception e) {
-            log.error("Unexpected error during token validation: {}", e.getMessage(), e);
+            log.error("토큰 검증 중 알 수 없는 오류 발생: 오류 메시지 = {}", e.getMessage(), e);
             Map<String, Object> errorData = new HashMap<>();
             errorData.put("isAccessTokenValid", false);
             errorData.put("isRefreshTokenValid", false);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ResponseDto<>("토큰 검증 중 오류가 발생했습니다.", errorData, false));
+                    .body(new ResponseDto<>(e.getMessage(), errorData, false));
         }
     }
 
