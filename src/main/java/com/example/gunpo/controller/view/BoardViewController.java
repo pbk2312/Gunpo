@@ -2,7 +2,11 @@ package com.example.gunpo.controller.view;
 
 
 import com.example.gunpo.dto.BoardDto;
+import com.example.gunpo.exception.board.CannotFindBoardException;
+import com.example.gunpo.exception.board.InvalidPostIdException;
+import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.board.BoardService;
+import com.example.gunpo.validator.member.AuthenticationValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -20,17 +24,17 @@ import org.springframework.web.bind.annotation.*;
 public class BoardViewController {
 
     private final BoardService boardService;
+    private final AuthenticationValidator authenticationValidator;
 
     @GetMapping("/new")
     public String boardCreatePost(
             @CookieValue(value = "accessToken", required = false) String accessToken) {
-
-        if (isAccessTokenMissing(accessToken)) {
-            log.warn("Access token is missing.");
-            return redirectToLogin();
+        try {
+            authenticationValidator.validateAccessToken(accessToken);
+            return "board/new";
+        } catch (UnauthorizedException e) {
+            return "board/list";
         }
-
-        return "board/new";
     }
 
     @GetMapping("/list")
@@ -56,16 +60,13 @@ public class BoardViewController {
     @GetMapping("/{id}")
     public String getBoardPost(@PathVariable Long id, Model model,
                                @CookieValue(value = "accessToken", required = false) String accessToken) {
-
-        BoardDto boardDto = boardService.getPost(id, accessToken);
-
-        if (boardDto == null) {
-            return "redirect:/board/list";
+        try {
+            BoardDto boardDto = boardService.getPost(id, accessToken);
+            model.addAttribute("board", boardDto);
+            return "board/detail";
+        } catch (InvalidPostIdException | CannotFindBoardException e) {
+            return "board/list";
         }
-
-        model.addAttribute("board", boardDto);
-
-        return "board/detail";
     }
 
     @GetMapping("/update/{id}")
@@ -85,15 +86,6 @@ public class BoardViewController {
         return "board/update";
 
 
-    }
-
-
-    private boolean isAccessTokenMissing(String accessToken) {
-        return accessToken == null;
-    }
-
-    private String redirectToLogin() {
-        return "redirect:/login";
     }
 
     private Page<BoardDto> getBoardPage(int page, int size) {
