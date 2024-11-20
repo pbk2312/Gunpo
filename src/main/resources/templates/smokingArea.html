@@ -37,7 +37,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
@@ -113,12 +114,12 @@
                     });
 
                     // 마커에 마우스를 올리면 정보 창 표시
-                    kakao.maps.event.addListener(marker, 'mouseover', function() {
+                    kakao.maps.event.addListener(marker, 'mouseover', function () {
                         infoWindow.open(map, marker);
                     });
 
                     // 마커에서 마우스를 뺄 때 정보 창 닫기
-                    kakao.maps.event.addListener(marker, 'mouseout', function() {
+                    kakao.maps.event.addListener(marker, 'mouseout', function () {
                         infoWindow.close();
                     });
                 });
@@ -142,49 +143,67 @@
 
     // 로그아웃 처리 함수
     function logout() {
-        // 서버에 로그아웃 요청
         fetch('/api/member/logout', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
-            }
+            },
+            credentials: 'include' // 쿠키 포함
         })
-            .then(response => {
-                if (response.ok) {
-                    // 쿠키에서 accessToken 삭제
+            .then(response => response.json()) // 서버 응답을 JSON으로 처리
+            .then(responseData => {
+                if (responseData.success) {
+                    // 성공적으로 로그아웃 처리
+                    console.log(responseData.message); // 로그아웃 성공 메시지 출력
+                    // 쿠키 삭제 (브라우저 레벨에서 삭제)
                     document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    window.location.reload(); // 페이지 새로고침
+                    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = '/'; // 메인 페이지로 리다이렉트
                 } else {
-                    console.error('로그아웃 요청 실패');
+                    // 서버에서 실패 메시지 처리
+                    alert(responseData.message || "로그아웃에 실패했습니다.");
+                    console.error("로그아웃 실패:", responseData.message);
                 }
             })
-            .catch(error => console.error('로그아웃 요청 중 오류 발생:', error));
+            .catch(error => {
+                // 네트워크 또는 서버 오류 처리
+                console.error('로그아웃 요청 중 오류 발생:', error);
+                alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            });
     }
 
     function checkAuth() {
         fetch('/api/member/validateToken', {
             method: 'GET',
-            credentials: 'include'
+            credentials: 'include' // 쿠키 포함 요청
         })
             .then(response => response.json())
             .then(responseData => {
                 const message = responseData.message; // 응답 메시지
                 const data = responseData.data; // 실제 데이터
 
-                const isLoggedIn = data.isLoggedIn; // 로그인 상태 확인
+                const isAccessTokenValid = data.isAccessTokenValid; // 액세스 토큰 유효성
+                const isRefreshTokenValid = data.isRefreshTokenValid; // 리프레시 토큰 유효성
+                const newAccessToken = data.accessToken; // 갱신된 액세스 토큰 (옵션)
+
                 const authButton = document.getElementById('authButton');
                 const mypageButton = document.getElementById('mypageButton');
 
-                if (isLoggedIn) {
+                if (isAccessTokenValid) {
                     // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
                     authButton.innerText = '로그아웃';
                     authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
                     authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
                     mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
-                    mypageButton.removeEventListener('click', () => {}); // 기존 이벤트 리스너 제거
+                    mypageButton.removeEventListener('click', () => {
+                    }); // 기존 이벤트 리스너 제거
                     mypageButton.addEventListener('click', () => {
-                        window.location.href = '/mypage/check'; // 마이페이지로 이동
+                        window.location.href = '/mypage/profile'; // 마이페이지로 이동
                     });
+                } else if (isRefreshTokenValid && newAccessToken) {
+                    // 리프레시 토큰으로 액세스 토큰 갱신된 경우
+                    console.log('새로운 액세스 토큰이 발급되었습니다.');
+                    checkAuth(); // 갱신된 상태로 다시 인증 상태 확인
                 } else {
                     // 로그아웃 상태: 로그인 버튼으로 전환
                     authButton.innerText = '로그인/회원가입';
@@ -198,10 +217,11 @@
             .catch(error => {
                 // 토큰 검증 중 오류 발생 시
                 console.error('로그인 상태 확인 중 오류 발생:', error);
-                // 여기서 추가적인 오류 처리를 할 수 있습니다 (예: 사용자에게 메시지 표시 등)
+                alert('인증 상태 확인 중 문제가 발생했습니다.');
             });
     }
-    // 페이지 로드 시 인증 상태 및 팝업 표시 확인
+
+    // 페이지 로드 시 인증 상태 확인
     window.onload = function () {
         checkAuth();
     };

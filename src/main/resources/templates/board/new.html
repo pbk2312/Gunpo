@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="Gunpo Community 게시글 작성 페이지" />
-    <meta name="author" content="Your Name" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="Gunpo Community 게시글 작성 페이지"/>
+    <meta name="author" content="Your Name"/>
     <title>게시글 작성 - Gunpo Community</title>
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="/assets/favicon.ico"/>
     <!-- Core theme CSS -->
-    <link href="/css/styles.css" rel="stylesheet" />
+    <link href="/css/styles.css" rel="stylesheet"/>
 </head>
 <style>
     body {
@@ -87,7 +87,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
@@ -144,25 +145,31 @@
         <script src="js/scripts.js"></script>
         <script>
             document.getElementById('createPostForm').addEventListener('submit', async function (event) {
-                event.preventDefault();  // 폼 제출 시 페이지 새로고침 방지
+                event.preventDefault(); // 폼 제출 시 페이지 새로고침 방지
 
-                const formData = new FormData(this);  // 폼 데이터 객체 생성
+                const formData = new FormData(this); // 폼 데이터 객체 생성
 
                 try {
                     const response = await fetch('/api/board/new', {
                         method: 'POST',
-                        body: formData,  // FormData 객체를 body로 전송
+                        body: formData, // FormData 객체를 body로 전송
                     });
 
                     if (response.ok) {
-                        // 성공적으로 작성되면 /board/list로 리다이렉트
-                        window.location.href = '/board/list';
+                        const result = await response.json();
+                        if (result.success) {
+                            alert(result.message); // 성공 메시지 표시
+                            window.location.href = '/board/list'; // 성공 시 리다이렉트
+                        } else {
+                            alert(result.message || '게시글 작성 중 문제가 발생했습니다.');
+                        }
                     } else {
-                        alert('게시글 작성에 실패했습니다.');
+                        const errorResult = await response.json();
+                        alert(errorResult.message || '게시글 작성에 실패했습니다.');
                     }
                 } catch (error) {
                     console.error('Error:', error);
-                    alert('오류가 발생했습니다.');
+                    alert('오류가 발생했습니다. 관리자에게 문의하세요.');
                 }
             });
         </script>

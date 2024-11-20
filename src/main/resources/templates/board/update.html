@@ -97,7 +97,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
@@ -189,29 +190,31 @@
 
 <!-- JavaScript for PUT request using Fetch API -->
 <script>
-    document.getElementById("updateForm").onsubmit = async function (event) {
-        event.preventDefault(); // 기본 폼 제출 방지
+    document.getElementById("updateForm").addEventListener("submit", async function (event) {
+        event.preventDefault(); // 기본 폼 제출 동작 방지
 
-        // FormData로 폼 데이터 수집
-        let formData = new FormData(this);
+        // FormData 객체 생성
+        const formData = new FormData(this);
 
         try {
-            let response = await fetch("/api/board/update", {
-                method: "PUT",  // PUT 메서드를 사용하여 요청 전송
+            const response = await fetch("/api/board/update", {
+                method: "PUT", // PUT 메서드 사용
                 body: formData
             });
 
-            // 응답이 성공적일 경우
-            if (response.ok) {
-                window.location.href = "/board/list"; // 수정 후 목록으로 리다이렉션
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                alert(result.message || "게시물이 성공적으로 수정되었습니다.");
+                window.location.href = "/board/list"; // 성공 시 리다이렉트
             } else {
-                alert("게시물 수정에 실패했습니다.");
+                alert(result.message || "게시물 수정 중 문제가 발생했습니다.");
             }
         } catch (error) {
-            console.error("Error during the update:", error);
-            alert("서버 오류로 인해 게시물 수정에 실패했습니다.");
+            console.error("Update error:", error);
+            alert("서버 오류로 인해 게시물 수정에 실패했습니다. 관리자에게 문의하세요.");
         }
-    };
+    });
 </script>
 </body>
 </html>
