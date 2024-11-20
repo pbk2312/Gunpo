@@ -5,7 +5,6 @@ import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.dto.MemberUpdateDto;
-import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.service.member.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import java.time.format.DateTimeFormatter;
