@@ -3,6 +3,10 @@ package com.example.gunpo.handler;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.exception.board.BoardValidationException;
 import com.example.gunpo.exception.board.CannotFindBoardException;
+import com.example.gunpo.exception.email.VerificationCodeMismatchException;
+import com.example.gunpo.exception.member.EmailDuplicationException;
+import com.example.gunpo.exception.member.IncorrectPasswordException;
+import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
@@ -20,6 +24,37 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(new ResponseDto<>(e.getMessage(), null, false));
     }
+
+
+    @ExceptionHandler(MemberNotFoundException.class)
+    public ResponseEntity<ResponseDto<String>> handleMemberNotFoundException(MemberNotFoundException ex) {
+        log.error("MemberNotFoundException: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto<>(ex.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(EmailDuplicationException.class)
+    public ResponseEntity<ResponseDto<String>> handleEmailDuplicationException(EmailDuplicationException ex) {
+        log.error("EmailDuplicationException: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ResponseDto<>(ex.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(IncorrectPasswordException.class)
+    public ResponseEntity<ResponseDto<String>> handleIncorrectPasswordException(IncorrectPasswordException ex) {
+        log.error("IncorrectPasswordException: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(new ResponseDto<>(ex.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(VerificationCodeMismatchException.class)
+    public ResponseEntity<ResponseDto<String>> handleVerificationCodeMismatchException(
+            VerificationCodeMismatchException ex) {
+        log.error("VerificationCodeMismatchException: {}", ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
+                .body(new ResponseDto<>(ex.getMessage(), null, false));
+    }
+
 
     @ExceptionHandler(BoardValidationException.class)
     public ResponseEntity<ResponseDto<String>> handleBoardValidationException(BoardValidationException e) {
