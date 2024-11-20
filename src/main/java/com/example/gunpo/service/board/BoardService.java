@@ -4,6 +4,7 @@ import com.example.gunpo.constants.BoardErrorMessage;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
+import com.example.gunpo.exception.board.InvalidPageableException;
 import com.example.gunpo.mapper.BoardMapper;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.service.redis.RedisViewCountService;
@@ -100,7 +101,7 @@ public class BoardService {
 
     private void validatePageable(Pageable pageable) {
         if (pageable.getPageNumber() < 0 || pageable.getPageSize() <= 0) {
-            throw new IllegalArgumentException("페이지 번호와 크기는 양수여야 합니다.");
+            throw new InvalidPageableException(BoardErrorMessage.INVALID_PAGEABLE.getMessage());
         }
     }
 
