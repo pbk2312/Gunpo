@@ -1,6 +1,8 @@
 package com.example.gunpo.infrastructure;
 
 
+import com.example.gunpo.constants.MemberErrorMessage;
+import com.example.gunpo.constants.TokenErrorMessage;
 import com.example.gunpo.dto.TokenDto;
 import com.example.gunpo.exception.member.InvalidTokenException;
 import com.example.gunpo.exception.member.MemberNotFoundException;
@@ -32,10 +34,12 @@ public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
 
-    // accessToken 유효 기간
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;            // 60분
-    // refreshToken 유효 기간
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;  // 7일
+    // accessToken과 refreshToken 유효 기간을 application.properties에서 주입받음
+    @Value("${jwt.access-token-expire-time}")
+    private long accessTokenExpireTime;
+
+    @Value("${jwt.refresh-token-expire-time}")
+    private long refreshTokenExpireTime;
 
     private final Key key;
 
@@ -55,7 +59,7 @@ public class TokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        Date accessTokenExpiresIn = new Date(now + accessTokenExpireTime);
         String accessToken = Jwts.builder()
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "Venture"
                 .setSubject(authentication.getName())       // payload "sub": "name"
@@ -67,7 +71,7 @@ public class TokenProvider {
         String refreshToken = Jwts.builder()
                 .setSubject(authentication.getName()) // 사용자 이름
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+                .setExpiration(new Date(now + refreshTokenExpireTime))
                 .compact();
 
         // TokenDTO를 생성해서 반환
@@ -109,7 +113,7 @@ public class TokenProvider {
                         .collect(Collectors.toList()))
                 .setSubject(claims.getSubject())
                 .signWith(key, SignatureAlgorithm.HS512)
-                .setExpiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXPIRE_TIME))
+                .setExpiration(new Date(System.currentTimeMillis() + accessTokenExpireTime))
                 .compact();
 
         return new UsernamePasswordAuthenticationToken(userDetails, newAccessToken, authorities);
@@ -118,7 +122,7 @@ public class TokenProvider {
     private UserDetails getUserDetailsFromClaims(Claims claims) {
         if (claims == null || claims.getSubject() == null) {
             log.error("토큰이 올바르지 않습니다. Claims: {}, Subject: {}", claims, claims != null ? claims.getSubject() : "null");
-            throw new InvalidTokenException("토큰이 올바르지 않습니다.");
+            throw new InvalidTokenException(TokenErrorMessage.INVALID_TOKEN.getMessage());
         }
 
         log.info("토큰에서 추출한 사용자 이름: {}", claims.getSubject());
@@ -126,22 +130,22 @@ public class TokenProvider {
 
         if (userDetails == null) {
             log.error("유저 정보를 찾을 수 없습니다. 사용자 이름: {}", claims.getSubject());
-            throw new MemberNotFoundException("유저 정보를 찾을 수 없습니다.");
+            throw new MemberNotFoundException(
+                    MemberErrorMessage.MEMBER_NOT_FOUND_ID.getMessage() + claims.getSubject());
         }
 
         return userDetails;
     }
 
     private Collection<? extends GrantedAuthority> extractAuthorities(Claims claims) {
-        // 권한 정보 추출
         Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
         if (authoritiesClaim == null) {
-            throw new InvalidTokenException("권한 정보가 없는 토큰입니다.");
+            throw new InvalidTokenException(TokenErrorMessage.INVALID_TOKEN.getMessage());
         }
 
         return Arrays.stream(authoritiesClaim.toString().split(","))
                 .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public boolean validate(String token) {
@@ -150,14 +154,17 @@ public class TokenProvider {
             return true;
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
             log.info("잘못된 JWT: {}", e.getMessage());
+            throw new InvalidTokenException(TokenErrorMessage.TOKEN_MALFORMED.getMessage());
         } catch (ExpiredJwtException e) {
             log.info("만료된 JWT 토큰: {}", e.getMessage());
+            throw new InvalidTokenException(TokenErrorMessage.EXPIRED_TOKEN.getMessage());
         } catch (UnsupportedJwtException e) {
             log.info("지원되지 않는 JWT 토큰: {}", e.getMessage());
+            throw new InvalidTokenException(TokenErrorMessage.UNSUPPORTED_TOKEN.getMessage());
         } catch (IllegalArgumentException e) {
             log.info("JWT 토큰이 잘못되었습니다: {}", e.getMessage());
+            throw new InvalidTokenException(TokenErrorMessage.TOKEN_ILLEGAL_ARGUMENT.getMessage());
         }
-        return false;
     }
 
     private Claims parseClaims(String token) {
