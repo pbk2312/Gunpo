@@ -1,5 +1,6 @@
 package com.example.gunpo.infrastructure;
 
+import com.example.gunpo.constants.EmailErrorMessage;
 import com.example.gunpo.exception.email.EmailSendFailedException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -32,8 +33,7 @@ public class EmailProvider {
             javaMailSender.send(message);
 
         } catch (Exception e) {
-            log.error("Failed to send email to {}: {}", email, e.getMessage(), e);
-            throw new EmailSendFailedException("이메일 발송 실패");
+            throw new EmailSendFailedException(EmailErrorMessage.EMAIL_SEND_FAILURE.getMessage());
         }
     }
 
