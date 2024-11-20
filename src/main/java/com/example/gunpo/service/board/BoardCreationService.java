@@ -28,27 +28,19 @@ public class BoardCreationService {
     private final AuthenticationValidator authenticationValidator;
     private final BoardValidator boardValidator;
 
-    public Long create(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
-        boardValidator.validate(boardDto);
+    public void create(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
         authenticationValidator.validateAccessToken(accessToken);
-
-        log.info("게시물 작성 요청 - 제목: {}, 사용자 토큰: {}", boardDto.getTitle(), accessToken);
-
-        return saveBoardWithDetails(boardDto, accessToken, images);
-
+        boardValidator.validate(boardDto);
+        saveBoardWithDetails(boardDto, accessToken, images);
     }
 
-    private Long saveBoardWithDetails(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
+    private void saveBoardWithDetails(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
         Member member = authenticationService.getUserDetails(accessToken);
         Board board = BoardFactory.createBoard(boardDto, member);
 
-        Long boardId = boardRepository.save(board).getId();
-        redisViewCountService.saveViewCountToRedis(boardId);
+        boardRepository.save(board);
+        redisViewCountService.saveViewCountToRedis(board.getId());
         imageProcessor.processNewImages(images, board);
-
-        log.info("게시물 저장 완료 - 게시물 ID: {}", boardId);
-        return boardId;
-
     }
 
 }
