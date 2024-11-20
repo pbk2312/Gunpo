@@ -1,6 +1,10 @@
 package com.example.gunpo.service;
 
+import com.example.gunpo.constants.ApiConstants;
+import com.example.gunpo.constants.ApiErrorMessage;
 import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.exception.api.ApiCallException;
+import com.example.gunpo.exception.api.ApiResponseParsingException;
 import com.example.gunpo.mapper.GyeonggiCurrencyStoreMapper;
 import com.example.gunpo.service.redis.RedisGyeonggiCurrencyStoreService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -58,14 +62,20 @@ public class GyeonggiCurrencyStoreService {
         }
     }
 
+    public List<GyeonggiCurrencyStoreDto> getAllMerchants() {
+        return redisService.getAllMerchants();
+    }
+
+    public List<GyeonggiCurrencyStoreDto> findByCmpnmNm(String cmpnmNm) {
+        return redisService.findByCmpnmNm(cmpnmNm);
+    }
+
+
     private List<GyeonggiCurrencyStoreDto> fetchMerchantsFromApi(int page) {
         String url = buildApiUrl(page, DEFAULT_PAGE_SIZE);
         log.info("요청 URL: {}", url);
 
         ResponseEntity<String> responseEntity = getApiResponse(url);
-        if (responseEntity == null) {
-            return Collections.emptyList();
-        }
 
         return handleApiResponse(responseEntity);
     }
@@ -74,11 +84,10 @@ public class GyeonggiCurrencyStoreService {
         try {
             return restTemplate.getForEntity(new URI(url), String.class);
         } catch (URISyntaxException e) {
-            log.error("URI 문법 오류: {}", e.getMessage());
+            throw new ApiCallException(ApiErrorMessage.URI_SYNTAX_ERROR.getMessage());
         } catch (Exception e) {
-            log.error("API 호출 중 오류: {}", e.getMessage());
+            throw new ApiCallException(ApiErrorMessage.API_CALL_ERROR.getMessage());
         }
-        return null; // 오류 시 null 반환
     }
 
     private List<GyeonggiCurrencyStoreDto> handleApiResponse(ResponseEntity<String> responseEntity) {
@@ -98,12 +107,12 @@ public class GyeonggiCurrencyStoreService {
 
     private List<GyeonggiCurrencyStoreDto> parseResponseBody(String responseBody) {
         if (isEmptyResponse(responseBody)) {
-            return Collections.emptyList();
+            throw new ApiResponseParsingException(ApiErrorMessage.EMPTY_RESPONSE.getMessage());
         }
 
         Map<String, Object> responseMap = parseJsonToMap(responseBody);
         if (responseMap == null || isNoDataResponse(responseMap)) {
-            return Collections.emptyList();
+            throw new ApiResponseParsingException(ApiErrorMessage.NO_DATA_RESPONSE.getMessage());
         }
 
         return extractItemsFromResponse(responseMap);
@@ -139,16 +148,14 @@ public class GyeonggiCurrencyStoreService {
         List<Map<String, Object>> regionMnyFacltStusList = getRegionMnyFacltStusList(responseMap);
 
         if (regionMnyFacltStusList == null || regionMnyFacltStusList.size() < 2) {
-            log.warn("RegionMnyFacltStus 배열에 예상된 데이터가 없습니다.");
-            return Collections.emptyList();
+            throw new ApiResponseParsingException(ApiErrorMessage.MISSING_REGION_MNY_FACLT_STUS.getMessage());
         }
 
         Map<String, Object> rowData = regionMnyFacltStusList.get(1);
         List<Map<String, Object>> itemsList = getItemsList(rowData);
 
         if (itemsList == null) {
-            log.warn("row 데이터가 응답에 없습니다.");
-            return Collections.emptyList();
+            throw new ApiResponseParsingException(ApiErrorMessage.MISSING_ROW_DATA.getMessage());
         }
 
         return itemsList.stream()
@@ -165,9 +172,10 @@ public class GyeonggiCurrencyStoreService {
     }
 
     private String buildApiUrl(int page, int size) {
-        String sigunNm = URLEncoder.encode("군포시", StandardCharsets.UTF_8);
+        String sigunNm = URLEncoder.encode(ApiConstants.GyeonggiCurrencyStore.DEFAULT_SIGUN_NM, StandardCharsets.UTF_8);
         return String.format(
-                "https://openapi.gg.go.kr/RegionMnyFacltStus?KEY=%s&pIndex=%d&pSize=%d&SIGUN_NM=%s&Type=json",
+                ApiConstants.GyeonggiCurrencyStore.API_QUERY_FORMAT,
+                ApiConstants.GyeonggiCurrencyStore.API_BASE_URL,
                 apiKey,
                 page,
                 size,
