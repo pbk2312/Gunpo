@@ -3,7 +3,6 @@ package com.example.gunpo.controller.view;
 
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.service.member.AuthenticationService;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +31,5 @@ public class MyPageViewController {
         return "mypage/profile";
 
     }
-
 
 }
