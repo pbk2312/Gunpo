@@ -47,7 +47,7 @@ public class MemberViewController {
                          Model model) {
         Member member = authenticationService.getUserDetails(accessToken);
 
-        MemberUpdateDto memberDto = getMemberUpdateDto(member);
+        MemberUpdateDto memberDto = new MemberUpdateDto(member);
 
         String formattedDate = getFormattedDate(member);
 
@@ -56,13 +56,6 @@ public class MemberViewController {
         return "member/update";
     }
 
-    private static MemberUpdateDto getMemberUpdateDto(Member member) {
-        MemberUpdateDto memberDto = new MemberUpdateDto();
-        memberDto.setId(member.getId());
-        memberDto.setNickname(member.getNickname());
-        memberDto.setDateOfBirth(member.getDateOfBirth());
-        return memberDto;
-    }
 
     private static String getFormattedDate(Member member) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
