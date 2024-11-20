@@ -1,5 +1,6 @@
-package com.example.gunpo.validator;
+package com.example.gunpo.validator.member;
 
+import com.example.gunpo.constants.EmailErrorMessage;
 import com.example.gunpo.exception.email.*;
 import com.example.gunpo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -13,25 +14,25 @@ public class EmailValidator {
 
     public void validateDuplicateEmail(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
-            throw new DuplicateEmailException("이미 사용 중인 이메일입니다.");
+            throw new DuplicateEmailException(EmailErrorMessage.DUPLICATE_EMAIL.getMessage());
         }
     }
 
     public void validateStoredData(String storedData) {
         if (storedData == null) {
-            throw new VerificationCodeExpiredException("인증번호가 만료되었거나 존재하지 않습니다.");
+            throw new VerificationCodeExpiredException(EmailErrorMessage.VERIFICATION_CODE_EXPIRED.getMessage());
         }
     }
 
     public void validateCertification(String storedCertification, String certificationNumber) {
         if (!storedCertification.equals(certificationNumber)) {
-            throw new VerificationCodeMismatchException("인증번호가 일치하지 않습니다.");
+            throw new VerificationCodeMismatchException(EmailErrorMessage.VERIFICATION_CODE_MISMATCH.getMessage());
         }
     }
 
     public void validateVerificationStatus(String status) {
         if (Boolean.parseBoolean(status)) {
-            throw new EmailAlreadyVerifiedException("이미 인증된 이메일입니다.");
+            throw new EmailAlreadyVerifiedException(EmailErrorMessage.EMAIL_ALREADY_VERIFIED.getMessage());
         }
     }
 
