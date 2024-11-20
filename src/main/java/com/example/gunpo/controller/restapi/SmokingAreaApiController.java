@@ -30,7 +30,7 @@ public class SmokingAreaApiController {
         String message = smokingZones.isEmpty() ? "흡연 구역 정보가 없습니다." : "흡연 구역 정보를 성공적으로 가져왔습니다.";
         log.info("응답 메시지 설정: {}", message);
 
-        ResponseDto<List<SmokingAreaDto>> responseDto = new ResponseDto<>(message, smokingZones);
+        ResponseDto<List<SmokingAreaDto>> responseDto = new ResponseDto<>(message, smokingZones,true);
         log.info("ResponseDto 생성: {}", responseDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
