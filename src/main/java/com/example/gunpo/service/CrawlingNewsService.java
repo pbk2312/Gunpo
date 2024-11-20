@@ -1,7 +1,9 @@
 package com.example.gunpo.service;
 
 import com.example.gunpo.constants.NewsConstants;
+import com.example.gunpo.constants.NewsErrorMessage;
 import com.example.gunpo.dto.NewsData;
+import com.example.gunpo.exception.api.NewsDataFetchException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -18,7 +20,7 @@ public class CrawlingNewsService {
     public List<NewsData> getAllNews() {
         List<NewsData> newsList = new ArrayList<>();
         try {
-            Document doc = fetchDocument(NewsConstants.BASE_URL);
+            Document doc = fetchDocument();
             Elements newsElements = doc.select(NewsConstants.NEWS_SECTION_SELECTOR);
 
             for (Element newsElement : newsElements) {
@@ -26,13 +28,15 @@ public class CrawlingNewsService {
                 newsList.add(newsData);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new NewsDataFetchException(NewsErrorMessage.FETCH_DOCUMENT_ERROR.getMessage(), e);
+        } catch (Exception e) {
+            throw new NewsDataFetchException(NewsErrorMessage.PARSE_NEWS_ERROR.getMessage(), e);
         }
         return newsList;
     }
 
-    private Document fetchDocument(String url) throws IOException {
-        return Jsoup.connect(url)
+    private Document fetchDocument() throws IOException {
+        return Jsoup.connect(NewsConstants.BASE_URL)
                 .timeout(5000)
                 .userAgent("Mozilla/5.0")
                 .get();
