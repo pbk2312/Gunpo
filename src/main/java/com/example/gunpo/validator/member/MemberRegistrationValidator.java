@@ -3,6 +3,7 @@ package com.example.gunpo.validator.member;
 import com.example.gunpo.constants.MemberErrorMessage;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
+import com.example.gunpo.exception.member.EmailDuplicationException;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.service.redis.RedisEmailCertificationService;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ public class MemberRegistrationValidator {
 
     private final MemberRepository memberRepository;
     private final RedisEmailCertificationService emailCertificationService;
+
     public void validateNewMember(MemberDto memberDto) {
         validateEmailAndPasswordNotNull(memberDto); // 이메일 및 비밀번호 null 체크
         checkEmailDuplication(memberDto.getEmail()); // 이메일 중복 확인
@@ -36,7 +38,7 @@ public class MemberRegistrationValidator {
 
     private void checkEmailDuplication(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
-            throw new IllegalArgumentException(MemberErrorMessage.EMAIL_IN_USE_MESSAGE.getMessage());
+            throw new EmailDuplicationException(MemberErrorMessage.EMAIL_IN_USE_MESSAGE.getMessage());
         }
     }
 
