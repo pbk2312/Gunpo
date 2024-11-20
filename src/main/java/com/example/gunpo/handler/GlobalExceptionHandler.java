@@ -3,6 +3,10 @@ package com.example.gunpo.handler;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.exception.board.BoardValidationException;
 import com.example.gunpo.exception.board.CannotFindBoardException;
+import com.example.gunpo.exception.email.DuplicateEmailException;
+import com.example.gunpo.exception.email.EmailAlreadyVerifiedException;
+import com.example.gunpo.exception.email.EmailSendFailedException;
+import com.example.gunpo.exception.email.VerificationCodeExpiredException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.exception.member.EmailDuplicationException;
 import com.example.gunpo.exception.member.IncorrectPasswordException;
@@ -75,6 +79,37 @@ public class GlobalExceptionHandler {
         log.error("예기치 못한 오류 발생: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseDto<>("서버 내부 오류가 발생했습니다.", null, false));
+    }
+
+
+    // 이메일 관련 예외 처리
+    @ExceptionHandler(DuplicateEmailException.class)
+    public ResponseEntity<ResponseDto<String>> handleDuplicateEmailException(DuplicateEmailException e) {
+        log.error("DuplicateEmailException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(EmailAlreadyVerifiedException.class)
+    public ResponseEntity<ResponseDto<String>> handleEmailAlreadyVerifiedException(EmailAlreadyVerifiedException e) {
+        log.warn("EmailAlreadyVerifiedException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(EmailSendFailedException.class)
+    public ResponseEntity<ResponseDto<String>> handleEmailSendFailedException(EmailSendFailedException e) {
+        log.error("EmailSendFailedException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(VerificationCodeExpiredException.class)
+    public ResponseEntity<ResponseDto<String>> handleVerificationCodeExpiredException(
+            VerificationCodeExpiredException e) {
+        log.error("VerificationCodeExpiredException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
 }
