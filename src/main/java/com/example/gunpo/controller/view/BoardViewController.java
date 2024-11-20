@@ -73,19 +73,15 @@ public class BoardViewController {
     public String updateBoardPage(@PathVariable Long id, Model model,
                                   @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
-
-        BoardDto boardDto = boardService.getPost(id, accessToken);
-
-        if (boardDto == null) {
-
-            return "redirect:/board/list";
+        try {
+            BoardDto boardDto = boardService.getPost(id, accessToken);
+            model.addAttribute("board", boardDto);
+            return "board/update";
+        } catch (InvalidPostIdException e) {
+            return "board/list";
+        } catch (Exception e) {
+            return "error";
         }
-
-        model.addAttribute("board", boardDto);
-
-        return "board/update";
-
-
     }
 
     private Page<BoardDto> getBoardPage(int page, int size) {
