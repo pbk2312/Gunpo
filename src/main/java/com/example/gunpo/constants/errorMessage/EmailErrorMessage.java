@@ -1,4 +1,4 @@
-package com.example.gunpo.constants;
+package com.example.gunpo.constants.errorMessage;
 
 public enum EmailErrorMessage {
     DUPLICATE_EMAIL("이미 사용 중인 이메일입니다."),
