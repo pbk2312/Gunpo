@@ -1,4 +1,4 @@
-package com.example.gunpo.constants;
+package com.example.gunpo.constants.errorMessage;
 
 public enum ImageErrorMessage {
     IMAGE_STORAGE_ERROR("이미지 저장 중 오류가 발생했습니다."),

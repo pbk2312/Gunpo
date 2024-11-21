@@ -1,4 +1,4 @@
-package com.example.gunpo.constants;
+package com.example.gunpo.constants.errorMessage;
 
 public enum TokenErrorMessage {
     INVALID_TOKEN("유효하지 않은 토큰입니다."),

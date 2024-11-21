@@ -1,4 +1,4 @@
-package com.example.gunpo.constants;
+package com.example.gunpo.constants.errorMessage;
 
 public enum BoardErrorMessage {
     MISSING_TITLE_AND_CONTENT("게시물 제목 및 내용은 필수입니다."),

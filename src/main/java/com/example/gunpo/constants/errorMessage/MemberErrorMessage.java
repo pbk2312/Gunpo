@@ -1,4 +1,4 @@
-package com.example.gunpo.constants;
+package com.example.gunpo.constants.errorMessage;
 
 public enum MemberErrorMessage {
     INVALID_REFRESH_TOKEN("유효하지 않은 refreshToken입니다."),

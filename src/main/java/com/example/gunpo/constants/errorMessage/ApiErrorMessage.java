@@ -1,4 +1,4 @@
-package com.example.gunpo.constants;
+package com.example.gunpo.constants.errorMessage;
 
 public enum ApiErrorMessage {
 
