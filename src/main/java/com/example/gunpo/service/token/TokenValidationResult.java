@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.token;
 
 import lombok.Builder;
 import lombok.Getter;

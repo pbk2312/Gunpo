@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.functions;
 
 import com.example.gunpo.constants.ApiConstants;
 import com.example.gunpo.constants.ApiErrorMessage;

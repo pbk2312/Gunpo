@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.token;
 
 
 import com.example.gunpo.dto.TokenDto;

@@ -1,4 +1,4 @@
-package com.example.gunpo.service;
+package com.example.gunpo.service.functions;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
