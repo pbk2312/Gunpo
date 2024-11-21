@@ -62,8 +62,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
     // 크롤링
-    implementation 'org.jsoup:jsoup:1.14.3'
+    implementation 'org.jsoup:jsoup:1.18.1'
 
+    // GPS
+    implementation 'org.hibernate:hibernate-spatial:6.2.12.Final'
 
 }
 
