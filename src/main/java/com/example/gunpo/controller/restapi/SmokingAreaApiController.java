@@ -3,7 +3,7 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.SmokingAreaDto;
-import com.example.gunpo.service.SmokingAreaService;
+import com.example.gunpo.service.functions.SmokingAreaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;

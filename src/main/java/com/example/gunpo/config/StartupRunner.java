@@ -1,7 +1,7 @@
 package com.example.gunpo.config;
 
-import com.example.gunpo.service.GyeonggiCurrencyStoreService;
-import com.example.gunpo.service.SmokingAreaService;
+import com.example.gunpo.service.functions.GyeonggiCurrencyStoreService;
+import com.example.gunpo.service.functions.SmokingAreaService;
 import lombok.RequiredArgsConstructor;
 //
 import lombok.extern.log4j.Log4j2;

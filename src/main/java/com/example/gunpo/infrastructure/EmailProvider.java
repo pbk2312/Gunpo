@@ -1,6 +1,6 @@
 package com.example.gunpo.infrastructure;
 
-import com.example.gunpo.constants.EmailErrorMessage;
+import com.example.gunpo.constants.errorMessage.EmailErrorMessage;
 import com.example.gunpo.exception.email.EmailSendFailedException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;

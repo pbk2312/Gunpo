@@ -1,7 +1,7 @@
 package com.example.gunpo.controller.view;
 
 import com.example.gunpo.dto.NewsData;
-import com.example.gunpo.service.CrawlingNewsService;
+import com.example.gunpo.service.functions.CrawlingNewsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

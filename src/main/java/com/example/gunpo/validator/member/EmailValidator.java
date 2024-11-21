@@ -1,6 +1,6 @@
 package com.example.gunpo.validator.member;
 
-import com.example.gunpo.constants.EmailErrorMessage;
+import com.example.gunpo.constants.errorMessage.EmailErrorMessage;
 import com.example.gunpo.exception.email.*;
 import com.example.gunpo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;

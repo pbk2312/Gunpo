@@ -2,7 +2,7 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
 import com.example.gunpo.dto.ResponseDto;
-import com.example.gunpo.service.GyeonggiCurrencyStoreService;
+import com.example.gunpo.service.functions.GyeonggiCurrencyStoreService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

@@ -1,7 +1,7 @@
 package com.example.gunpo.controller.restapi;
 
 
-import com.example.gunpo.service.ChatMessageService;
+import com.example.gunpo.service.functions.ChatMessageService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

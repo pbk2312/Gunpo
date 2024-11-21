@@ -1,6 +1,6 @@
 package com.example.gunpo.validator.member;
 
-import com.example.gunpo.constants.MemberErrorMessage;
+import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.infrastructure.TokenProvider;
 import lombok.RequiredArgsConstructor;

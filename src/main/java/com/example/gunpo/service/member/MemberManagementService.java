@@ -1,6 +1,6 @@
 package com.example.gunpo.service.member;
 
-import com.example.gunpo.constants.MemberErrorMessage;
+import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.domain.MemberRole;
 import com.example.gunpo.dto.MemberDto;

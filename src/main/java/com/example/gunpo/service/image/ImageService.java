@@ -1,6 +1,6 @@
 package com.example.gunpo.service.image;
 
-import com.example.gunpo.constants.ImageErrorMessage;
+import com.example.gunpo.constants.errorMessage.ImageErrorMessage;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.BoardImage;
 import com.example.gunpo.exception.board.ImageStorageException;

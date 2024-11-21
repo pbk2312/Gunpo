@@ -7,7 +7,7 @@ import com.example.gunpo.exception.board.BoardValidationException;
 import com.example.gunpo.exception.board.InvalidPostIdException;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.member.AuthenticationService;
-import com.example.gunpo.constants.BoardErrorMessage;
+import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

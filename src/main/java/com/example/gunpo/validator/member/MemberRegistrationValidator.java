@@ -1,6 +1,6 @@
 package com.example.gunpo.validator.member;
 
-import com.example.gunpo.constants.MemberErrorMessage;
+import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.exception.member.EmailDuplicationException;

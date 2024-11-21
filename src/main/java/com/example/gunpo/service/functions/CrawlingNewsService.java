@@ -1,7 +1,7 @@
 package com.example.gunpo.service.functions;
 
 import com.example.gunpo.constants.NewsConstants;
-import com.example.gunpo.constants.NewsErrorMessage;
+import com.example.gunpo.constants.errorMessage.NewsErrorMessage;
 import com.example.gunpo.dto.NewsData;
 import com.example.gunpo.exception.api.NewsDataFetchException;
 import org.jsoup.Jsoup;

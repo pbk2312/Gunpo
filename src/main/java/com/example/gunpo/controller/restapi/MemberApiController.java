@@ -3,9 +3,12 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.LoginDto;
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.TokenDto;
-import com.example.gunpo.service.TokenValidationResult;
+import com.example.gunpo.exception.member.MemberNotFoundException;
+import com.example.gunpo.exception.member.UnauthorizedException;
+import com.example.gunpo.service.token.TokenValidationResult;
 import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.service.member.MemberManagementService;
 import com.example.gunpo.util.CookieUtils;
@@ -14,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,6 +63,20 @@ public class MemberApiController {
         log.info("로그아웃 성공: 액세스 토큰 = {}", accessToken);
         return ResponseEntity.ok(new ResponseDto<>("로그아웃 성공", null, true));
     }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDto<String>> updateMember(@RequestBody @Valid MemberUpdateDto updateDto) {
+        memberManagementService.update(updateDto);
+        return ResponseEntity.ok(new ResponseDto<>("성공적으로 업데이트 성공", null, true));
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto<String>> deleteMember(
+            @CookieValue(value = "accessToken", required = false) String accessToken) {
+        memberManagementService.delete(accessToken);
+        return ResponseEntity.ok(new ResponseDto<>("회원 탈퇴 성공", null, true));
+    }
+
 
     @GetMapping("/validateToken")
     public ResponseEntity<ResponseDto<Map<String, Object>>> validateToken(
