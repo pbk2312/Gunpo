@@ -8,6 +8,8 @@ import com.example.gunpo.exception.email.EmailAlreadyVerifiedException;
 import com.example.gunpo.exception.email.EmailSendFailedException;
 import com.example.gunpo.exception.email.VerificationCodeExpiredException;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
+import com.example.gunpo.exception.location.DistanceCalculationException;
+import com.example.gunpo.exception.location.InvalidCoordinateException;
 import com.example.gunpo.exception.member.EmailDuplicationException;
 import com.example.gunpo.exception.member.IncorrectPasswordException;
 import com.example.gunpo.exception.member.MemberNotFoundException;
@@ -31,32 +33,32 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<ResponseDto<String>> handleMemberNotFoundException(MemberNotFoundException ex) {
-        log.error("MemberNotFoundException: {}", ex.getMessage(), ex);
+    public ResponseEntity<ResponseDto<String>> handleMemberNotFoundException(MemberNotFoundException e) {
+        log.error("MemberNotFoundException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ResponseDto<>(ex.getMessage(), null, false));
+                .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
     @ExceptionHandler(EmailDuplicationException.class)
-    public ResponseEntity<ResponseDto<String>> handleEmailDuplicationException(EmailDuplicationException ex) {
-        log.error("EmailDuplicationException: {}", ex.getMessage(), ex);
+    public ResponseEntity<ResponseDto<String>> handleEmailDuplicationException(EmailDuplicationException e) {
+        log.error("EmailDuplicationException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new ResponseDto<>(ex.getMessage(), null, false));
+                .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
     @ExceptionHandler(IncorrectPasswordException.class)
-    public ResponseEntity<ResponseDto<String>> handleIncorrectPasswordException(IncorrectPasswordException ex) {
-        log.error("IncorrectPasswordException: {}", ex.getMessage(), ex);
+    public ResponseEntity<ResponseDto<String>> handleIncorrectPasswordException(IncorrectPasswordException e) {
+        log.error("IncorrectPasswordException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                .body(new ResponseDto<>(ex.getMessage(), null, false));
+                .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
     @ExceptionHandler(VerificationCodeMismatchException.class)
     public ResponseEntity<ResponseDto<String>> handleVerificationCodeMismatchException(
-            VerificationCodeMismatchException ex) {
-        log.error("VerificationCodeMismatchException: {}", ex.getMessage(), ex);
+            VerificationCodeMismatchException e) {
+        log.error("VerificationCodeMismatchException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY)
-                .body(new ResponseDto<>(ex.getMessage(), null, false));
+                .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
 
@@ -82,7 +84,6 @@ public class GlobalExceptionHandler {
     }
 
 
-    // 이메일 관련 예외 처리
     @ExceptionHandler(DuplicateEmailException.class)
     public ResponseEntity<ResponseDto<String>> handleDuplicateEmailException(DuplicateEmailException e) {
         log.error("DuplicateEmailException: {}", e.getMessage(), e);
@@ -109,6 +110,20 @@ public class GlobalExceptionHandler {
             VerificationCodeExpiredException e) {
         log.error("VerificationCodeExpiredException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(InvalidCoordinateException.class)
+    public ResponseEntity<ResponseDto<String>> handleInvalidCoordinateException(InvalidCoordinateException e) {
+        log.error("InvalidCoordinateException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(DistanceCalculationException.class)
+    public ResponseEntity<ResponseDto<String>> handleDistanceCalculationException(DistanceCalculationException e) {
+        log.error("DistanceCalculationException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
