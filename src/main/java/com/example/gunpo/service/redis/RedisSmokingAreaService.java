@@ -46,4 +46,9 @@ public class RedisSmokingAreaService {
         return smokingArea != null ? SmokingZoneMapper.INSTANCE.toDto(smokingArea) : null;
     }
 
+    public boolean isDataPresent() {
+        Set<String> keys = redisTemplate.keys(RedisConstants.REDIS_KEY_PREFIX + "*");
+        return keys != null && !keys.isEmpty();
+    }
+
 }

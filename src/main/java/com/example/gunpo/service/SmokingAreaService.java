@@ -39,6 +39,12 @@ public class SmokingAreaService {
     private final RedisSmokingAreaService redisSmokingAreaService;
 
     public void fetchAllDataAndSaveToRedis() {
+        // Check if data already exists in Redis
+        if (redisSmokingAreaService.isDataPresent()) {
+            log.info("Redis에 흡연 구역 데이터가 이미 존재하므로 API 호출을 중단합니다.");
+            return;
+        }
+
         int page = 1;
         int size = ApiConstants.DEFAULT_PAGE_SIZE;
 
@@ -53,7 +59,6 @@ public class SmokingAreaService {
             page++;
         }
     }
-
     public List<SmokingArea> getDataFromAPI(int page, int size) {
         String url = buildApiUrl(page, size);
         log.info("요청 URL: {}", url);
