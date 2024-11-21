@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.*;
 
 import com.example.gunpo.exception.location.DistanceCalculationException;
 import com.example.gunpo.exception.location.InvalidCoordinateException;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
