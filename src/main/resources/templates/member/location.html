@@ -87,6 +87,15 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #5a54d2, #a67bff);
         }
+
+        .custom-alert {
+            max-width: 500px; /* 메시지의 너비를 폼에 맞춤 */
+            margin: 10px auto; /* 화면 중앙 정렬 */
+            padding: 10px; /* 내부 여백을 적당히 설정 */
+            border-radius: 5px; /* 부드러운 모서리 */
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
+            font-size: 0.9rem; /* 글씨 크기를 살짝 작게 */
+        }
     </style>
 </head>
 <body>
@@ -116,12 +125,28 @@
         </nav>
         <!-- Page content-->
         <div class="container-fluid text-center">
+            <div th:if="${errorMessage}" class="alert alert-danger custom-alert text-center">
+                <p th:text="${errorMessage}" class="m-0"></p>
+            </div>
             <h1 class="mt-4">동네 인증</h1>
             <p>현재 위치를 인증하여 <strong>군포 커뮤니티</strong>를 이용하세요!</p>
             <button class="btn btn-primary mt-3" onclick="getLocation()">내 위치로 인증하기</button>
         </div>
     </div>
 </div>
+
+<footer class="bg-dark text-white text-center py-4">
+    <div class="container">
+        <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:support@gunpocommunity.kr" class="text-white">support@gunpocommunity.kr</a></p>
+        <p>
+            <a href="#!" class="text-white">Privacy Policy</a> |
+            <a href="#!" class="text-white">Terms of Service</a> |
+            <a href="#!" class="text-white">Contact Us</a>
+        </p>
+    </div>
+</footer>
+
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
