@@ -100,9 +100,15 @@
         chatBox.appendChild(message);
     };
 
+    let isSending = false; // 중복 전송 방지 플래그
+
     function sendMessage() {
         var messageInput = document.getElementById('message');
-        var messageContent = messageInput.value;
+        var messageContent = messageInput.value.trim(); // 공백 제거
+
+        if (!messageContent || isSending) return; // 메시지가 비어있거나 전송 중이면 종료
+
+        isSending = true;
 
         // WebSocket으로 메시지 전송
         ws.send(messageContent);
@@ -114,10 +120,22 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(messageContent),
+        }).finally(() => {
+            isSending = false; // 전송 완료 후 플래그 초기화
+            messageInput.value = ''; // 메시지 전송 후 입력창 비우기
         });
-
-        messageInput.value = '';
     }
+
+    // Enter 키로 메시지 전송
+    document.getElementById('message').addEventListener('keydown', function(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+            event.preventDefault(); // Enter 키로 개행되지 않도록 방지
+        }
+    });
+
+    // 버튼 클릭으로 메시지 전송
+    document.getElementById('send-button').addEventListener('click', sendMessage);
 </script>
 </body>
 </html>
