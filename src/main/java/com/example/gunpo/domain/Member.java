@@ -28,6 +28,8 @@ public class Member {
 
     private LocalDate dateOfBirth;
 
+    private boolean NeighborhoodVerification;
+
     @OneToMany(mappedBy = "author")
     private List<Board> boards = new ArrayList<>();
 

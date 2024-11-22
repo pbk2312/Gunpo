@@ -40,6 +40,13 @@ public class MemberManagementService {
         log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
     }
 
+    public void NeighborhoodVerification(String accessToken) {
+        Member member = authenticationService.getUserDetails(accessToken);
+        member.setNeighborhoodVerification(true);
+        memberRepository.save(member);
+    }
+
+
     private Member findAndUpdateMemberFields(MemberUpdateDto updateDto) {
         Member existingMember = getExistingMember(updateDto);
         existingMember.setNickname(updateDto.getNickname());
@@ -57,6 +64,7 @@ public class MemberManagementService {
         Member member = MemberMapper.INSTANCE.toEntity(memberDto);
         encodePassword(member);
         member.setMemberRole(MemberRole.MEMBER);
+        member.setNeighborhoodVerification(false);
         return member;
     }
 
