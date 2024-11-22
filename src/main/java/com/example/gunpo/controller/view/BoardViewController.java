@@ -19,6 +19,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -47,7 +48,8 @@ public class BoardViewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @CookieValue(value = "accessToken", required = false) String accessToken,
-            Model model) {
+            Model model,
+            RedirectAttributes redirectAttributes) {
         try {
             // 사용자가 로그인된 상태인지 확인
             Member member = authenticationService.getUserDetails(accessToken);
@@ -67,10 +69,12 @@ public class BoardViewController {
 
             return "board/list";
         } catch (UnauthorizedException e) {
-            // 사용자가 로그인하지 않은 경우 /login으로 리디렉션
+            // 로그인하지 않은 경우 메시지 추가 후 /login으로 리디렉션
+            redirectAttributes.addFlashAttribute("errorMessage", "지역 커뮤니티 게시판은 로그인이 필요합니다.");
             return "redirect:/login";
         } catch (NeighborhoodVerificationException e) {
-            // 동네 인증이 되지 않은 경우 /location으로 리디렉션
+            // 동네 인증이 되지 않은 경우 메시지 추가 후 /neighborhoodVerification으로 리디렉션
+            redirectAttributes.addFlashAttribute("errorMessage", "지역 커뮤니티 게시판은 동네 인증이 필요합니다.");
             return "redirect:/neighborhoodVerification";
         }
     }
