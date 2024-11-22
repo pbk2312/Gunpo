@@ -153,7 +153,7 @@ public class TokenProvider {
         try {
             return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
         } catch (ExpiredJwtException e) {
-            return e.getClaims(); // Return claims even if token is expired
+            return e.getClaims();
         }
     }
 
