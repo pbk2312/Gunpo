@@ -1,6 +1,8 @@
 package com.example.gunpo.service.member;
 
+import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
+import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,15 +28,14 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         return memberRepository.findByEmail(email)
                 .map(this::createUserDetails) // 사용자가 존재하면 UserDetails 생성
-                .orElseThrow(() -> new UsernameNotFoundException("사용자를 찾을 수 없습니다: " + email));
+                .orElseThrow(() -> new UsernameNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_EMAIL.getMessage()));
     }
 
     private UserDetails createUserDetails(Member member) {
         String role = member.getMemberRole().toString();
-        log.info("사용자 권한: " + role);
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(role);
 
-        return new User( // UserDetails 객체 반환
+        return new User(
                 member.getEmail(),
                 member.getPassword(),
                 Collections.singletonList(grantedAuthority)
