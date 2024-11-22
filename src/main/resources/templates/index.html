@@ -4,243 +4,140 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <meta name="description" content="군포 시민을 위한 소통 플랫폼"/>
-    <meta name="author" content="Your Name"/>
+    <meta name="author" content="Gunpo Community"/>
     <title>Gunpo Community Platform</title>
-    <!-- Favicon-->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
-    <!-- Core theme CSS (includes Bootstrap)-->
-    <link href="css/styles.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
     <style>
-        body {
-            background-color: #f8f9fa;
+        html, body {
+            height: 100%;
+            margin: 0;
             font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
         }
 
         .hero {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #007bff, #5a54d2);
             color: white;
-            padding: 60px 20px;
             text-align: center;
+            padding: 80px 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 40px;
         }
 
-        .feature {
-            padding: 40px 20px;
-            text-align: center;
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+        }
+
+        .container {
+            flex: 1; /* 남은 공간을 차지하게 만듦 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .features {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .feature-card {
             background-color: white;
+            padding: 20px;
+            text-align: center;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
+            transition: transform 0.3s, box-shadow 0.3s;
+            width: 300px;
         }
 
-        .feature:hover {
+        .feature-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.2);
         }
 
-        .feature h2 {
-            margin-bottom: 20px;
-        }
-
-        .feature p {
-            color: #6c757d;
-        }
-
-        .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
-        }
-
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
+        .feature-card .icon {
+            font-size: 50px;
             color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 1rem;
+        }
+
+        footer {
+            background-color: #343a40;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        footer a {
+            color: #007bff;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-<div class="d-flex" id="wrapper">
-    <!-- Sidebar-->
-    <div class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
-        <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
-                지역화폐 가맹점 찾기</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
-        </div>
-    </div>
-    <!-- Page content wrapper-->
-    <div id="page-content-wrapper">
-        <!-- Top navigation-->
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <div class="container-fluid">
-                <button class="btn btn-primary" id="sidebarToggle">메뉴 열기/닫기</button>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
-                        </li>
-                        <li class="nav-item">
-                            <button id="mypageButton" class="btn btn-outline-secondary" style="display:none;">마이페이지
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Page content-->
-        <div class="container-fluid">
-            <!-- Hero Section -->
-            <div class="hero" id="heroSection">
-                <h1>환영합니다, 군포 시민 여러분!</h1>
-                <p>군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다</p>
-            </div>
+<!-- Hero Section -->
+<div class="hero">
+    <h1>환영합니다, 군포 시민 여러분!</h1>
+    <p>군포 시민을 위한 소통 플랫폼에서 새로운 소식을 만나보세요!</p>
+</div>
 
-            <!-- Features Section -->
-            <div class="row">
-                <div class="col-md-4 feature" id="communitySection" style="cursor: pointer;">
-                    <div class="icon">💬</div>
-                    <h2>소통의 장</h2>
-                    <p>시민들이 의견을 나누고 질문할 수 있는 커뮤니티 게시판.</p>
-                </div>
-                <div class="col-md-4 feature">
-                    <div class="icon">📅</div>
-                    <h2>이벤트 안내</h2>
-                    <p>지역의 다양한 이벤트 및 행사 정보를 제공합니다.</p>
-                </div>
-                <div class="col-md-4 feature">
-                    <div class="icon">📷</div>
-                    <h2>사진 갤러리</h2>
-                    <p>이벤트 및 활동의 순간들을 공유하는 공간입니다.</p>
-                </div>
-            </div>
-            <!-- Additional Section -->
-            <div class="row mt-4">
-                <div class="col-md-12 feature" id="newsSection" style="cursor: pointer;">
-                    <div class="icon">🌐</div>
-                    <h2>지속적인 정보 업데이트</h2>
-                    <p>군포의 최신 소식과 정보를 지속적으로 업데이트합니다.</p>
-                </div>
-            </div>
+<!-- Features Section -->
+<div class="container">
+    <div class="features">
+        <div class="feature-card" onclick="location.href='/board/list'">
+            <div class="icon">💬</div>
+            <h2>커뮤니티 게시판</h2>
+            <p>시민들이 의견을 나누고 함께 이야기하는 공간입니다.</p>
+        </div>
+        <div class="feature-card" onclick="location.href='/news'">
+            <div class="icon">🌐</div>
+            <h2>최신 뉴스</h2>
+            <p>군포의 다양한 최신 소식을 확인하세요.</p>
+        </div>
+        <div class="feature-card" onclick="location.href='/GyeonggiCurrencyStore'">
+            <div class="icon">💳</div>
+            <h2>경기 지역화폐</h2>
+            <p>가맹점을 쉽게 찾아보고 이용할 수 있습니다.</p>
         </div>
     </div>
 </div>
-<!-- Bootstrap core JS-->
+
+<!-- Footer -->
+<footer>
+    <p>© 2024 Gunpo Community. All Rights Reserved. | <a href="/privacy">개인정보 보호정책</a></p>
+</footer>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Core theme JS-->
-<script src="js/scripts.js"></script>
-<script>
-
-    // 로그아웃 확인 후 처리
-    function confirmLogout() {
-        if (confirm('로그아웃 하시겠습니까?')) {
-            logout();
-        }
-    }
-
-    // 로그아웃 처리 함수
-    function logout() {
-        fetch('/api/member/logout', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            credentials: 'include' // 쿠키 포함
-        })
-            .then(response => response.json()) // 서버 응답을 JSON으로 처리
-            .then(responseData => {
-                if (responseData.success) {
-                    // 성공적으로 로그아웃 처리
-                    console.log(responseData.message); // 로그아웃 성공 메시지 출력
-                    // 쿠키 삭제 (브라우저 레벨에서 삭제)
-                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                    window.location.href = '/'; // 메인 페이지로 리다이렉트
-                } else {
-                    // 서버에서 실패 메시지 처리
-                    alert(responseData.message || "로그아웃에 실패했습니다.");
-                    console.error("로그아웃 실패:", responseData.message);
-                }
-            })
-            .catch(error => {
-                // 네트워크 또는 서버 오류 처리
-                console.error('로그아웃 요청 중 오류 발생:', error);
-                alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            });
-    }
-
-    function checkAuth() {
-        fetch('/api/member/validateToken', {
-            method: 'GET',
-            credentials: 'include' // 쿠키 포함 요청
-        })
-            .then(response => response.json())
-            .then(responseData => {
-                const message = responseData.message; // 응답 메시지
-                const data = responseData.data; // 실제 데이터
-
-                const isAccessTokenValid = data.isAccessTokenValid; // 액세스 토큰 유효성
-                const isRefreshTokenValid = data.isRefreshTokenValid; // 리프레시 토큰 유효성
-                const newAccessToken = data.accessToken; // 갱신된 액세스 토큰 (옵션)
-
-                const authButton = document.getElementById('authButton');
-                const mypageButton = document.getElementById('mypageButton');
-
-                if (isAccessTokenValid) {
-                    // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
-                    authButton.innerText = '로그아웃';
-                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
-                    authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
-                    mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
-                    mypageButton.removeEventListener('click', () => {
-                    }); // 기존 이벤트 리스너 제거
-                    mypageButton.addEventListener('click', () => {
-                        window.location.href = '/mypage/profile'; // 마이페이지로 이동
-                    });
-                } else if (isRefreshTokenValid && newAccessToken) {
-                    // 리프레시 토큰으로 액세스 토큰 갱신된 경우
-                    console.log('새로운 액세스 토큰이 발급되었습니다.');
-                    checkAuth(); // 갱신된 상태로 다시 인증 상태 확인
-                } else {
-                    // 로그아웃 상태: 로그인 버튼으로 전환
-                    authButton.innerText = '로그인/회원가입';
-                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
-                    authButton.addEventListener('click', function () {
-                        window.location.href = '/login'; // 로그인 페이지로 이동
-                    });
-                    mypageButton.style.display = 'none'; // 마이페이지 버튼 숨기기
-                }
-            })
-            .catch(error => {
-                // 토큰 검증 중 오류 발생 시
-                console.error('로그인 상태 확인 중 오류 발생:', error);
-                alert('인증 상태 확인 중 문제가 발생했습니다.');
-            });
-    }
-
-    // 페이지 로드 시 인증 상태 확인
-    window.onload = function () {
-        checkAuth();
-    };
-
-    document.getElementById('communitySection').addEventListener('click', function () {
-        window.location.href = 'board/list'; // 클릭 시 /board/list로 이동
-    });
-
-    document.getElementById('newsSection').addEventListener('click', function () {
-        window.location.href = '/news';
-    });
-</script>
 </body>
 </html>
