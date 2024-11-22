@@ -16,39 +16,6 @@
             background-color: #f8f9fa;
         }
 
-        #wrapper {
-            display: flex;
-            height: 100vh;
-        }
-
-        #sidebar-wrapper {
-            width: 250px;
-            background: linear-gradient(135deg, #6c63ff, #c197ff);
-            color: white;
-        }
-
-        .sidebar-heading {
-            text-align: center;
-            font-weight: bold;
-            font-size: 1.5rem;
-            padding: 15px 0;
-            background: #5a54d2;
-        }
-
-        .list-group-item {
-            background-color: transparent;
-            color: white;
-        }
-
-        .list-group-item:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        #page-content-wrapper {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-        }
 
         .navbar {
             background-color: #ffffff;
@@ -87,35 +54,26 @@
         .btn-primary:hover {
             background: linear-gradient(135deg, #5a54d2, #a67bff);
         }
-
-        .custom-alert {
-            max-width: 500px; /* 메시지의 너비를 폼에 맞춤 */
-            margin: 10px auto; /* 화면 중앙 정렬 */
-            padding: 10px; /* 내부 여백을 적당히 설정 */
-            border-radius: 5px; /* 부드러운 모서리 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
-            font-size: 0.9rem; /* 글씨 크기를 살짝 작게 */
-        }
     </style>
 </head>
 <body>
 <div class="d-flex" id="wrapper">
     <!-- Sidebar-->
     <div class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading">Gunpo Community</div>
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
         <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action" href="#!">공지사항</a>
-            <a class="list-group-item list-group-item-action" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
-            <a class="list-group-item list-group-item-action" href="/board/list">커뮤니티 게시판</a>
-            <a class="list-group-item list-group-item-action" href="/smoking-area">흡연 구역</a>
-            <a class="list-group-item list-group-item-action" href="/news">뉴스</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="#!">공지사항</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
         </div>
     </div>
     <!-- Page content wrapper-->
     <div id="page-content-wrapper">
         <!-- Top navigation-->
-        <nav class="navbar navbar-expand-lg">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/">
                     <span class="icon">🏠</span>
@@ -125,28 +83,12 @@
         </nav>
         <!-- Page content-->
         <div class="container-fluid text-center">
-            <div th:if="${errorMessage}" class="alert alert-danger custom-alert text-center">
-                <p th:text="${errorMessage}" class="m-0"></p>
-            </div>
             <h1 class="mt-4">동네 인증</h1>
             <p>현재 위치를 인증하여 <strong>군포 커뮤니티</strong>를 이용하세요!</p>
             <button class="btn btn-primary mt-3" onclick="getLocation()">내 위치로 인증하기</button>
         </div>
     </div>
 </div>
-
-<footer class="bg-dark text-white text-center py-4">
-    <div class="container">
-        <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
-        <p>Contact us: <a href="mailto:support@gunpocommunity.kr" class="text-white">support@gunpocommunity.kr</a></p>
-        <p>
-            <a href="#!" class="text-white">Privacy Policy</a> |
-            <a href="#!" class="text-white">Terms of Service</a> |
-            <a href="#!" class="text-white">Contact Us</a>
-        </p>
-    </div>
-</footer>
-
 <!-- Bootstrap core JS-->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
