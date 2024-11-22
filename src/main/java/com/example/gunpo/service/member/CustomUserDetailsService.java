@@ -2,7 +2,6 @@ package com.example.gunpo.service.member;
 
 import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

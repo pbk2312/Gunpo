@@ -1,6 +1,5 @@
 package com.example.gunpo.service.redis;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
