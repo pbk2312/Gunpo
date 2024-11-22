@@ -1,17 +1,21 @@
 package com.example.gunpo.controller.view;
 
 
+import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.BoardDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.InvalidPostIdException;
+import com.example.gunpo.exception.location.NeighborhoodVerificationException;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.board.BoardService;
+import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.validator.member.AuthenticationValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +29,7 @@ public class BoardViewController {
 
     private final BoardService boardService;
     private final AuthenticationValidator authenticationValidator;
+    private final AuthenticationService authenticationService;
 
     @GetMapping("/new")
     public String boardCreatePost(
@@ -41,20 +46,33 @@ public class BoardViewController {
     public String boardList(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
+            @CookieValue(value = "accessToken", required = false) String accessToken,
             Model model) {
+        try {
+            // 사용자가 로그인된 상태인지 확인
+            Member member = authenticationService.getUserDetails(accessToken);
+            authenticationValidator.validateNeighborhoodVerification(member);
 
-        Page<BoardDto> boardPage = getBoardPage(page, size);
+            // 게시물 페이지 불러오기
+            Page<BoardDto> boardPage = getBoardPage(page, size);
 
-        logBoardRequest(page, size, boardPage);
+            logBoardRequest(page, size, boardPage);
 
-        checkFirstBoardDto(boardPage);
+            checkFirstBoardDto(boardPage);
 
-        // model에 페이지 정보와 게시물 목록 추가
-        model.addAttribute("boardPage", boardPage);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", boardPage.getTotalPages());
+            // model에 페이지 정보와 게시물 목록 추가
+            model.addAttribute("boardPage", boardPage);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", boardPage.getTotalPages());
 
-        return "board/list";
+            return "board/list";
+        } catch (UnauthorizedException e) {
+            // 사용자가 로그인하지 않은 경우 /login으로 리디렉션
+            return "redirect:/login";
+        } catch (NeighborhoodVerificationException e) {
+            // 동네 인증이 되지 않은 경우 /location으로 리디렉션
+            return "redirect:/neighborhoodVerification";
+        }
     }
 
     @GetMapping("/{id}")
