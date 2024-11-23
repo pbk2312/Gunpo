@@ -2,8 +2,8 @@ package com.example.gunpo.service.member;
 
 import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.dto.LoginDto;
-import com.example.gunpo.dto.TokenDto;
+import com.example.gunpo.dto.member.LoginDto;
+import com.example.gunpo.dto.member.TokenDto;
 import com.example.gunpo.exception.member.IncorrectPasswordException;
 import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.repository.MemberRepository;

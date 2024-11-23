@@ -1,4 +1,4 @@
-package com.example.gunpo.dto;
+package com.example.gunpo.dto.member;
 
 import com.example.gunpo.domain.Member;
 import jakarta.validation.constraints.NotBlank;

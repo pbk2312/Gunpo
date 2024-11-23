@@ -2,7 +2,7 @@ package com.example.gunpo.service.board;
 
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.dto.BoardDto;
+import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.service.redis.RedisViewCountService;

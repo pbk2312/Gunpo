@@ -1,6 +1,6 @@
 package com.example.gunpo.controller.restapi;
 
-import com.example.gunpo.dto.EmailDto;
+import com.example.gunpo.dto.member.EmailDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.service.email.EmailService;
 import jakarta.validation.Valid;

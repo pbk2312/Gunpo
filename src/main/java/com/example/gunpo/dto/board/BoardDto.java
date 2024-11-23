@@ -1,4 +1,4 @@
-package com.example.gunpo.dto;
+package com.example.gunpo.dto.board;
 
 import com.example.gunpo.domain.Category;
 import jakarta.persistence.EnumType;

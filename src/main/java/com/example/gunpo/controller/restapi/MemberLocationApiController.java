@@ -1,6 +1,6 @@
 package com.example.gunpo.controller.restapi;
 
-import com.example.gunpo.dto.LocationRequestDto;
+import com.example.gunpo.dto.functions.LocationRequestDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.service.functions.LocationService;
 import com.example.gunpo.service.member.MemberManagementService;

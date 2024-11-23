@@ -4,7 +4,7 @@ import com.example.gunpo.Factory.ImageProcessor;
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.BoardImage;
-import com.example.gunpo.dto.BoardDto;
+import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.validator.board.BoardValidator;

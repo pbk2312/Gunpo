@@ -1,4 +1,4 @@
-package com.example.gunpo.dto;
+package com.example.gunpo.dto.member;
 
 
 import lombok.*;

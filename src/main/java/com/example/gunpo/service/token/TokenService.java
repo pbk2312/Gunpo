@@ -1,7 +1,7 @@
 package com.example.gunpo.service.token;
 
 
-import com.example.gunpo.dto.TokenDto;
+import com.example.gunpo.dto.member.TokenDto;
 import com.example.gunpo.infrastructure.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

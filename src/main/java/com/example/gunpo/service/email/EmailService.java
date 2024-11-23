@@ -1,6 +1,6 @@
 package com.example.gunpo.service.email;
 
-import com.example.gunpo.dto.EmailDto;
+import com.example.gunpo.dto.member.EmailDto;
 import com.example.gunpo.infrastructure.EmailProvider;
 import com.example.gunpo.service.member.CertificationNumberGenerator;
 import com.example.gunpo.service.redis.RedisEmailCertificationService;

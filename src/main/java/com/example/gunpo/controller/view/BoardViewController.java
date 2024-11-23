@@ -1,21 +1,24 @@
 package com.example.gunpo.controller.view;
 
 
+import com.example.gunpo.domain.Comment;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.dto.BoardDto;
+import com.example.gunpo.dto.board.BoardDto;
+import com.example.gunpo.dto.board.CommentDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.InvalidPostIdException;
 import com.example.gunpo.exception.location.NeighborhoodVerificationException;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.board.BoardService;
+import com.example.gunpo.service.board.CommentService;
 import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.validator.member.AuthenticationValidator;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +34,7 @@ public class BoardViewController {
     private final BoardService boardService;
     private final AuthenticationValidator authenticationValidator;
     private final AuthenticationService authenticationService;
+    private final CommentService commentService;
 
     @GetMapping("/new")
     public String boardCreatePost(
@@ -83,13 +87,25 @@ public class BoardViewController {
     public String getBoardPost(@PathVariable Long id, Model model,
                                @CookieValue(value = "accessToken", required = false) String accessToken) {
         try {
+            // 게시물 정보 가져오기
             BoardDto boardDto = boardService.getPost(id, accessToken);
             model.addAttribute("board", boardDto);
+
+            List<Comment> comments = commentService.getComments(id);
+
+            // 댓글을 CommentDto 리스트로 변환
+            List<CommentDto> commentDtos = comments.stream()
+                    .map(CommentDto::from)
+                    .toList();
+            // 댓글을 모델에 추가
+            model.addAttribute("comments", commentDtos);
+
             return "board/detail";
         } catch (InvalidPostIdException | CannotFindBoardException e) {
             return "board/list";
         }
     }
+
 
     @GetMapping("/update/{id}")
     public String updateBoardPage(@PathVariable Long id, Model model,

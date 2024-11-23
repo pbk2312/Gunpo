@@ -3,7 +3,7 @@ package com.example.gunpo.service.member;
 import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.dto.MemberUpdateDto;
+import com.example.gunpo.dto.member.MemberUpdateDto;
 import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.validator.member.MemberRegistrationValidator;

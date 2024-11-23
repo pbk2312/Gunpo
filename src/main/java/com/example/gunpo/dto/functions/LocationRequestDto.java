@@ -1,4 +1,4 @@
-package com.example.gunpo.dto;
+package com.example.gunpo.dto.functions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

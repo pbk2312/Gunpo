@@ -1,13 +1,11 @@
 package com.example.gunpo.controller.restapi;
 
 
-import com.example.gunpo.dto.LoginDto;
+import com.example.gunpo.dto.member.LoginDto;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.dto.MemberUpdateDto;
+import com.example.gunpo.dto.member.MemberUpdateDto;
 import com.example.gunpo.dto.ResponseDto;
-import com.example.gunpo.dto.TokenDto;
-import com.example.gunpo.exception.member.MemberNotFoundException;
-import com.example.gunpo.exception.member.UnauthorizedException;
+import com.example.gunpo.dto.member.TokenDto;
 import com.example.gunpo.service.token.TokenValidationResult;
 import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.service.member.MemberManagementService;
@@ -17,7 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

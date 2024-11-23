@@ -2,7 +2,7 @@ package com.example.gunpo.validator.board;
 
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.dto.BoardDto;
+import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.exception.board.BoardValidationException;
 import com.example.gunpo.exception.board.InvalidPostIdException;
 import com.example.gunpo.exception.member.UnauthorizedException;

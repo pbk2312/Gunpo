@@ -1,7 +1,7 @@
 package com.example.gunpo.domain;
 
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
-import com.example.gunpo.dto.BoardDto;
+import com.example.gunpo.dto.board.BoardDto;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;

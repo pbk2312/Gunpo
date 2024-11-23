@@ -2,7 +2,7 @@ package com.example.gunpo.infrastructure;
 
 import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.constants.errorMessage.TokenErrorMessage;
-import com.example.gunpo.dto.TokenDto;
+import com.example.gunpo.dto.member.TokenDto;
 import com.example.gunpo.exception.member.InvalidTokenException;
 import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.service.member.CustomUserDetailsService;
