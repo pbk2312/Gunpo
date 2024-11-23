@@ -41,14 +41,14 @@ public class BoardUpdateService {
         // 추가할 새 이미지 처리
         List<BoardImage> updatedImages = imageProcessor.processNewImages(newImages, existingBoard);
 
-        // 게시글 업데이트
-        existingBoard.updateBoard(
+        Board updatedBoard = existingBoard.updateBoard(
                 boardDto.getTitle(),
                 boardDto.getContent(),
                 boardDto.getCategory(),
                 updatedImages
         );
 
+        boardRepository.save(updatedBoard);
     }
 
 }
