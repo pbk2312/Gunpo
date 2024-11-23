@@ -9,6 +9,7 @@ import com.example.gunpo.exception.board.CommentNotFoundException;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.repository.CommentRepository;
 import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.validator.board.CommentValidator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final BoardRepository boardRepository;
     private final AuthenticationService authenticationService;
+    private final CommentValidator commentValidator;
 
     @Transactional
     public Comment addComment(Long boardId, String accessToken, String content) {
@@ -37,14 +39,16 @@ public class CommentService {
     }
 
     @Transactional
-    public void updateComment(Long commentId, String content) {
+    public void updateComment(Long commentId, String accessToken,String content) {
         Comment comment = getComment(commentId);
+        commentValidator.verifyAuthor(accessToken,comment);
         comment.updateContent(content);
     }
 
     @Transactional
-    public void deleteComment(Long commentId) {
+    public void deleteComment(Long commentId,String accessToken) {
         Comment comment = getComment(commentId);
+        commentValidator.verifyAuthor(accessToken,comment);
         commentRepository.delete(comment);
     }
 
@@ -60,6 +64,5 @@ public class CommentService {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(BoardErrorMessage.COMMENT_NOT_FOUND.getMessage()));
     }
-
 
 }
