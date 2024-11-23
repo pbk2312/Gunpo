@@ -55,10 +55,4 @@ public class BoardDto {
         this.category = category;
     }
 
-    public String getFormattedCreatedAt() {
-        return this.createdAt != null ? this.createdAt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) : "";
-    }
-
-
-
 }
