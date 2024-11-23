@@ -2,11 +2,9 @@ package com.example.gunpo.service.member;
 
 import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
-import com.example.gunpo.domain.MemberRole;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.dto.MemberUpdateDto;
 import com.example.gunpo.exception.member.MemberNotFoundException;
-import com.example.gunpo.mapper.MemberMapper;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.validator.member.MemberRegistrationValidator;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +24,9 @@ public class MemberManagementService {
 
     public void save(MemberDto memberDto) {
         memberRegistrationValidator.validateNewMember(memberDto);
-        Member member = createMember(memberDto);
+
+        // 엔티티의 팩토리 메서드를 사용하여 Member 생성
+        Member member = Member.create(memberDto, encodePassword(memberDto.getPassword()));
         memberRepository.save(member);
     }
 
@@ -36,17 +36,23 @@ public class MemberManagementService {
     }
 
     public void update(MemberUpdateDto updateDto) {
+        // 엔티티의 업데이트 메서드 사용
         Member existingMember = getExistingMember(updateDto);
-        existingMember.updateMemberFields(updateDto.getNickname(), updateDto.getDateOfBirth());
+        Member updatedMember = existingMember.updateProfile(
+                updateDto.getNickname(),
+                updateDto.getDateOfBirth()
+        );
+        memberRepository.save(updatedMember);
+
+        log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
     }
 
     public void NeighborhoodVerification(String accessToken) {
+        // 상태 변경을 엔티티에 위임
         Member member = authenticationService.getUserDetails(accessToken);
-        member.setNeighborhoodVerification(true);
-        memberRepository.save(member);
+        Member updatedMember = member.verifyNeighborhood();
+        memberRepository.save(updatedMember);
     }
-
-
 
     private Member getExistingMember(MemberUpdateDto updateDto) {
         return memberRepository.findById(updateDto.getId())
@@ -54,16 +60,8 @@ public class MemberManagementService {
                         MemberErrorMessage.MEMBER_NOT_FOUND_ID.getMessage()));
     }
 
-    private Member createMember(MemberDto memberDto) {
-        Member member = MemberMapper.INSTANCE.toEntity(memberDto);
-        encodePassword(member);
-        member.setMemberRole(MemberRole.MEMBER);
-        member.setNeighborhoodVerification(false);
-        return member;
-    }
-
-    private void encodePassword(Member member) {
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
+    private String encodePassword(String password) {
+        return passwordEncoder.encode(password);
     }
 
 }
