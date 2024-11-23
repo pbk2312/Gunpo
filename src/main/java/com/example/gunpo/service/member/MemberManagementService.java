@@ -36,8 +36,8 @@ public class MemberManagementService {
     }
 
     public void update(MemberUpdateDto updateDto) {
-        Member updatedMember = findAndUpdateMemberFields(updateDto);
-        log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
+        Member existingMember = getExistingMember(updateDto);
+        existingMember.updateMemberFields(updateDto.getNickname(), updateDto.getDateOfBirth());
     }
 
     public void NeighborhoodVerification(String accessToken) {
@@ -47,12 +47,6 @@ public class MemberManagementService {
     }
 
 
-    private Member findAndUpdateMemberFields(MemberUpdateDto updateDto) {
-        Member existingMember = getExistingMember(updateDto);
-        existingMember.setNickname(updateDto.getNickname());
-        existingMember.setDateOfBirth(updateDto.getDateOfBirth());
-        return memberRepository.save(existingMember);
-    }
 
     private Member getExistingMember(MemberUpdateDto updateDto) {
         return memberRepository.findById(updateDto.getId())

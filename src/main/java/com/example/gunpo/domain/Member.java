@@ -33,4 +33,14 @@ public class Member {
     @OneToMany(mappedBy = "author")
     private List<Board> boards = new ArrayList<>();
 
+
+    public void updateMemberFields(String nickname, LocalDate dateOfBirth) {
+        if (nickname != null && !nickname.isBlank()) {
+            this.nickname = nickname;
+        }
+        if (dateOfBirth != null) {
+            this.dateOfBirth = dateOfBirth;
+        }
+    }
+
 }
