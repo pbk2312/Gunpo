@@ -9,6 +9,7 @@ import com.example.gunpo.exception.board.CommentNotFoundException;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.repository.CommentRepository;
 import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.validator.board.CommentValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,6 +37,9 @@ class CommentServiceTest {
     @Mock
     private AuthenticationService authenticationService;
 
+
+    @Mock
+    private CommentValidator commentValidator;
     private Member mockMember;
     private Board mockBoard;
 
@@ -89,15 +93,18 @@ class CommentServiceTest {
         // Given
         Long commentId = 1L;
         String updatedContent = "Updated Comment";
+        String accessToken = "validAccessToken";
         Comment mockComment = Comment.builder()
                 .id(commentId)
                 .content("Old Comment")
                 .author(mockMember)
                 .build();
+
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(mockComment));
+        when(authenticationService.getUserDetails(accessToken)).thenReturn(mockMember);
 
         // When
-        commentService.updateComment(commentId, updatedContent);
+        commentService.updateComment(commentId, accessToken, updatedContent);
 
         // Then
         assertThat(mockComment.getContent()).isEqualTo(updatedContent);
@@ -109,11 +116,12 @@ class CommentServiceTest {
     void updateComment_commentNotFound_throwsCommentNotFoundException() {
         // Given
         Long invalidCommentId = 999L;
+        String accessToken = "validAccessToken";
+
         when(commentRepository.findById(invalidCommentId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThatThrownBy(() ->
-                commentService.updateComment(invalidCommentId, "Updated Content"))
+        assertThatThrownBy(() -> commentService.updateComment(invalidCommentId, accessToken, "Updated Content"))
                 .isInstanceOf(CommentNotFoundException.class)
                 .hasMessage(BoardErrorMessage.COMMENT_NOT_FOUND.getMessage());
         verify(commentRepository, never()).save(any(Comment.class));
@@ -124,11 +132,17 @@ class CommentServiceTest {
     void deleteComment_success() {
         // Given
         Long commentId = 1L;
-        Comment mockComment = Comment.builder().id(commentId).author(mockMember).build();
+        String accessToken = "validAccessToken";
+        Comment mockComment = Comment.builder()
+                .id(commentId)
+                .author(mockMember)
+                .build();
+
         when(commentRepository.findById(commentId)).thenReturn(Optional.of(mockComment));
+        when(authenticationService.getUserDetails(accessToken)).thenReturn(mockMember);
 
         // When
-        commentService.deleteComment(commentId);
+        commentService.deleteComment(commentId, accessToken);
 
         // Then
         verify(commentRepository, times(1)).delete(mockComment);
@@ -139,11 +153,12 @@ class CommentServiceTest {
     void deleteComment_commentNotFound_throwsCommentNotFoundException() {
         // Given
         Long invalidCommentId = 999L;
+        String accessToken = "validAccessToken";
+
         when(commentRepository.findById(invalidCommentId)).thenReturn(Optional.empty());
 
         // When & Then
-        assertThatThrownBy(() ->
-                commentService.deleteComment(invalidCommentId))
+        assertThatThrownBy(() -> commentService.deleteComment(invalidCommentId, accessToken))
                 .isInstanceOf(CommentNotFoundException.class)
                 .hasMessage(BoardErrorMessage.COMMENT_NOT_FOUND.getMessage());
         verify(commentRepository, never()).delete(any(Comment.class));
