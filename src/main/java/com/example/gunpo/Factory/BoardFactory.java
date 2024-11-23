@@ -3,6 +3,7 @@ package com.example.gunpo.Factory;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.BoardImage;
 import com.example.gunpo.domain.Category;
+import com.example.gunpo.domain.Comment;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.BoardDto;
 import java.time.LocalDateTime;
@@ -32,6 +33,16 @@ public class BoardFactory {
                 .author(existingBoard.getAuthor())
                 .category(boardDto.getCategory())
                 .images(updatedImages)
+                .build();
+    }
+
+    public static Comment createComment(Board board, Member member, String content) {
+        return Comment.builder()
+                .board(board)
+                .author(member)
+                .content(content)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
                 .build();
     }
 

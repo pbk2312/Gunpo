@@ -1,6 +1,5 @@
 package com.example.gunpo.service.board;
 
-import com.example.gunpo.Factory.BoardFactory;
 import com.example.gunpo.Factory.ImageProcessor;
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
 import com.example.gunpo.domain.Board;
@@ -29,16 +28,26 @@ public class BoardUpdateService {
     public void updatePost(BoardDto boardDto, List<MultipartFile> newImages, List<String> deleteImages,
                            String accessToken) {
 
+        // 기존 게시글 조회
         Board existingBoard = boardRepository.findById(boardDto.getId())
                 .orElseThrow(() -> new CannotFindBoardException(BoardErrorMessage.POST_NOT_FOUND.getMessage()));
 
+        // 작성자 검증
         boardValidator.verifyAuthor(existingBoard, accessToken);
 
+        // 삭제할 이미지 처리
         imageProcessor.processDeletedImages(deleteImages, existingBoard);
+
+        // 추가할 새 이미지 처리
         List<BoardImage> updatedImages = imageProcessor.processNewImages(newImages, existingBoard);
 
-        Board updatedBoard = BoardFactory.createUpdatedBoard(existingBoard, boardDto, updatedImages);
-        boardRepository.save(updatedBoard);
+        // 게시글 업데이트
+        existingBoard.updateBoard(
+                boardDto.getTitle(),
+                boardDto.getContent(),
+                boardDto.getCategory(),
+                updatedImages
+        );
 
     }
 
