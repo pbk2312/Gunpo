@@ -41,6 +41,8 @@ public class Board {
 
     private int viewCount;
 
+    private int likeCount;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -71,6 +73,7 @@ public class Board {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .viewCount(0)
+                .likeCount(0)
                 .category(Category.valueOf(boardDto.getCategory().name()))
                 .build();
     }
