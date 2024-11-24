@@ -9,7 +9,9 @@ public enum BoardErrorMessage {
     INVALID_PAGEABLE("페이지 번호와 크기는 양수여야 합니다."),
     IMAGE_NOT_NULL("이미지 객체는 null일 수 없습니다."),
     COMMENT_NOT_NULL("댓글 객체는 null일 수 없습니다."),
-    COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다.");
+    COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다."),
+    SYNC_LIKE_DATA_ERROR("Redis 좋아요 데이터를 DB로 동기화하는 중 오류 발생."),
+    SYNC_VIEWCOUNT_DATA_ERROR("Redis 좋아요 데이터를 DB로 동기화하는 중 오류 발생.");
 
 
     private final String message;
