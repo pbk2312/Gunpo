@@ -1,34 +1,40 @@
 package com.example.gunpo.service.board;
 
-import com.example.gunpo.constants.RedisConstants;
 import com.example.gunpo.domain.Member;
+import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.service.redis.RedisBoardLikeService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
 @Log4j2
 public class BoardLikeService {
 
-    private final StringRedisTemplate redisTemplate;
+    private final RedisBoardLikeService redisService;
     private final AuthenticationService authService;
+    private final BoardRepository boardRepository;
 
     public int toggleLike(Long boardId, String accessToken, boolean isLike) {
         Member member = authService.getUserDetails(accessToken);
-        String userKey = generateUserKey(boardId, member.getId());
 
-        boolean isActionSuccessful = isLike ? addLike(userKey) : removeLike(userKey);
+        String userKey = redisService.generateUserKey(boardId, member.getId());
+        String boardKey = redisService.generateBoardKey(boardId);
+
+        boolean isActionSuccessful = isLike
+                ? redisService.addLike(userKey)
+                : redisService.removeLike(userKey);
 
         if (isActionSuccessful) {
-            updateLikeCount(boardId, isLike);
+            if (isLike) {
+                redisService.incrementLikeCount(boardKey);
+            } else {
+                redisService.decrementLikeCount(boardKey);
+            }
             logLikeAction(member.getId(), boardId, isLike);
         }
 
@@ -36,59 +42,39 @@ public class BoardLikeService {
     }
 
     public int getLikeCount(Long boardId) {
-        String redisKey = generateBoardKey(boardId);
-        String likeCountStr = redisTemplate.opsForValue().get(redisKey);
+        String redisKey = redisService.generateBoardKey(boardId);
 
-        return parseLikeCount(likeCountStr, boardId);
+        // Redis에서 좋아요 수 조회
+        String likeCountStr = redisService.getLikeCount(redisKey);
+        if (likeCountStr != null) {
+            log.info("Redis에서 좋아요 수 가져옴: {} -> {}", redisKey, likeCountStr);
+            return parseLikeCount(likeCountStr, boardId);
+        }
+
+        // Redis에 데이터가 없으면 DB에서 조회
+        log.info("Redis에 좋아요 수 없음. DB에서 조회: boardId={}", boardId);
+        int dbLikeCount = fetchLikeCountFromDB(boardId);
+
+        // DB에서 조회한 좋아요 수를 Redis에 저장
+        redisService.setLikeCount(redisKey, dbLikeCount);
+        log.info("DB의 좋아요 수를 Redis에 저장: {} -> {}", redisKey, dbLikeCount);
+
+        return dbLikeCount;
     }
 
-    public Map<Long, Integer> getLikeCounts(List<Long> boardIds) {
-        List<String> redisKeys = boardIds.stream()
-                .map(this::generateBoardKey)
-                .toList();
+    private int fetchLikeCountFromDB(Long boardId) {
+        // DB에서 좋아요 수 조회
+        Optional<Integer> likeCount = boardRepository.findLikeCountByBoardId(boardId);
 
-        List<String> likeCountStrings = redisTemplate.opsForValue().multiGet(redisKeys);
-
-        return boardIds.stream()
-                .collect(Collectors.toMap(
-                        id -> id,
-                        id -> parseLikeCount(getLikeCountString(likeCountStrings, boardIds.indexOf(id)), id)
-                ));
+        // 값이 있으면 반환, 없으면 0을 반환
+        return likeCount.orElse(0); // 값이 없으면 기본값 0 반환
     }
+
 
     public boolean isUserLiked(Long boardId, String accessToken) {
         Member member = authService.getUserDetails(accessToken);
-        String userKey = generateUserKey(boardId, member.getId());
-        return Boolean.TRUE.equals(redisTemplate.hasKey(userKey));
-    }
-
-    private String generateUserKey(Long boardId, Long userId) {
-        return RedisConstants.LIKE_PREFIX + boardId + ":user:" + userId;
-    }
-
-    private String generateBoardKey(Long boardId) {
-        return RedisConstants.LIKE_PREFIX + boardId;
-    }
-
-    private boolean addLike(String userKey) {
-        return Boolean.TRUE.equals(redisTemplate.opsForValue()
-                .setIfAbsent(userKey, "liked", RedisConstants.LIKE_EXPIRE_TIME, TimeUnit.SECONDS));
-    }
-
-    private boolean removeLike(String userKey) {
-        return Boolean.TRUE.equals(redisTemplate.delete(userKey));
-    }
-
-    private void updateLikeCount(Long boardId, boolean isIncrement) {
-        String redisKey = generateBoardKey(boardId);
-        if (isIncrement) {
-            redisTemplate.opsForValue().increment(redisKey);
-        } else {
-            Long updatedCount = redisTemplate.opsForValue().decrement(redisKey);
-            if (updatedCount != null && updatedCount < 0) {
-                redisTemplate.opsForValue().set(redisKey, "0");
-            }
-        }
+        String userKey = redisService.generateUserKey(boardId, member.getId());
+        return redisService.hasKey(userKey);
     }
 
     private void logLikeAction(Long userId, Long boardId, boolean isLike) {
@@ -101,17 +87,12 @@ public class BoardLikeService {
             log.info("게시물 {}의 좋아요 수 데이터가 Redis에 없습니다. 초기값 0 반환.", boardId);
             return 0;
         }
-
         try {
             return Integer.parseInt(likeCountStr);
         } catch (NumberFormatException e) {
             log.error("게시물 {}의 좋아요 수를 파싱하는 데 실패했습니다. 기본값 0 반환.", boardId);
             return 0;
         }
-    }
-
-    private String getLikeCountString(List<String> likeCountStrings, int index) {
-        return (likeCountStrings != null && index >= 0) ? likeCountStrings.get(index) : "0";
     }
 
 }
