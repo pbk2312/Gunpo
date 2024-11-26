@@ -2,11 +2,13 @@ package com.example.gunpo.service.board;
 
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
 import com.example.gunpo.domain.Board;
+import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.InvalidPageableException;
 import com.example.gunpo.mapper.BoardMapper;
 import com.example.gunpo.repository.BoardRepository;
+import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.service.redis.RedisViewCountService;
 import com.example.gunpo.validator.board.BoardValidator;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,6 +33,7 @@ public class BoardService {
     private final BoardMapper boardMapper;
     private final RedisViewCountService redisViewCountService;
     private final BoardValidator boardValidator;
+    private final AuthenticationService authenticationService;
 
     @Transactional(readOnly = true)
     public Page<BoardDto> getPosts(Pageable pageable) {
@@ -57,8 +59,9 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardDto getPost(Long postId, String accessToken) {
         Board board = getBoard(postId);
+        Member member = authenticationService.getUserDetails(accessToken);
 
-        redisViewCountService.incrementViewCountIfNotExists(postId, accessToken);
+        redisViewCountService.incrementViewCountIfNotExists(postId, member.getId());
 
         BoardDto boardDto = boardMapper.toDto(board);
         setViewCount(boardDto, board.getId());
@@ -84,7 +87,7 @@ public class BoardService {
     }
 
     private void setViewCount(BoardDto boardDto, Long boardId) {
-        int viewCount = redisViewCountService.getViewCountFromRedis(boardId);
+        int viewCount = redisViewCountService.getViewCount(boardId);
         boardDto.setViewCount(viewCount);
     }
 
@@ -92,8 +95,7 @@ public class BoardService {
     private void setViewCounts(List<BoardDto> boardDtos) {
         List<Long> boardIds = boardDtos.stream()
                 .map(BoardDto::getId)
-                .collect(Collectors.toList());
-
+                .toList();
         Map<Long, Integer> viewCounts = redisViewCountService.getViewCounts(boardIds);
 
         boardDtos.forEach(dto -> dto.setViewCount(viewCounts.getOrDefault(dto.getId(), 0)));
