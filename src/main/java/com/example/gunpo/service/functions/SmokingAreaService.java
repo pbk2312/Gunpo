@@ -142,7 +142,7 @@ public class SmokingAreaService {
     }
 
     public List<SmokingAreaDto> getAllSmokingZones() {
-        return redisSmokingAreaService.getAllSmokingZonesFromRedis();
+        return redisSmokingAreaService.getAllSmokingZones();
     }
 
 }
