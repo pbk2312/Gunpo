@@ -115,39 +115,12 @@
 
     // Initialize Kakao Map
     async function initMap() {
-        const defaultLocation = { lat: 37.3625, lng: 126.9357 }; // 기본 군포시 중심 좌표
-        let userLocation = defaultLocation; // 초기 위치: 군포시
-
-        // 현재 위치 확인
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                position => {
-                    userLocation = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    };
-                    loadMap(userLocation); // 지도 로딩
-                },
-                error => {
-                    console.error('Geolocation error:', error);
-                    alert('현재 위치를 가져올 수 없어 기본 위치로 설정됩니다.');
-                    loadMap(userLocation); // 기본 위치로 지도 로딩
-                }
-            );
-        } else {
-            alert('Geolocation을 지원하지 않아 기본 위치로 설정됩니다.');
-            loadMap(userLocation); // 기본 위치로 지도 로딩
-        }
-    }
-
-    // Kakao Map 생성 및 마커 추가 함수
-    async function loadMap(centerLocation) {
         const stores = await fetchCurrencyStores();
 
         const mapContainer = document.getElementById('map'); // 지도를 표시할 div
         const mapOption = {
-            center: new kakao.maps.LatLng(centerLocation.lat, centerLocation.lng), // 초기 위치 설정
-            level: 3 // 지도 확대 레벨
+            center: new kakao.maps.LatLng(37.3625, 126.9357), // 군포시 중심
+            level: 3 // 지도 확대 레벨 // 작을 수록 더 확대
         };
         map = new kakao.maps.Map(mapContainer, mapOption);
 
@@ -181,11 +154,12 @@
                     infoWindow.close();
                 });
 
-                markers.push({ marker, store }); // 마커와 상호명 매핑
+                markers.push({marker, store}); // 마커와 상호명 매핑
             }
         });
     }
 
+    // Search for a store and move the map
     // Search for stores and display them on the map
     async function searchStore(event) {
         event.preventDefault(); // 폼 기본 동작 방지
