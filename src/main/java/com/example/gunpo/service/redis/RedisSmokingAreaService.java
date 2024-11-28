@@ -66,10 +66,15 @@ public class RedisSmokingAreaService {
         return smokingZoneList;
     }
 
-    // Redis에 흡연구역 정보 저장
     private void saveSmokingAreaToRedis(SmokingArea smokingArea) {
         String redisKey = RedisConstants.REDIS_KEY_PREFIX + smokingArea.getBoothName();
-        saveToDB(smokingArea);
+
+        // boothName으로 DB 존재 여부 확인
+        if (!smokingAreaRepository.existsByBoothName(smokingArea.getBoothName())) {
+            saveToDB(smokingArea); // DB에 데이터가 없으면 저장
+        }
+
+        // Redis에 데이터가 없는 경우만 저장
         if (Boolean.FALSE.equals(redisTemplate.hasKey(redisKey))) {
             redisTemplate.opsForValue().set(redisKey, smokingArea);
         }
