@@ -39,6 +39,10 @@ public class Member {
     @Builder.Default
     private List<Board> boards = new ArrayList<>();
 
+    @OneToMany(mappedBy = "member") // 1:N 관계 추가
+    @Builder.Default
+    private List<Inquiry> inquiries = new ArrayList<>();
+
     public Member verifyNeighborhood() {
         return this.toBuilder()
                 .neighborhoodVerification(true)
