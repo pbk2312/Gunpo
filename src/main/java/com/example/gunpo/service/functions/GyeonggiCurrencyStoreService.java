@@ -53,13 +53,16 @@ public class GyeonggiCurrencyStoreService {
 
         while (true) {
             List<GyeonggiCurrencyStoreDto> merchants = fetchMerchantsFromApi(page);
-            if (merchants.isEmpty()) {
-                log.info("데이터 수집 종료.");
+
+            if (merchants.isEmpty()) { // 빈 데이터 확인
+                log.info("더 이상 가져올 데이터가 없습니다. 데이터 수집을 종료합니다.");
                 break;
             }
+
             saveMerchantsToRedis(merchants, page);
             page++;
         }
+        log.info("모든 데이터를 성공적으로 Redis에 저장했습니다.");
     }
 
     public List<GyeonggiCurrencyStoreDto> getAllMerchants() {
@@ -107,12 +110,14 @@ public class GyeonggiCurrencyStoreService {
 
     private List<GyeonggiCurrencyStoreDto> parseResponseBody(String responseBody) {
         if (isEmptyResponse(responseBody)) {
-            throw new ApiResponseParsingException(ApiErrorMessage.EMPTY_RESPONSE.getMessage());
+            log.warn("응답이 비어 있습니다.");
+            return Collections.emptyList(); // 빈 리스트 반환
         }
 
         Map<String, Object> responseMap = parseJsonToMap(responseBody);
         if (responseMap == null || isNoDataResponse(responseMap)) {
-            throw new ApiResponseParsingException(ApiErrorMessage.NO_DATA_RESPONSE.getMessage());
+            log.warn("API에서 데이터가 없습니다.");
+            return Collections.emptyList(); // 빈 리스트 반환
         }
 
         return extractItemsFromResponse(responseMap);
@@ -137,11 +142,11 @@ public class GyeonggiCurrencyStoreService {
 
     private boolean isNoDataResponse(Map<String, Object> responseMap) {
         Map<String, Object> result = (Map<String, Object>) responseMap.get("RESULT");
-        if (result != null && "INFO-200".equals(result.get("CODE"))) {
-            log.warn("API에서 해당하는 데이터가 없습니다: {}", result.get("MESSAGE"));
-            return true;
+        if (result != null && "INFO-200".equals(result.get("CODE"))) { // INFO-200: 데이터 없음
+            log.warn("API에서 데이터 없음: {}", result.get("MESSAGE"));
+            return true; // 데이터 없음
         }
-        return false;
+        return false; // 데이터 있음
     }
 
     private List<GyeonggiCurrencyStoreDto> extractItemsFromResponse(Map<String, Object> responseMap) {
