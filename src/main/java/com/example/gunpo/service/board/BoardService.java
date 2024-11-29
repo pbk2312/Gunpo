@@ -97,6 +97,15 @@ public class BoardService {
                 .toList();
     }
 
+    public List<BoardDto> getPostListByAuthorName(String nickName) {
+        Member member = authenticationService.getMemberByNickname(nickName);
+        List<Board> boardByAuthor = boardRepository.getBoardByAuthor(member);
+
+        return boardByAuthor.stream()
+                .map(boardMapper::toDto)
+                .toList();
+    }
+
 
     private Board getBoard(Long postId) {
         boardValidator.validatePostId(postId);
