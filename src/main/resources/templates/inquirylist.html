@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content="군포 시민을 위한 소통 플랫폼"/>
+    <meta name="author" content="Your Name"/>
+    <title>문의 내역 - Gunpo Community Platform</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+    <!-- Core theme CSS (includes Bootstrap) -->
+    <link href="css/styles.css" rel="stylesheet"/>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .inquiry-list-container {
+            max-width: 800px;
+            margin: auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #343a40;
+        }
+
+        .btn-inquiry {
+            display: block;
+            margin: 0 auto 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 16px;
+            text-decoration: none;
+        }
+
+        .btn-inquiry:hover {
+            background-color: #0056b3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            color: #343a40;
+        }
+
+        .empty-message {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 18px;
+            color: #666;
+        }
+
+        /* 홈 버튼 스타일 */
+        .navbar-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #6a11cb;
+            text-decoration: none;
+        }
+
+        .navbar-brand .icon {
+            font-size: 2rem;
+            margin-right: 10px;
+        }
+
+        .navbar-brand .text {
+            font-size: 1rem;
+            color: #6c757d;
+        }
+
+        .navbar-brand:hover .text {
+            color: #343a40;
+        }
+    </style>
+</head>
+<body>
+<div class="d-flex" id="wrapper">
+    <!-- Sidebar -->
+    <aside class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
+        </div>
+    </aside>
+    <!-- Page content wrapper -->
+    <div id="page-content-wrapper">
+        <!-- Top navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text">홈으로</span>
+                </a>
+            </div>
+        </nav>
+        <!-- Main content -->
+        <main class="container-fluid">
+            <div class="inquiry-list-container mt-5">
+                <h1>문의 내역</h1>
+                <!-- 문의하기 버튼 -->
+                <a href="/contact" class="btn-inquiry">문의하기</a>
+
+                <!-- 문의 내역이 비어있으면 메시지를 표시 -->
+                <div th:if="${inquiryDtoList.isEmpty()}" class="empty-message">
+                    문의 내역이 없습니다.
+                </div>
+
+                <!-- 문의 내역이 있을 경우 테이블로 표시 -->
+                <table th:if="${not inquiryDtoList.isEmpty()}">
+                    <thead>
+                    <tr>
+                        <th>번호</th>
+                        <th>제목</th>
+                        <th>내용</th>
+                        <th>카테고리</th>
+                        <th>작성일</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="inquiry, iterStat : ${inquiryDtoList}">
+                        <td th:text="${iterStat.index + 1}"></td> <!-- 순번 -->
+                        <td th:text="${inquiry.title}"></td> <!-- 제목 -->
+                        <td th:text="${inquiry.message}"></td> <!-- 내용 -->
+                        <td th:text="${inquiry.inquiryCategory}"></td> <!-- 카테고리 -->
+                        <td th:text="${#temporals.format(inquiry.createdAt, 'yyyy-MM-dd')}"></td> <!-- 작성일 -->
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+</div>
+<footer class="bg-dark text-white text-center py-4">
+    <div class="container">
+        <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:support@gunpocommunity.kr" class="text-white">support@gunpocommunity.kr</a></p>
+        <p>
+            <a href="#!" class="text-white">Privacy Policy</a> |
+            <a href="#!" class="text-white">Terms of Service</a> |
+            <a href="#!" class="text-white">Contact Us</a>
+        </p>
+    </div>
+</footer>
+</body>
+</html>
