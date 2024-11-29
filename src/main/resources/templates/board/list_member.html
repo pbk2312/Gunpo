@@ -56,27 +56,29 @@
         <!-- 게시물 목록 -->
         <div class="container mt-4">
             <div class="d-flex justify-content-between align-items-center">
-                <h2>회원 작성 게시글 목록</h2>
+                <!-- 닉네임이 있을 경우, 닉네임을 표시하고 없으면 '내가 작성한 게시물'이라고 표시 -->
+                <h2 th:text="${nickname != null ? nickname + ' 님이 작성한 게시물' : '내가 작성한 게시물'}"></h2>
             </div>
+
 
             <table class="table table-hover mt-3">
                 <thead>
                 <tr>
-                    <th>카테고리</th>
-                    <th>제목</th>
                     <th>작성자</th>
+                    <th>제목</th>
+                    <th>카테고리</th>
                     <th>작성일</th>
                 </tr>
                 </thead>
                 <tbody>
                 <!-- 게시글 리스트 -->
                 <tr th:each="board : ${boardList}">
-                    <td th:text="${board.category}">카테고리</td>
+                    <td th:text="${board.nickname}">작성자</td>
                     <td>
                         <a href="javascript:void(0);" th:text="${board.title}"
                            th:onclick="'checkLoginAndView(' + ${board.id} + ')'">게시물 제목</a>
                     </td>
-                    <td th:text="${board.nickname}">작성자</td>
+                    <td th:text="${board.category}">카테고리</td>
                     <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
                 </tr>
                 </tbody>
