@@ -122,6 +122,16 @@ public class BoardViewController {
         }
     }
 
+    @GetMapping("/memberPost")
+    public String memberPostListPage(@CookieValue(value = "accessToken", required = false) String accessToken,
+                                     Model model) {
+
+        List<BoardDto> listByMember = boardService.getPostListByMember(accessToken);
+        model.addAttribute("boardList",listByMember);
+        return "board/list_member";
+    }
+
+
     private Page<BoardDto> getBoardPage(int page, int size) {
         PageRequest pageable = PageRequest.of(page, size);
         return boardService.getPosts(pageable);
