@@ -59,7 +59,7 @@ public class BoardService {
     @Transactional(readOnly = true)
     public BoardDto getPost(Long postId, String accessToken) {
         Board board = getBoard(postId);
-        Member member = authenticationService.getUserDetails(accessToken);
+        Member member = getMember(accessToken);
 
         redisViewCountService.incrementViewCountIfNotExists(postId, member.getId());
 
@@ -67,6 +67,10 @@ public class BoardService {
         setViewCount(boardDto, board.getId());
 
         return boardDto;
+    }
+
+    private Member getMember(String accessToken) {
+        return authenticationService.getUserDetails(accessToken);
     }
 
     @Transactional
@@ -78,6 +82,19 @@ public class BoardService {
 
         boardRepository.delete(board);
         log.info("게시물이 성공적으로 삭제되었습니다. ID: {}", postId);
+    }
+
+    @Transactional(readOnly = true)
+    public List<BoardDto> getPostListByMember(String accessToken) {
+        // 인증된 사용자의 정보를 가져옴
+        Member member = getMember(accessToken);
+
+        // 해당 사용자가 작성한 게시물 리스트를 조회
+        List<Board> boardByAuthor = boardRepository.getBoardByAuthor(member);
+
+        return boardByAuthor.stream()
+                .map(boardMapper::toDto) // 메서드 참조로 변경
+                .toList();
     }
 
 
