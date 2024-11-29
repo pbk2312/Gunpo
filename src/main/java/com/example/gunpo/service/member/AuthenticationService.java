@@ -73,17 +73,25 @@ public class AuthenticationService {
         redisTokenService.deleteStringValue(String.valueOf(member.getId()));
     }
 
-@Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Member getUserDetails(String accessToken) {
         authenticationValidator.validateAccessToken(accessToken);
         Authentication authentication = tokenService.getAuthentication(accessToken);
         return findMemberByAuthentication(authentication);
     }
 
+
+    @Transactional(readOnly = true)
+    public Member getMemberByNickname(String nickName) {
+        return memberRepository.findByNickname(nickName)
+                .orElseThrow(() -> new MemberNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_ID.getMessage()));
+    }
+
     private Member findMemberByAuthentication(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return findMemberByEmail(userDetails.getUsername());
     }
+
     public TokenValidationResult validateTokens(String accessToken, String refreshToken) {
         if (isTokenValid(accessToken)) {
             return TokenValidationResult.builder()
