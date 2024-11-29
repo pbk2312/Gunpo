@@ -38,8 +38,6 @@ class CommentServiceTest {
     private AuthenticationService authenticationService;
 
 
-    @Mock
-    private CommentValidator commentValidator;
     private Member mockMember;
     private Board mockBoard;
 
