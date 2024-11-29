@@ -69,6 +69,7 @@ public class BoardService {
         return boardDto;
     }
 
+    @Transactional
     public void deletePost(Long postId, String accessToken) {
         log.info("게시물 삭제 요청 - 게시물 ID: {}", postId);
 

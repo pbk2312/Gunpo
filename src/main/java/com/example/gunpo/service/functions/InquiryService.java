@@ -11,6 +11,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Log4j2
 @RequiredArgsConstructor
@@ -20,13 +21,14 @@ public class InquiryService {
     private final InquiryRepository inquiryRepository;
     private final AuthenticationService authenticationService;
 
+    @Transactional
     public void saveInquiry(InquiryDto inquiryDto, String accessToken) {
         Member member = getMember(accessToken);
         Inquiry inquiry = Inquiry.create(inquiryDto.getTitle(), inquiryDto.getMessage(),
                 inquiryDto.getInquiryCategory(), member);
         inquiryRepository.save(inquiry);
     }
-
+    @Transactional(readOnly = true)
     public List<InquiryDto> getInquiryList(String acccessToken) {
         Member member = getMember(acccessToken);
         List<Inquiry> inquiryList = inquiryRepository.findByMember(member);

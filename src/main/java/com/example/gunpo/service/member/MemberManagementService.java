@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +23,7 @@ public class MemberManagementService {
     private final MemberRegistrationValidator memberRegistrationValidator;
     private final AuthenticationService authenticationService;
 
+    @Transactional
     public void save(MemberDto memberDto) {
         memberRegistrationValidator.validateNewMember(memberDto);
 
@@ -29,12 +31,12 @@ public class MemberManagementService {
         Member member = Member.create(memberDto, encodePassword(memberDto.getPassword()));
         memberRepository.save(member);
     }
-
+    @Transactional
     public void delete(String accessToken) {
         Member member = authenticationService.getUserDetails(accessToken);
         memberRepository.delete(member);
     }
-
+    @Transactional
     public void update(MemberUpdateDto updateDto) {
         // 엔티티의 업데이트 메서드 사용
         Member existingMember = getExistingMember(updateDto);
@@ -46,7 +48,7 @@ public class MemberManagementService {
 
         log.info("회원 정보 업데이트 성공: ID = {}", updatedMember.getId());
     }
-
+    @Transactional
     public void NeighborhoodVerification(String accessToken) {
         // 상태 변경을 엔티티에 위임
         Member member = authenticationService.getUserDetails(accessToken);

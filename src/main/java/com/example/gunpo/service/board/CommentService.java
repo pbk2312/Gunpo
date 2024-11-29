@@ -52,7 +52,7 @@ public class CommentService {
         commentRepository.delete(comment);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<Comment> getComments(Long boardId) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new CannotFindBoardException(BoardErrorMessage.INVALID_POST_ID.getMessage()));

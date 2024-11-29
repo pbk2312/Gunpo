@@ -8,6 +8,7 @@ import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public class BoardLikeService {
     private final AuthenticationService authService;
     private final BoardRepository boardRepository;
 
+    @Transactional
     public int toggleLike(Long boardId, String accessToken, boolean isLike) {
         Member member = authService.getUserDetails(accessToken);
 
@@ -41,6 +43,7 @@ public class BoardLikeService {
         return getLikeCount(boardId);
     }
 
+    @Transactional(readOnly = true)
     public int getLikeCount(Long boardId) {
         String redisKey = redisService.generateBoardKey(boardId);
 

@@ -19,6 +19,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 
 @Service
@@ -34,6 +35,7 @@ public class AuthenticationService {
 
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 7;
 
+    @Transactional
     public TokenDto login(LoginDto loginDto) {
         Member member = findMemberByEmail(loginDto.getEmail());
         Authentication authentication = authenticateUser(loginDto);
@@ -65,13 +67,13 @@ public class AuthenticationService {
                 REFRESH_TOKEN_EXPIRE_TIME);
     }
 
-
+    @Transactional
     public void logout(String accessToken) {
         Member member = getUserDetails(accessToken);
         redisTokenService.deleteStringValue(String.valueOf(member.getId()));
     }
 
-
+@Transactional(readOnly = true)
     public Member getUserDetails(String accessToken) {
         authenticationValidator.validateAccessToken(accessToken);
         Authentication authentication = tokenService.getAuthentication(accessToken);
@@ -82,8 +84,6 @@ public class AuthenticationService {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return findMemberByEmail(userDetails.getUsername());
     }
-
-
     public TokenValidationResult validateTokens(String accessToken, String refreshToken) {
         if (isTokenValid(accessToken)) {
             return TokenValidationResult.builder()
