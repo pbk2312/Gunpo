@@ -122,13 +122,32 @@ public class BoardViewController {
         }
     }
 
+    // 본인 작성 글 보기
     @GetMapping("/memberPost")
     public String memberPostListPage(@CookieValue(value = "accessToken", required = false) String accessToken,
                                      Model model) {
 
+        // 로그인한 사용자의 게시물 목록 조회
         List<BoardDto> listByMember = boardService.getPostListByMember(accessToken);
-        model.addAttribute("boardList",listByMember);
+
+        model.addAttribute("boardList", listByMember);
         return "board/list_member";
+    }
+
+    // 특정 닉네임 사용자의 게시물 보기
+    @GetMapping("/memberPost/{nickname}")
+    public String memberPostListPageByNickname(@PathVariable("nickname") String nickname, // 닉네임을 URL Path로 받음
+                                               @CookieValue(value = "accessToken", required = false) String accessToken,
+                                               Model model) {
+
+        // 닉네임을 통해 다른 사용자가 작성한 게시물 조회
+        List<BoardDto> listByMember = boardService.getPostListByAuthorName(nickname);
+
+        // 게시물 목록을 모델에 추가
+        model.addAttribute("boardList", listByMember);
+        model.addAttribute("nickname", nickname); // 조회한 닉네임도 모델에 추가 (뷰에서 사용)
+
+        return "board/list_member"; // 뷰 이름 반환
     }
 
 
