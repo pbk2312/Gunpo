@@ -26,6 +26,8 @@ public class Inquiry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String title;
+
     private String message;
 
     private LocalDateTime createdAt;
@@ -37,8 +39,9 @@ public class Inquiry {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    public static Inquiry create(String message, InquiryCategory category, Member member) {
+    public static Inquiry create(String title,String message, InquiryCategory category, Member member) {
         return Inquiry.builder()
+                .title(title)
                 .message(message)
                 .category(category)
                 .createdAt(LocalDateTime.now())
