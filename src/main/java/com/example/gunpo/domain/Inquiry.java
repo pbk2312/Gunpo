@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Inquiry {
 
     @Id
@@ -36,11 +37,13 @@ public class Inquiry {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Builder
-    public Inquiry(String message, InquiryCategory category, LocalDateTime createdAt) {
-        this.message = message;
-        this.category = category;
-        this.createdAt = createdAt;
+    public static Inquiry create(String message, InquiryCategory category, Member member) {
+        return Inquiry.builder()
+                .message(message)
+                .category(category)
+                .createdAt(LocalDateTime.now())
+                .member(member)
+                .build();
     }
 
 }
