@@ -3,6 +3,7 @@ package com.example.gunpo.handler;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.exception.board.BoardValidationException;
 import com.example.gunpo.exception.board.CannotFindBoardException;
+import com.example.gunpo.exception.chat.RedisPublishingException;
 import com.example.gunpo.exception.email.DuplicateEmailException;
 import com.example.gunpo.exception.email.EmailAlreadyVerifiedException;
 import com.example.gunpo.exception.email.EmailSendFailedException;
@@ -14,6 +15,7 @@ import com.example.gunpo.exception.member.EmailDuplicationException;
 import com.example.gunpo.exception.member.IncorrectPasswordException;
 import com.example.gunpo.exception.member.MemberNotFoundException;
 import com.example.gunpo.exception.member.UnauthorizedException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -123,6 +125,20 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DistanceCalculationException.class)
     public ResponseEntity<ResponseDto<String>> handleDistanceCalculationException(DistanceCalculationException e) {
         log.error("DistanceCalculationException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(JsonProcessingException.class)
+    public ResponseEntity<ResponseDto<String>> handleJsonProcessingException(JsonProcessingException e) {
+        log.error("JsonProcessingException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(RedisPublishingException.class)
+    public ResponseEntity<ResponseDto<String>> handleRedisPublishingException(RedisPublishingException e) {
+        log.error("RedisPublishingException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ResponseDto<>(e.getMessage(), null, false));
     }
