@@ -1,4 +1,4 @@
-package com.example.gunpo.service.redis;
+package com.example.gunpo.service.redis.chat;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -1,4 +1,4 @@
-package com.example.gunpo.service.redis;
+package com.example.gunpo.service.redis.chat;
 
 import com.example.gunpo.constants.errorMessage.ChatErrorMessage;
 import com.example.gunpo.dto.functions.MessageDto;

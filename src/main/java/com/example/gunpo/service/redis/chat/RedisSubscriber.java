@@ -1,4 +1,4 @@
-package com.example.gunpo.service.redis;
+package com.example.gunpo.service.redis.chat;
 
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.redis.connection.Message;
