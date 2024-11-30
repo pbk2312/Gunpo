@@ -54,7 +54,6 @@
         </nav>
 
         <!-- 게시물 목록 -->
-        <!-- 게시물 목록 -->
         <div class="container mt-4">
             <div class="d-flex justify-content-between align-items-center">
                 <h2>게시판 목록</h2>
@@ -84,8 +83,8 @@
                            onclick="showAuthorOptions(this, event)">작성자</a>
                     </td>
                     <td>
-                    <a href="javascript:void(0);" th:text="${board.title}"
-                    th:onclick="'checkLoginAndView(' + ${board.id} + ')'">게시물 제목</a>
+                        <a href="javascript:void(0);" th:text="${board.title}"
+                           th:onclick="'checkLoginAndView(' + ${board.id} + ')'">게시물 제목</a>
                     </td>
                     <td th:text="${board.category}">카테고리</td> <!-- 카테고리 표시 -->
                     <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
@@ -134,29 +133,29 @@
     let currentOptions = null; // 전역 변수로 선언하여 다른 함수에서도 사용 가능하도록 함.
 
     function showAuthorOptions(element, event) {
-        // 닉네임 가져오기
         const nickname = element.getAttribute('data-nickname');
 
-        // 이전에 열린 옵션이 있다면 제거
         if (currentOptions) {
             currentOptions.remove();
         }
 
-        // 클릭된 요소의 좌표 기반으로 옵션 위치 계산
         const rect = event.target.getBoundingClientRect();
         const options = `
     <div id="author-options" style="position: absolute; left: ${rect.left + window.scrollX}px; top: ${rect.bottom + window.scrollY}px; background: white; border: 1px solid #ccc; padding: 10px; z-index: 1000;">
         <a href="javascript:void(0);" onclick="goToMemberPost('${nickname}')">게시물 보기</a><br>
-        <a href="javascript:void(0);" onclick="sendMessage('${nickname}')">쪽지 보내기</a>
+        <a href="javascript:void(0);" onclick="startChat('${nickname}')">1대1 채팅</a>
     </div>
     `;
 
-        // body에 옵션 추가
         document.body.insertAdjacentHTML('beforeend', options);
-        currentOptions = document.getElementById('author-options'); // 현재 옵션을 추적
+        currentOptions = document.getElementById('author-options');
 
-        // 클릭된 요소의 이벤트 처리 방지
         event.stopPropagation();
+    }
+
+    function startChat(nickname) {
+        const url = `/chat/create/${encodeURIComponent(nickname)}`;
+        window.location.href = url; // 채팅방 페이지로 바로 이동
     }
 
     function goToMemberPost(nickname) {
@@ -165,10 +164,6 @@
         window.location.href = baseUrl + encodeURIComponent(nickname); // URL 인코딩된 닉네임 추가
     }
 
-    function sendMessage(nickname) {
-        // '쪽지 보내기' 클릭 시 구현 예정 (예시로 콘솔에 메시지 출력)
-        console.log(`쪽지 보내기 클릭: ${nickname}`);
-    }
 
     // 페이지에서 다른 곳을 클릭하면 열린 옵션을 닫도록 처리
     document.addEventListener('click', function (e) {
@@ -177,7 +172,6 @@
             currentOptions = null; // 옵션 닫은 후 추적 변수 초기화
         }
     });
-
 
 
     // 로그아웃 확인 후 처리
