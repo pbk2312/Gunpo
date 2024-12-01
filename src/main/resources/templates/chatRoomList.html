@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Room List</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #eef2f7;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #444;
+            font-size: 2rem;
+        }
+
+        .chat-room-list {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .chat-room {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            background-color: #f9fafc;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            padding: 15px 20px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .chat-room:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .participants {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .participants span {
+            color: #007bff;
+        }
+
+        .chat-room a {
+            text-decoration: none;
+            color: #fff;
+            background-color: #007bff;
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            align-self: flex-end;
+        }
+
+        .chat-room a:hover {
+            background-color: #0056b3;
+        }
+
+        #sidebar-wrapper {
+            width: 250px;
+            height: 100%;
+            background-color: #fff;
+            border-right: 1px solid #ddd;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar-heading {
+            padding: 1rem;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .list-group-item {
+            padding: 1rem;
+            text-decoration: none;
+            color: #333;
+            transition: background-color 0.2s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #f0f0f0;
+        }
+
+        #page-content-wrapper {
+            margin-left: 250px;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="wrapper">
+    <!-- Sidebar -->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
+        </div>
+    </div>
+
+    <!-- Page content -->
+    <div id="page-content-wrapper">
+        <!-- Top navigation -->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <!-- 왼쪽 로고 및 홈 버튼 -->
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text">홈으로</span>
+                </a>
+
+                <!-- 오른쪽 로그인/회원가입 및 마이페이지 버튼 -->
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <li class="nav-item">
+                            <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
+                        </li>
+                        <li class="nav-item">
+                            <button id="mypageButton" class="btn btn-outline-secondary" style="display:none;">마이페이지
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <h1>참여 중인 채팅방</h1>
+        <div class="chat-room-list">
+            <ul>
+                <!-- 채팅방 목록 출력 -->
+                <li class="chat-room" th:each="chatRoom : ${chatRooms}">
+                    <p class="participants">참여자:
+                        <span th:text="${chatRoom.value.get('userA')}"></span>,
+                        <span th:text="${chatRoom.value.get('userB')}"></span>
+                    </p>
+                    <a th:if="${chatRoom.value.get('userA') != mynickname}"
+                       th:href="@{'/chat/' + ${chatRoom.value['userA']}}">입장하기</a>
+                    <a th:if="${chatRoom.value.get('userB') != mynickname}"
+                       th:href="@{'/chat/' + ${chatRoom.value['userB']}}">입장하기</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function confirmLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            logout();
+        }
+    }
+
+    // 로그아웃 처리 함수
+    function logout() {
+        fetch('/api/member/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include' // 쿠키 포함
+        })
+            .then(response => response.json()) // 서버 응답을 JSON으로 처리
+            .then(responseData => {
+                if (responseData.success) {
+                    // 성공적으로 로그아웃 처리
+                    console.log(responseData.message); // 로그아웃 성공 메시지 출력
+                    // 쿠키 삭제 (브라우저 레벨에서 삭제)
+                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = '/'; // 메인 페이지로 리다이렉트
+                } else {
+                    // 서버에서 실패 메시지 처리
+                    alert(responseData.message || "로그아웃에 실패했습니다.");
+                    console.error("로그아웃 실패:", responseData.message);
+                }
+            })
+            .catch(error => {
+                // 네트워크 또는 서버 오류 처리
+                console.error('로그아웃 요청 중 오류 발생:', error);
+                alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            });
+    }
+
+    function checkAuth() {
+        fetch('/api/member/validateToken', {
+            method: 'GET',
+            credentials: 'include' // 쿠키 포함 요청
+        })
+            .then(response => response.json())
+            .then(responseData => {
+                const message = responseData.message; // 응답 메시지
+                const data = responseData.data; // 실제 데이터
+
+                const isAccessTokenValid = data.isAccessTokenValid; // 액세스 토큰 유효성
+                const isRefreshTokenValid = data.isRefreshTokenValid; // 리프레시 토큰 유효성
+                const newAccessToken = data.accessToken; // 갱신된 액세스 토큰 (옵션)
+
+                const authButton = document.getElementById('authButton');
+                const mypageButton = document.getElementById('mypageButton');
+
+                if (isAccessTokenValid) {
+                    // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
+                    authButton.innerText = '로그아웃';
+                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
+                    authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
+                    mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
+                    mypageButton.removeEventListener('click', () => {
+                    }); // 기존 이벤트 리스너 제거
+                    mypageButton.addEventListener('click', () => {
+                        window.location.href = '/mypage/profile'; // 마이페이지로 이동
+                    });
+                } else if (isRefreshTokenValid && newAccessToken) {
+                    // 리프레시 토큰으로 액세스 토큰 갱신된 경우
+                    console.log('새로운 액세스 토큰이 발급되었습니다.');
+                    checkAuth(); // 갱신된 상태로 다시 인증 상태 확인
+                } else {
+                    // 로그아웃 상태: 로그인 버튼으로 전환
+                    authButton.innerText = '로그인/회원가입';
+                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
+                    authButton.addEventListener('click', function () {
+                        window.location.href = '/login'; // 로그인 페이지로 이동
+                    });
+                    mypageButton.style.display = 'none'; // 마이페이지 버튼 숨기기
+                }
+            })
+            .catch(error => {
+                // 토큰 검증 중 오류 발생 시
+                console.error('로그인 상태 확인 중 오류 발생:', error);
+                alert('인증 상태 확인 중 문제가 발생했습니다.');
+            });
+    }
+
+    // 페이지 로드 시 인증 상태 확인
+    window.onload = function () {
+        checkAuth();
+    };
+
+</script>
+</body>
+</html>
