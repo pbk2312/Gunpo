@@ -154,7 +154,7 @@
     }
 
     function startChat(nickname) {
-        const url = `/chat/create/${encodeURIComponent(nickname)}`;
+        const url = `/chat/${encodeURIComponent(nickname)}`;
         window.location.href = url; // 채팅방 페이지로 바로 이동
     }
 
