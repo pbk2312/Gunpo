@@ -11,6 +11,25 @@
     <!-- Core theme CSS (includes Bootstrap) -->
     <link href="/css/styles.css" rel="stylesheet"/>
 </head>
+<style>
+    /* 제목 및 작성자 링크 스타일 */
+    .title-link, .nickname-link {
+        text-decoration: none; /* 기본 상태에서 밑줄 제거 */
+        color: #007bff; /* 링크 색상 */
+        font-weight: bold; /* 텍스트 굵게 */
+    }
+
+    .title-link:hover, .nickname-link:hover {
+        text-decoration: underline; /* 마우스 오버 시 밑줄 추가 */
+        cursor: pointer; /* 커서 변경 */
+    }
+
+    /* 테이블 셀 중앙 정렬 */
+    td, th {
+        vertical-align: middle;
+        text-align: center;
+    }
+</style>
 <body>
 <div class="d-flex" id="wrapper">
     <!-- Sidebar -->
@@ -73,13 +92,26 @@
                 <tbody>
                 <!-- 게시글 리스트 -->
                 <tr th:each="board : ${boardList}">
-                    <td th:text="${board.nickname}">작성자</td>
+                    <!-- 작성자 부분에 링크 스타일 적용 -->
+                    <td class="text-center">
+                        <a href="javascript:void(0);"
+                           class="nickname-link text-secondary fw-bold"
+                           th:text="${board.nickname}"
+                           th:attr="data-nickname=${board.nickname}"
+                           onclick="showAuthorOptions(this, event)">작성자</a>
+                    </td>
+
+                    <!-- 제목 부분에 링크 스타일 적용 -->
                     <td>
-                        <a href="javascript:void(0);" th:text="${board.title}"
+                        <a href="javascript:void(0);"
+                           class="title-link text-primary fw-bold"
+                           th:text="${board.title}"
                            th:onclick="'checkLoginAndView(' + ${board.id} + ')'">게시물 제목</a>
                     </td>
-                    <td th:text="${board.category}">카테고리</td>
-                    <td th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
+
+                    <!-- 카테고리와 작성일 -->
+                    <td class="text-center" th:text="${board.category}">카테고리</td>
+                    <td class="text-center" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
                 </tr>
                 </tbody>
             </table>

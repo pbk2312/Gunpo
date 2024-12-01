@@ -108,7 +108,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
@@ -131,6 +132,11 @@
                 <h1>문의 내역</h1>
                 <!-- 문의하기 버튼 -->
                 <a href="/contact" class="btn-inquiry">문의하기</a>
+
+                <p class="email-notice">
+                    ※ 문의 내용은 회원가입 시 입력한 이메일로 전송될 예정입니다.
+                </p>
+
 
                 <!-- 문의 내역이 비어있으면 메시지를 표시 -->
                 <div th:if="${inquiryDtoList.isEmpty()}" class="empty-message">
