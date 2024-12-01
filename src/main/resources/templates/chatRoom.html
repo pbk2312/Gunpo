@@ -36,6 +36,32 @@
             box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
         }
 
+        #navigationBar {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background-color: #f7f7f7;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .nav-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            color: white;
+            background-color: #007bff;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .nav-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
         #chatBox {
             flex: 1;
             padding: 15px;
@@ -43,7 +69,7 @@
             background-color: #f9f9f9;
             display: flex;
             flex-direction: column;
-            gap: 10px; /* 메시지 간격 */
+            gap: 10px;
         }
 
         .chat-message {
@@ -52,7 +78,7 @@
             max-width: 70%;
             word-wrap: break-word;
             position: relative;
-            animation: fadeIn 0.3s ease-in-out; /* 부드러운 메시지 등장 효과 */
+            animation: fadeIn 0.3s ease-in-out;
         }
 
         @keyframes fadeIn {
@@ -73,42 +99,11 @@
             text-align: right;
         }
 
-        .my-message::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            right: -10px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 10px 0 10px 10px;
-            border-color: transparent transparent transparent #007bff;
-        }
-
         .partner-message {
             align-self: flex-start;
             background-color: #e0e0e0;
             color: black;
             text-align: left;
-        }
-
-        .partner-message::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: -10px;
-            width: 0;
-            height: 0;
-            border-style: solid;
-            border-width: 10px 10px 10px 0;
-            border-color: transparent #e0e0e0 transparent transparent;
-        }
-
-        .chat-message small {
-            font-size: 12px;
-            display: block;
-            margin-bottom: 5px;
-            color: #666;
         }
 
         #chatFooter {
@@ -125,11 +120,6 @@
             border-radius: 20px;
             font-size: 16px;
             outline: none;
-            transition: box-shadow 0.3s ease;
-        }
-
-        #message:focus {
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
         }
 
         #sendButton {
@@ -141,12 +131,10 @@
             margin-left: 10px;
             font-size: 16px;
             cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
         }
 
         #sendButton:hover {
             background-color: #0056b3;
-            transform: scale(1.05);
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -187,7 +175,7 @@
 
                         if (message.sender !== currentUserNickname) {
                             var senderElement = document.createElement("small");
-                            senderElement.textContent = message.sender + ":";
+                            senderElement.textContent = message.sender;
                             messageElement.appendChild(senderElement);
                         }
 
@@ -211,15 +199,26 @@
                 });
         }
 
+        function handleKeyPress(event) {
+            if (event.key === "Enter") {
+                event.preventDefault(); // 기본 동작 방지
+                sendMessage();
+            }
+        }
+
         window.onload = loadMessages;
     </script>
 </head>
 <body>
 <div id="chatContainer">
-    <h1>채팅방: <span th:text="${roomId}"></span></h1>
+    <div id="navigationBar">
+        <a href="/chat/rooms" class="nav-button">채팅방 목록</a>
+        <a href="/board/list" class="nav-button">커뮤니티 게시판</a>
+    </div>
+    <h1>채팅방 <span th:text="${roomId}"></span></h1>
     <div id="chatBox"></div>
     <div id="chatFooter">
-        <input type="text" id="message" placeholder="메시지를 입력하세요..." />
+        <input type="text" id="message" placeholder="메시지를 입력하세요..." onkeypress="handleKeyPress(event)"/>
         <button id="sendButton" onclick="sendMessage()">전송</button>
     </div>
 </div>
