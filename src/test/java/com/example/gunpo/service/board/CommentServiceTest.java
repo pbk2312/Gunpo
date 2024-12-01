@@ -37,6 +37,9 @@ class CommentServiceTest {
     @Mock
     private AuthenticationService authenticationService;
 
+    @Mock
+    private CommentValidator commentValidator;
+
 
     private Member mockMember;
     private Board mockBoard;
@@ -159,6 +162,113 @@ class CommentServiceTest {
         assertThatThrownBy(() -> commentService.deleteComment(invalidCommentId, accessToken))
                 .isInstanceOf(CommentNotFoundException.class)
                 .hasMessage(BoardErrorMessage.COMMENT_NOT_FOUND.getMessage());
+        verify(commentRepository, never()).delete(any(Comment.class));
+    }
+
+    @Test
+    @DisplayName("대댓글 수정 - 성공적으로 대댓글을 수정한다.")
+    void updateReplyComment_success() {
+        // Given
+        Long parentCommentId = 1L;
+        Long replyId = 2L;
+        String updatedContent = "Updated Reply Comment";
+        String accessToken = "validAccessToken";
+        Comment mockParentComment = Comment.builder()
+                .id(parentCommentId)
+                .content("Parent Comment")
+                .author(mockMember)
+                .build();
+        Comment mockReplyComment = Comment.builder()
+                .id(replyId)
+                .content("Old Reply Comment")
+                .author(mockMember)
+                .parentComment(mockParentComment)
+                .build();
+
+        when(commentRepository.findById(replyId)).thenReturn(Optional.of(mockReplyComment));
+        when(authenticationService.getUserDetails(accessToken)).thenReturn(mockMember);
+
+        // When
+        commentService.updateReplyComment(parentCommentId, replyId, accessToken, updatedContent);
+
+        // Then
+        assertThat(mockReplyComment.getContent()).isEqualTo(updatedContent);
+        verify(commentRepository, times(1)).findById(replyId);
+    }
+
+    @Test
+    @DisplayName("대댓글 수정 - 대댓글이 부모 댓글과 연결되지 않으면 예외를 던진다.")
+    void updateReplyComment_invalidParent_throwsIllegalArgumentException() {
+        // Given
+        Long parentCommentId = 1L;
+        Long replyId = 2L;
+        String accessToken = "validAccessToken";
+        Comment mockReplyComment = Comment.builder()
+                .id(replyId)
+                .content("Old Reply Comment")
+                .author(mockMember)
+                .parentComment(null)  // 부모 댓글이 설정되지 않음
+                .build();
+
+        when(commentRepository.findById(replyId)).thenReturn(Optional.of(mockReplyComment));
+
+        // When & Then
+        assertThatThrownBy(
+                () -> commentService.updateReplyComment(parentCommentId, replyId, accessToken, "Updated Content"))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 대댓글은 부모 댓글과 연결되어 있지 않습니다.");
+        verify(commentRepository, never()).save(any(Comment.class));
+    }
+
+    @Test
+    @DisplayName("대댓글 삭제 - 성공적으로 대댓글을 삭제한다.")
+    void deleteReplyComment_success() {
+        // Given
+        Long parentCommentId = 1L;
+        Long replyId = 2L;
+        String accessToken = "validAccessToken";
+        Comment mockParentComment = Comment.builder()
+                .id(parentCommentId)
+                .content("Parent Comment")
+                .author(mockMember)
+                .build();
+        Comment mockReplyComment = Comment.builder()
+                .id(replyId)
+                .content("Reply Comment")
+                .author(mockMember)
+                .parentComment(mockParentComment)
+                .build();
+
+        when(commentRepository.findById(replyId)).thenReturn(Optional.of(mockReplyComment));
+        when(authenticationService.getUserDetails(accessToken)).thenReturn(mockMember);
+
+        // When
+        commentService.deleteReplyComment(parentCommentId, replyId, accessToken);
+
+        // Then
+        verify(commentRepository, times(1)).delete(mockReplyComment);
+    }
+
+    @Test
+    @DisplayName("대댓글 삭제 - 대댓글이 부모 댓글과 연결되지 않으면 예외를 던진다.")
+    void deleteReplyComment_invalidParent_throwsIllegalArgumentException() {
+        // Given
+        Long parentCommentId = 1L;
+        Long replyId = 2L;
+        String accessToken = "validAccessToken";
+        Comment mockReplyComment = Comment.builder()
+                .id(replyId)
+                .content("Reply Comment")
+                .author(mockMember)
+                .parentComment(null)  // 부모 댓글이 설정되지 않음
+                .build();
+
+        when(commentRepository.findById(replyId)).thenReturn(Optional.of(mockReplyComment));
+
+        // When & Then
+        assertThatThrownBy(() -> commentService.deleteReplyComment(parentCommentId, replyId, accessToken))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 대댓글은 부모 댓글과 연결되어 있지 않습니다.");
         verify(commentRepository, never()).delete(any(Comment.class));
     }
 
