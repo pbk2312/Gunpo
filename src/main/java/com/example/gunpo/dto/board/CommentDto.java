@@ -6,23 +6,32 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor
 public class CommentDto {
 
-    private final Long Id;
-    private String authorName;      // 작성자 이름
-    private String content;         // 댓글 내용
-    private LocalDateTime createdAt; // 작성 시간
+    private final Long id;               // 댓글 ID
+    private String authorName;           // 작성자 이름
+    private String content;              // 댓글 내용
+    private LocalDateTime createdAt;     // 작성 시간
+    private List<CommentDto> replies;    // 대댓글
 
     public static CommentDto from(Comment comment) {
         Member author = comment.getAuthor();
+
+        List<CommentDto> replyDtos = comment.getReplies().stream()
+                .map(CommentDto::from)
+                .toList();
+
         return new CommentDto(
                 comment.getId(),
                 author.getNickname(),
                 comment.getContent(),
-                comment.getCreatedAt()
+                comment.getCreatedAt(),
+                replyDtos
         );
     }
 
