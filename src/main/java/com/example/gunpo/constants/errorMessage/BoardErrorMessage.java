@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum BoardErrorMessage {
     MISSING_TITLE_AND_CONTENT("게시물 제목 및 내용은 필수입니다."),
     UNAUTHORIZED_MODIFY("게시물 수정,삭제 권한이 없습니다."),
@@ -10,18 +13,13 @@ public enum BoardErrorMessage {
     IMAGE_NOT_NULL("이미지 객체는 null일 수 없습니다."),
     COMMENT_NOT_NULL("댓글 객체는 null일 수 없습니다."),
     COMMENT_NOT_FOUND("댓글을 찾을 수 없습니다."),
-    SYNC_LIKE_DATA_ERROR("Redis 좋아요 데이터를 DB로 동기화하는 중 오류 발생."),
-    SYNC_VIEWCOUNT_DATA_ERROR("Redis 좋아요 데이터를 DB로 동기화하는 중 오류 발생.");
+    INVALID_REPLY_COMMENT("해당 대댓글은 부모 댓글과 연결되어 있지 않습니다.");
 
 
     private final String message;
 
     BoardErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }
