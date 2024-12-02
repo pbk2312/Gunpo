@@ -22,6 +22,16 @@
         text-decoration: underline; /* 마우스 오버 시 밑줄 추가 */
         cursor: pointer; /* 커서 변경 */
     }
+
+    #notificationList {
+        position: absolute;
+        right: 0;
+        top: 100%;
+        background: white;
+        border: 1px solid #ddd;
+        width: 300px;
+        z-index: 1000;
+    }
 </style>
 <body>
 <div class="d-flex" id="wrapper">
@@ -50,9 +60,24 @@
                     <span class="text">홈으로</span>
                 </a>
 
-                <!-- 오른쪽 로그인/회원가입 및 마이페이지 버튼 -->
+                <!-- 오른쪽 네비게이션 -->
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                        <!-- 알림 버튼 -->
+                        <li class="nav-item dropdown">
+                            <button id="notificationButton" class="btn btn-outline-secondary position-relative"
+                                    onclick="toggleNotifications()">
+                                🔔
+                                <span id="notificationBadge"
+                                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                      style="display: none;">0</span>
+                            </button>
+                            <div id="notificationList" class="dropdown-menu p-3 shadow"
+                                 style="display: none; max-height: 300px; overflow-y: auto;">
+                                <p class="text-muted">알림이 없습니다.</p>
+                            </div>
+                        </li>
+                        <!-- 로그인/회원가입 -->
                         <li class="nav-item">
                             <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
                         </li>
@@ -106,7 +131,8 @@
                                    th:onclick="'checkLoginAndView(' + ${board.id} + ')'">게시물 제목</a>
                             </td>
                             <td class="text-center" th:text="${board.category}">카테고리</td>
-                            <td class="text-center" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일</td>
+                            <td class="text-center" th:text="${#temporals.format(board.createdAt, 'yyyy-MM-dd')}">작성일
+                            </td>
                             <td class="text-center" th:text="${board.viewCount}">0</td>
                         </tr>
                         </tbody>
@@ -136,183 +162,233 @@
     </div>
 </div>
 
-        <footer class="bg-dark text-white text-center py-4">
-            <div class="container">
-                <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
-                <p>Contact us: <a href="mailto:support@gunpocommunity.kr"
-                                  class="text-white">support@gunpocommunity.kr</a></p>
-                <p>
-                    <a href="#!" class="text-white">Privacy Policy</a> |
-                    <a href="#!" class="text-white">Terms of Service</a> |
-                    <a href="#!" class="text-white">Contact Us</a>
-                </p>
-            </div>
-        </footer>
+<footer class="bg-dark text-white text-center py-4">
+    <div class="container">
+        <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:support@gunpocommunity.kr"
+                          class="text-white">support@gunpocommunity.kr</a></p>
+        <p>
+            <a href="#!" class="text-white">Privacy Policy</a> |
+            <a href="#!" class="text-white">Terms of Service</a> |
+            <a href="#!" class="text-white">Contact Us</a>
+        </p>
+    </div>
+</footer>
 
-        <!-- Bootstrap core JS -->
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-        <!-- Core theme JS -->
-        <script src="/js/scripts.js"></script>
-        <script>
-            let currentOptions = null; // 전역 변수로 선언하여 다른 함수에서도 사용 가능하도록 함.
+<!-- Bootstrap core JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS -->
+<script src="/js/scripts.js"></script>
+<script>
+    let currentOptions = null; // 전역 변수로 선언하여 다른 함수에서도 사용 가능하도록 함.
 
-            function showAuthorOptions(element, event) {
-                const nickname = element.getAttribute('data-nickname');
+    function showAuthorOptions(element, event) {
+        const nickname = element.getAttribute('data-nickname');
 
-                if (currentOptions) {
-                    currentOptions.remove();
-                }
+        if (currentOptions) {
+            currentOptions.remove();
+        }
 
-                const rect = event.target.getBoundingClientRect();
-                const options = `
+        const rect = event.target.getBoundingClientRect();
+        const options = `
     <div id="author-options" style="position: absolute; left: ${rect.left + window.scrollX}px; top: ${rect.bottom + window.scrollY}px; background: white; border: 1px solid #ccc; padding: 10px; z-index: 1000;">
         <a href="javascript:void(0);" onclick="goToMemberPost('${nickname}')">게시물 보기</a><br>
         <a href="javascript:void(0);" onclick="startChat('${nickname}')">1대1 채팅</a>
     </div>
     `;
 
-                document.body.insertAdjacentHTML('beforeend', options);
-                currentOptions = document.getElementById('author-options');
+        document.body.insertAdjacentHTML('beforeend', options);
+        currentOptions = document.getElementById('author-options');
 
-                event.stopPropagation();
-            }
+        event.stopPropagation();
+    }
 
-            function startChat(nickname) {
-                const url = `/chat/${encodeURIComponent(nickname)}`;
-                window.location.href = url; // 채팅방 페이지로 바로 이동
-            }
+    function startChat(nickname) {
+        const url = `/chat/${encodeURIComponent(nickname)}`;
+        window.location.href = url; // 채팅방 페이지로 바로 이동
+    }
 
-            function goToMemberPost(nickname) {
-                // '게시물 보기' 클릭 시 해당 작성자의 게시물 보기 페이지로 이동
-                const baseUrl = '/board/memberPost/'; // Thymeleaf URL 기본 경로
-                window.location.href = baseUrl + encodeURIComponent(nickname); // URL 인코딩된 닉네임 추가
-            }
+    function goToMemberPost(nickname) {
+        // '게시물 보기' 클릭 시 해당 작성자의 게시물 보기 페이지로 이동
+        const baseUrl = '/board/memberPost/'; // Thymeleaf URL 기본 경로
+        window.location.href = baseUrl + encodeURIComponent(nickname); // URL 인코딩된 닉네임 추가
+    }
 
 
-            // 페이지에서 다른 곳을 클릭하면 열린 옵션을 닫도록 처리
-            document.addEventListener('click', function (e) {
-                if (currentOptions && !currentOptions.contains(e.target)) {
-                    currentOptions.remove();
-                    currentOptions = null; // 옵션 닫은 후 추적 변수 초기화
+    // 페이지에서 다른 곳을 클릭하면 열린 옵션을 닫도록 처리
+    document.addEventListener('click', function (e) {
+        if (currentOptions && !currentOptions.contains(e.target)) {
+            currentOptions.remove();
+            currentOptions = null; // 옵션 닫은 후 추적 변수 초기화
+        }
+    });
+
+
+    // 로그아웃 확인 후 처리
+    function confirmLogout() {
+        if (confirm('로그아웃 하시겠습니까?')) {
+            logout();
+        }
+    }
+
+    // 로그아웃 처리 함수
+    function logout() {
+        fetch('/api/member/logout', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include' // 쿠키 포함
+        })
+            .then(response => response.json()) // 서버 응답을 JSON으로 처리
+            .then(responseData => {
+                if (responseData.success) {
+                    // 성공적으로 로그아웃 처리
+                    console.log(responseData.message); // 로그아웃 성공 메시지 출력
+                    // 쿠키 삭제 (브라우저 레벨에서 삭제)
+                    document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                    window.location.href = '/'; // 메인 페이지로 리다이렉트
+                } else {
+                    // 서버에서 실패 메시지 처리
+                    alert(responseData.message || "로그아웃에 실패했습니다.");
+                    console.error("로그아웃 실패:", responseData.message);
                 }
+            })
+            .catch(error => {
+                // 네트워크 또는 서버 오류 처리
+                console.error('로그아웃 요청 중 오류 발생:', error);
+                alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
             });
+    }
 
+    function checkAuth() {
+        fetch('/api/member/validateToken', {
+            method: 'GET',
+            credentials: 'include' // 쿠키 포함 요청
+        })
+            .then(response => response.json())
+            .then(responseData => {
+                const message = responseData.message; // 응답 메시지
+                const data = responseData.data; // 실제 데이터
 
-            // 로그아웃 확인 후 처리
-            function confirmLogout() {
-                if (confirm('로그아웃 하시겠습니까?')) {
-                    logout();
+                const isAccessTokenValid = data.isAccessTokenValid; // 액세스 토큰 유효성
+                const isRefreshTokenValid = data.isRefreshTokenValid; // 리프레시 토큰 유효성
+                const newAccessToken = data.accessToken; // 갱신된 액세스 토큰 (옵션)
+
+                const authButton = document.getElementById('authButton');
+                const mypageButton = document.getElementById('mypageButton');
+
+                if (isAccessTokenValid) {
+                    // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
+                    authButton.innerText = '로그아웃';
+                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
+                    authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
+                    mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
+                    mypageButton.removeEventListener('click', () => {
+                    }); // 기존 이벤트 리스너 제거
+                    mypageButton.addEventListener('click', () => {
+                        window.location.href = '/mypage/profile'; // 마이페이지로 이동
+                    });
+                } else if (isRefreshTokenValid && newAccessToken) {
+                    // 리프레시 토큰으로 액세스 토큰 갱신된 경우
+                    console.log('새로운 액세스 토큰이 발급되었습니다.');
+                    checkAuth(); // 갱신된 상태로 다시 인증 상태 확인
+                } else {
+                    // 로그아웃 상태: 로그인 버튼으로 전환
+                    authButton.innerText = '로그인/회원가입';
+                    authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
+                    authButton.addEventListener('click', function () {
+                        window.location.href = '/login'; // 로그인 페이지로 이동
+                    });
+                    mypageButton.style.display = 'none'; // 마이페이지 버튼 숨기기
                 }
-            }
+            })
+            .catch(error => {
+                // 토큰 검증 중 오류 발생 시
+                console.error('로그인 상태 확인 중 오류 발생:', error);
+                alert('인증 상태 확인 중 문제가 발생했습니다.');
+            });
+    }
 
-            // 로그아웃 처리 함수
-            function logout() {
-                fetch('/api/member/logout', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include' // 쿠키 포함
-                })
-                    .then(response => response.json()) // 서버 응답을 JSON으로 처리
-                    .then(responseData => {
-                        if (responseData.success) {
-                            // 성공적으로 로그아웃 처리
-                            console.log(responseData.message); // 로그아웃 성공 메시지 출력
-                            // 쿠키 삭제 (브라우저 레벨에서 삭제)
-                            document.cookie = "accessToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                            document.cookie = "refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-                            window.location.href = '/'; // 메인 페이지로 리다이렉트
-                        } else {
-                            // 서버에서 실패 메시지 처리
-                            alert(responseData.message || "로그아웃에 실패했습니다.");
-                            console.error("로그아웃 실패:", responseData.message);
-                        }
-                    })
-                    .catch(error => {
-                        // 네트워크 또는 서버 오류 처리
-                        console.error('로그아웃 요청 중 오류 발생:', error);
-                        alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
-                    });
-            }
+    function checkLoginAndView(boardId) {
+        fetch('/api/member/validateToken', {
+            method: 'GET',
+            credentials: 'include' // 쿠키 포함
+        })
+            .then(response => response.json())
+            .then(responseData => {
+                const isAccessTokenValid = responseData.data.isAccessTokenValid;
 
-            function checkAuth() {
-                fetch('/api/member/validateToken', {
-                    method: 'GET',
-                    credentials: 'include' // 쿠키 포함 요청
-                })
-                    .then(response => response.json())
-                    .then(responseData => {
-                        const message = responseData.message; // 응답 메시지
-                        const data = responseData.data; // 실제 데이터
+                if (isAccessTokenValid) {
+                    // 로그인 상태: 게시물 상세 페이지로 이동
+                    window.location.href = `/board/${boardId}`;
+                } else {
+                    // 로그아웃 상태: 로그인 페이지로 이동
+                    alert('로그인이 필요한 서비스입니다.');
+                    window.location.href = '/login';
+                }
+            })
+            .catch(error => {
+                console.error('로그인 상태 확인 중 오류 발생:', error);
+                alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            });
+    }
 
-                        const isAccessTokenValid = data.isAccessTokenValid; // 액세스 토큰 유효성
-                        const isRefreshTokenValid = data.isRefreshTokenValid; // 리프레시 토큰 유효성
-                        const newAccessToken = data.accessToken; // 갱신된 액세스 토큰 (옵션)
+    let notifications = []; // 알림 리스트 저장
 
-                        const authButton = document.getElementById('authButton');
-                        const mypageButton = document.getElementById('mypageButton');
+    // 알림 버튼 클릭 시 토글
+    function toggleNotifications() {
+        const list = document.getElementById("notificationList");
+        list.style.display = list.style.display === "block" ? "none" : "block";
+    }
 
-                        if (isAccessTokenValid) {
-                            // 로그인 상태: 로그아웃 버튼으로 전환 및 마이페이지 버튼 활성화
-                            authButton.innerText = '로그아웃';
-                            authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
-                            authButton.addEventListener('click', confirmLogout); // 로그아웃 확인
-                            mypageButton.style.display = 'block'; // 마이페이지 버튼 표시
-                            mypageButton.removeEventListener('click', () => {
-                            }); // 기존 이벤트 리스너 제거
-                            mypageButton.addEventListener('click', () => {
-                                window.location.href = '/mypage/profile'; // 마이페이지로 이동
-                            });
-                        } else if (isRefreshTokenValid && newAccessToken) {
-                            // 리프레시 토큰으로 액세스 토큰 갱신된 경우
-                            console.log('새로운 액세스 토큰이 발급되었습니다.');
-                            checkAuth(); // 갱신된 상태로 다시 인증 상태 확인
-                        } else {
-                            // 로그아웃 상태: 로그인 버튼으로 전환
-                            authButton.innerText = '로그인/회원가입';
-                            authButton.removeEventListener('click', confirmLogout); // 기존 이벤트 리스너 제거
-                            authButton.addEventListener('click', function () {
-                                window.location.href = '/login'; // 로그인 페이지로 이동
-                            });
-                            mypageButton.style.display = 'none'; // 마이페이지 버튼 숨기기
-                        }
-                    })
-                    .catch(error => {
-                        // 토큰 검증 중 오류 발생 시
-                        console.error('로그인 상태 확인 중 오류 발생:', error);
-                        alert('인증 상태 확인 중 문제가 발생했습니다.');
-                    });
-            }
+    // 알림 리스트 렌더링
+    function renderNotifications() {
+        const list = document.getElementById("notificationList");
+        list.innerHTML = ""; // 기존 내용 초기화
 
-            function checkLoginAndView(boardId) {
-                fetch('/api/member/validateToken', {
-                    method: 'GET',
-                    credentials: 'include' // 쿠키 포함
-                })
-                    .then(response => response.json())
-                    .then(responseData => {
-                        const isAccessTokenValid = responseData.data.isAccessTokenValid;
+        if (notifications.length === 0) {
+            list.innerHTML = '<p class="text-muted">알림이 없습니다.</p>';
+        } else {
+            notifications.forEach((notif) => {
+                const item = document.createElement("div");
+                item.className = "dropdown-item";
+                item.textContent = notif.message;
+                list.appendChild(item);
+            });
+        }
 
-                        if (isAccessTokenValid) {
-                            // 로그인 상태: 게시물 상세 페이지로 이동
-                            window.location.href = `/board/${boardId}`;
-                        } else {
-                            // 로그아웃 상태: 로그인 페이지로 이동
-                            alert('로그인이 필요한 서비스입니다.');
-                            window.location.href = '/login';
-                        }
-                    })
-                    .catch(error => {
-                        console.error('로그인 상태 확인 중 오류 발생:', error);
-                        alert('서버와 통신 중 문제가 발생했습니다. 잠시 후 다시 시도해주세요.');
-                    });
-            }
+        const badge = document.getElementById("notificationBadge");
+        if (notifications.length > 0) {
+            badge.textContent = notifications.length;
+            badge.style.display = "inline";
+        } else {
+            badge.style.display = "none";
+        }
+    }
 
-            // 페이지 로드 시 인증 상태 확인
-            window.onload = function () {
-                checkAuth();
-            };
-        </script>
+    // 알림 데이터 가져오기
+    function fetchNotifications() {
+        fetch("/api/notifications", {
+            method: "GET",
+            credentials: "include",
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                notifications = data || [];
+                renderNotifications();
+            })
+            .catch((error) => {
+                console.error("알림 가져오기 실패:", error);
+            });
+    }
+
+    // 페이지 로드 시 알림 가져오기
+    window.onload = function () {
+        checkAuth(); // 기존 인증 상태 확인 함수
+        fetchNotifications();
+    };
+</script>
 </body>
 </html>
