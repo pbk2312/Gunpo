@@ -79,23 +79,19 @@ public class Board {
     }
 
     // 이미지 추가
-    public Board addImage(BoardImage image) {
+    public void addImage(BoardImage image) {
         if (image == null) {
             throw new IllegalArgumentException(BoardErrorMessage.IMAGE_NOT_NULL.getMessage());
         }
-        List<BoardImage> updatedImages = new ArrayList<>(this.images);
-        updatedImages.add(image);
-        return this.toBuilder().images(updatedImages).build();
+        this.images.add(image);
     }
 
     // 댓글 추가
-    public Board addComment(Comment comment) {
+    public void addComment(Comment comment) {
         if (comment == null) {
             throw new IllegalArgumentException(BoardErrorMessage.COMMENT_NOT_NULL.getMessage());
         }
-        List<Comment> updatedComments = new ArrayList<>(this.comments);
-        updatedComments.add(comment);
-        return this.toBuilder().comments(updatedComments).build();
+        this.comments.add(comment);
     }
 
 }
