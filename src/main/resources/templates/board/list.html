@@ -354,7 +354,18 @@
             notifications.forEach((notif) => {
                 const item = document.createElement("div");
                 item.className = "dropdown-item";
+                item.style.cursor = "pointer";
                 item.textContent = notif.message;
+
+                // 알림 클릭 시 해당 게시물로 이동
+                item.addEventListener("click", () => {
+                    if (notif.postId) {
+                        window.location.href = `/board/${notif.postId}`;
+                    } else {
+                        alert("게시물 정보를 찾을 수 없습니다.");
+                    }
+                });
+
                 list.appendChild(item);
             });
         }
