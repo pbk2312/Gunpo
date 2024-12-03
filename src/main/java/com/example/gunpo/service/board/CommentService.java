@@ -42,8 +42,13 @@ public class CommentService {
         String authorId = board.getAuthor().getId().toString();
 
         // Redis에 알림 저장
-        NotificationDto notificationDto = new NotificationDto(authorId, notificationMessage, LocalDateTime.now(),
-                boardId);
+        NotificationDto notificationDto = new NotificationDto(
+                null, // notificationId는 Redis에서 생성되므로 null로 설정
+                authorId,
+                notificationMessage,
+                LocalDateTime.now(),
+                boardId
+        );
         notificationRedisService.saveNotification(notificationDto);
 
         return commentRepository.save(comment);
