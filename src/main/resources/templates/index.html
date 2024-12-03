@@ -12,51 +12,101 @@
     <link href="css/styles.css" rel="stylesheet"/>
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
+            background-color: #f4f8fb;
+            font-family: 'Noto Sans KR', sans-serif;
+            color: #333;
         }
 
         .hero {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #86cfeb, #007bff);
             color: white;
-            padding: 60px 20px;
+            padding: 70px 30px;
             text-align: center;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            line-height: 1.6;
         }
 
         .feature {
-            padding: 40px 20px;
+            padding: 30px 20px;
             text-align: center;
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.2s;
-            cursor: pointer;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            margin: 15px 0;
         }
 
         .feature:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
             transform: translateY(-5px);
         }
 
         .feature h2 {
-            margin-bottom: 20px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 15px 0;
         }
 
         .feature p {
-            color: #6c757d;
+            color: #555;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .icon {
+            font-size: 50px;
+            color: #007bff;
+            margin-bottom: 15px;
         }
 
         .btn-primary {
             background-color: #007bff;
-            border-color: #007bff;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
         }
 
-        .icon {
-            font-size: 40px;
-            margin-bottom: 10px;
-            color: #007bff;
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            padding: 20px 0;
+        }
+
+        footer a {
+            color: #86cfeb;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        .hover-effect {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .hover-effect:hover {
+            transform: scale(0.98); /* 약간 눌린 듯한 효과 */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 살짝 강조된 그림자 */
         }
     </style>
 </head>
@@ -101,44 +151,54 @@
         <!-- Page content-->
         <div class="container-fluid">
             <!-- Hero Section -->
-            <div class="hero" id="heroSection">
-                <h1>환영합니다, 군포 시민 여러분!</h1>
-                <p>군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다.</p>
+            <div class="hero text-center py-5 bg-light" id="heroSection">
+                <h1 class="display-4 mb-3">환영합니다, 군포 시민 여러분!</h1>
+                <p class="lead">군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다.</p>
             </div>
 
-            <div class="row">
-                <!-- 경기 지역화폐 가맹점 찾기 -->
-                <div class="col-md-6 feature" id="currencySection">
-                    <div class="icon">💳</div>
-                    <h2>경기 지역화폐 가맹점 찾기</h2>
+            <!-- Feature Section -->
+        </div>
+        <div class="row text-center my-5">
+            <!-- 경기 지역화폐 가맹점 찾기 -->
+            <div class="col-md-6 mb-4" id="currencySection">
+                <div class="p-4 bg-white shadow-sm rounded hover-effect">
+                    <div class="icon mb-3" style="font-size: 2rem;">💳</div>
+                    <h2 class="h4">경기 지역화폐 가맹점 찾기</h2>
                     <p>군포 내 지역화폐 사용 가능한 가맹점을 검색해보세요.</p>
                 </div>
-
-                <!-- 커뮤니티 게시판 -->
-                <div class="col-md-6 feature" id="boardSection">
-                    <div class="icon">📋</div>
-                    <h2>커뮤니티 게시판</h2>
-                    <p>로그인 후 다양한 주제로 의견을 나눌 수 있습니다.</p>
-                </div>
             </div>
 
-            <!-- Additional Section -->
-            <div class="row mt-4">
-                <div class="col-md-12 feature" id="newsSection">
-                    <div class="icon">🌐</div>
-                    <h2>지속적인 정보 업데이트</h2>
+            <!-- 커뮤니티 게시판 -->
+            <div class="col-md-6 mb-4" id="boardSection">
+                <div class="p-4 bg-white shadow-sm rounded hover-effect">
+                    <div class="icon mb-3" style="font-size: 2rem;">📋</div>
+                    <h2 class="h4">커뮤니티 게시판</h2>
+                    <p>로그인과 동네 인증 후 다양한 주제로 의견을 나눌 수 있습니다.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Additional Section -->
+        <div class="row text-center my-5">
+            <!-- 지속적인 정보 업데이트 -->
+            <div class="col-md-6 mb-4" id="newsSection">
+                <div class="p-4 bg-white shadow-sm rounded hover-effect">
+                    <div class="icon mb-3" style="font-size: 2rem;">🌐</div>
+                    <h2 class="h4">지속적인 정보 업데이트</h2>
                     <p>군포의 최신 소식과 정보를 지속적으로 업데이트합니다.</p>
                 </div>
             </div>
-            <div class="row mt-4">
-                <div class="col-md-12 feature" id="smokingAreaSection">
-                    <div class="icon">🚭</div>
-                    <h2>흡연 구역 찾기</h2>
+
+            <!-- 흡연 구역 찾기 -->
+            <div class="col-md-6 mb-4" id="smokingAreaSection">
+                <div class="p-4 bg-white shadow-sm rounded hover-effect">
+                    <div class="icon mb-3" style="font-size: 2rem;">🚭</div>
+                    <h2 class="h4">흡연 구역 찾기</h2>
                     <p>군포 내 흡연 구역을 찾아보세요.</p>
                 </div>
             </div>
-
         </div>
+
     </div>
 </div>
 
