@@ -4,13 +4,16 @@ import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
 import com.example.gunpo.domain.Board;
 import com.example.gunpo.domain.Comment;
 import com.example.gunpo.domain.Member;
+import com.example.gunpo.dto.functions.NotificationDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.CommentNotFoundException;
 import com.example.gunpo.exception.board.InvalidReplyCommentException;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.repository.CommentRepository;
 import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.service.redis.notification.NotificationRedisService;
 import com.example.gunpo.validator.board.CommentValidator;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,32 +27,25 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final AuthenticationService authenticationService;
     private final CommentValidator commentValidator;
+    private final NotificationRedisService notificationRedisService;
 
-    // 게시글 조회 및 유효성 검증
-    private Board getBoard(Long boardId) {
-        return boardRepository.findById(boardId)
-                .orElseThrow(() -> new CannotFindBoardException(BoardErrorMessage.INVALID_POST_ID.getMessage()));
-    }
-
-    // 댓글 조회 및 유효성 검증
-    private Comment getComment(Long commentId) {
-        return commentRepository.findById(commentId)
-                .orElseThrow(() -> new CommentNotFoundException(BoardErrorMessage.COMMENT_NOT_FOUND.getMessage()));
-    }
-
-    // 댓글 작성자 검증
-    private void verifyCommentAuthor(String accessToken, Comment comment) {
-        commentValidator.verifyAuthor(accessToken, comment);
-    }
-
-    // 일반 댓글 추가
     @Transactional
     public Comment addComment(Long boardId, String accessToken, String content) {
         Board board = getBoard(boardId);
         Member member = authenticationService.getUserDetails(accessToken);
 
-        Comment comment = Comment.create(board, member, content, null);  // 부모 댓글 없이 일반 댓글 생성
+        Comment comment = Comment.create(board, member, content, null);
         board.addComment(comment);
+
+        // 알림 메시지 생성
+        String notificationMessage = member.getNickname() + "님이 게시글에 댓글을 남겼습니다.";
+        String authorId = board.getAuthor().getId().toString();
+
+        // Redis에 알림 저장
+        NotificationDto notificationDto = new NotificationDto(authorId, notificationMessage, LocalDateTime.now(),
+                boardId);
+        notificationRedisService.saveNotification(notificationDto);
+
         return commentRepository.save(comment);
     }
 
@@ -106,12 +102,26 @@ public class CommentService {
         commentRepository.delete(replyComment);
     }
 
-    // 대댓글의 부모 댓글 유효성 검증
     private void validateParentComment(Comment replyComment, Long parentCommentId) {
         if (replyComment.getParentComment() == null || !replyComment.getParentComment().getId()
                 .equals(parentCommentId)) {
             throw new InvalidReplyCommentException(BoardErrorMessage.INVALID_REPLY_COMMENT.getMessage());
         }
+    }
+
+    private Board getBoard(Long boardId) {
+        return boardRepository.findById(boardId)
+                .orElseThrow(() -> new CannotFindBoardException(BoardErrorMessage.INVALID_POST_ID.getMessage()));
+    }
+
+    private Comment getComment(Long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(BoardErrorMessage.COMMENT_NOT_FOUND.getMessage()));
+    }
+
+
+    private void verifyCommentAuthor(String accessToken, Comment comment) {
+        commentValidator.verifyAuthor(accessToken, comment);
     }
 
 }
