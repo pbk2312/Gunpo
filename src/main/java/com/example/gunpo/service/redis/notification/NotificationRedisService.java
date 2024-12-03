@@ -20,13 +20,16 @@ public class NotificationRedisService {
     // NotificationDto를 Redis에 저장하는 메서드
     public void saveNotification(NotificationDto notificationDto) {
         HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
-        String notificationId = UUID.randomUUID().toString();
+        String notificationId = UUID.randomUUID().toString();  // 고유한 notificationId 생성
 
         // 메시지와 게시물 ID를 세미콜론으로 구분하여 저장
         String value = notificationDto.getMessage() + ";" + notificationDto.getPostId();
 
         // 사용자별 Redis 키 생성
         String key = KEY + ":" + notificationDto.getUserId();
+
+        // NotificationDto에 notificationId를 설정한 후 저장
+        notificationDto.setNotificationId(notificationId);
 
         hashOps.put(key, notificationId, value);
     }
@@ -35,14 +38,21 @@ public class NotificationRedisService {
         HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
         String key = KEY + ":" + userId;
 
-        return hashOps.values(key).stream()
-                .map(value -> {
+        return hashOps.entries(key).entrySet().stream()
+                .map(entry -> {
+                    String notificationId = entry.getKey();  // Redis에서 저장된 key가 notificationId
+                    String value = entry.getValue();
                     String[] parts = value.split(";");
                     String message = parts[0];
                     Long boardId = Long.parseLong(parts[1]);
-                    return new NotificationDto(userId, message, LocalDateTime.now(), boardId);
+                    return new NotificationDto(notificationId, userId, message, LocalDateTime.now(), boardId);
                 })
                 .toList();
+    }
+
+    public void deleteNotification(String userId, String notificationId) {
+        String key = KEY + ":" + userId;
+        redisTemplate.opsForHash().delete(key, notificationId); // 특정 알림 삭제
     }
 
     // 사용자 ID를 기준으로 모든 알림 삭제
