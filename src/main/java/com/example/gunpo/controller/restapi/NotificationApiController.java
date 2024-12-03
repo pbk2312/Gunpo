@@ -4,7 +4,6 @@ import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.functions.NotificationDto;
 import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.service.redis.notification.NotificationRedisService;
-import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,13 +26,8 @@ public class NotificationApiController {
     public ResponseEntity<List<NotificationDto>> getNotifications(
             @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
-
         Member member = authenticationService.getUserDetails(accessToken);
-        List<String> messages = notificationRedisService.getNotifications(member.getId().toString());
-        List<NotificationDto> notifications = messages.stream()
-                .map(msg -> new NotificationDto(member.getId().toString(), msg, LocalDateTime.now()))
-                .toList();
-        log.info(notifications);
+        List<NotificationDto> notifications = notificationRedisService.getNotifications(member.getId().toString());
         return ResponseEntity.ok(notifications);
     }
 
