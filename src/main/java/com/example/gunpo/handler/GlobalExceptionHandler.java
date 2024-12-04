@@ -14,6 +14,7 @@ import com.example.gunpo.exception.location.InvalidCoordinateException;
 import com.example.gunpo.exception.member.EmailDuplicationException;
 import com.example.gunpo.exception.member.IncorrectPasswordException;
 import com.example.gunpo.exception.member.MemberNotFoundException;
+import com.example.gunpo.exception.member.NickNameDuplicateExcecption;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.log4j.Log4j2;
@@ -140,6 +141,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ResponseDto<String>> handleRedisPublishingException(RedisPublishingException e) {
         log.error("RedisPublishingException: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ResponseDto<>(e.getMessage(), null, false));
+    }
+
+    @ExceptionHandler(NickNameDuplicateExcecption.class)
+    public ResponseEntity<ResponseDto<String>> handleNickNameDuplicateException(NickNameDuplicateExcecption e) {
+        log.error("NickNameDuplicateException: {}", e.getMessage(), e);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ResponseDto<>(e.getMessage(), null, false));
     }
 
