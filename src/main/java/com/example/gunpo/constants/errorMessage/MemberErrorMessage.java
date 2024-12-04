@@ -10,7 +10,8 @@ public enum MemberErrorMessage {
     EMAIL_REQUIRED_MESSAGE("이메일과 비밀번호는 필수입니다."),
     EMAIL_IN_USE_MESSAGE("이미 사용 중인 이메일입니다."),
     EMAIL_VERIFICATION_FAILED_MESSAGE("이메일 인증이 완료되지 않았습니다."),
-    MEMBER_NOT_NeighborhoodVerification("동네 인증이 완료되지 않았습니다.");
+    MEMBER_NOT_NeighborhoodVerification("동네 인증이 완료되지 않았습니다."),
+    DUPLICATE_NICKNAME("이미 닉네임이 존재합니다.");
 
     private final String message;
 
