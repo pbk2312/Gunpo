@@ -4,6 +4,7 @@ import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.exception.email.VerificationCodeMismatchException;
 import com.example.gunpo.exception.member.EmailDuplicationException;
+import com.example.gunpo.exception.member.NickNameDuplicateExcecption;
 import com.example.gunpo.repository.MemberRepository;
 import com.example.gunpo.service.redis.RedisEmailCertificationService;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class MemberRegistrationValidator {
         validateEmailAndPasswordNotNull(memberDto); // 이메일 및 비밀번호 null 체크
         checkEmailDuplication(memberDto.getEmail()); // 이메일 중복 확인
         validateEmailCertification(memberDto); // 이메일 인증 여부 확인
+        validateNickName(memberDto.getNickname()); // 닉네임 중복 여부 확인
     }
 
     private void validateEmailAndPasswordNotNull(MemberDto memberDto) {
@@ -39,6 +41,12 @@ public class MemberRegistrationValidator {
     private void checkEmailDuplication(String email) {
         if (memberRepository.findByEmail(email).isPresent()) {
             throw new EmailDuplicationException(MemberErrorMessage.EMAIL_IN_USE_MESSAGE.getMessage());
+        }
+    }
+
+    private void validateNickName(String nickName) {
+        if (memberRepository.findByNickname(nickName).isPresent()) {
+            throw new NickNameDuplicateExcecption(MemberErrorMessage.DUPLICATE_NICKNAME.getMessage());
         }
     }
 
