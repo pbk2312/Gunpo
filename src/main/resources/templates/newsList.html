@@ -1,71 +1,133 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-  <title>Gunpo Community - 시민을 위한 정보</title>
-  <!-- Favicon-->
-  <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
-  <!-- Core theme CSS (includes Bootstrap)-->
-  <link href="css/styles.css" rel="stylesheet" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Gunpo Community - 시민을 위한 정보</title>
+    <!-- Favicon-->
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet"/>
+    <style>
+        .news-card-wrapper {
+            width: 350px;
+        }
+
+        .news-card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .news-card img {
+            border-radius: 15px 15px 0 0;
+            height: 250px;
+            width: 100%;
+            object-fit: cover;
+        }
+
+        .news-card .card-body {
+            padding: 1.5rem;
+            background-color: #f7f7f7;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .news-card .card-title {
+            font-size: 1.75rem;
+            font-weight: bold;
+            color: #444;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .news-card .card-text {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 1.25rem;
+        }
+
+        .news-card .btn {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .d-flex.flex-wrap {
+            gap: 25px;
+            justify-content: center;
+        }
+    </style>
 </head>
 <body>
 <div class="d-flex" id="wrapper">
-  <!-- Sidebar-->
-  <div class="border-end bg-white" id="sidebar-wrapper">
-    <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
-    <div class="list-group list-group-flush">
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
-      <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
-    </div>
-  </div>
-  <!-- Page content wrapper-->
-  <div id="page-content-wrapper">
-    <!-- Top navigation-->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="/">
-          <span class="icon">🏠</span>
-          <span class="text text-muted">홈으로</span>
-        </a>
-      </div>
-    </nav>
-    <!-- Page content-->
-    <div class="container-fluid mt-4">
-      <h1 class="text-center">군포 시민을 위한 정보</h1>
-      <p class="text-center text-muted">군포시의 최신 소식을 확인하세요</p>
-
-      <!-- 뉴스 카드 레이아웃 -->
-      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div th:each="news : ${newsList}" class="col">
-          <div class="card h-100 shadow-sm">
-            <img th:src="${news.imageUrl}" class="card-img-top" alt="News Image" style="height: 200px; object-fit: cover;">
-            <div class="card-body">
-              <h5 th:text="${news.title}" class="card-title"></h5>
-              <p th:text="${news.summary}" class="card-text"></p>
-              <a th:href="${news.link}" class="btn btn-outline-primary btn-sm" target="_blank">더 읽기</a>
-            </div>
-          </div>
+    <!-- Sidebar-->
+    <div class="border-end bg-white" id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
+        <div class="list-group list-group-flush">
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
         </div>
-      </div>
     </div>
-  </div>
+    <!-- Page content wrapper-->
+    <div id="page-content-wrapper">
+        <!-- Top navigation-->
+        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">
+                    <span class="icon">🏠</span>
+                    <span class="text text-muted">홈으로</span>
+                </a>
+            </div>
+        </nav>
+        <!-- Page content-->
+        <div class="container-fluid mt-4">
+            <h1 class="text-center mb-4" style="font-size: 3rem; font-weight: bold; color: #333;">
+                군포 시민 뉴스<span style="color: #FF7F00;">.</span>
+            </h1>
+            <p class="text-center text-muted mb-5" style="font-size: 1.25rem;">군포시의 최신 소식을 확인하세요</p>
+
+            <!-- 뉴스 카드 레이아웃 -->
+            <div class="d-flex justify-content-center flex-wrap gap-4">
+                <div th:each="news : ${newsList}" class="news-card-wrapper">
+                    <div class="card news-card shadow-lg">
+                        <img th:src="${news.imageUrl}" class="card-img-top" alt="News Image">
+                        <div class="card-body">
+                            <h5 th:text="${news.title}" class="card-title">
+                                <span th:text="${news.title}"></span>
+                                <span style="color: #FF7F00;">●</span>
+                            </h5>
+                            <p th:text="${news.summary}" class="card-text"></p>
+                            <a th:href="${news.link}" class="btn btn-primary btn-sm" target="_blank">더 읽기</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
 <footer class="bg-dark text-white text-center py-4">
-  <div class="container">
-    <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
-    <p>Contact us: <a href="mailto:support@gunpocommunity.kr" class="text-white">support@gunpocommunity.kr</a></p>
-    <p>
-      <a href="#!" class="text-white">Privacy Policy</a> |
-      <a href="#!" class="text-white">Terms of Service</a> |
-      <a href="#!" class="text-white">Contact Us</a>
-    </p>
-  </div>
+    <div class="container">
+        <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
+        <p>Contact us: <a href="mailto:support@gunpocommunity.kr" class="text-white">support@gunpocommunity.kr</a></p>
+        <p>
+            <a href="#!" class="text-white">Privacy Policy</a> |
+            <a href="#!" class="text-white">Terms of Service</a> |
+            <a href="#!" class="text-white">Contact Us</a>
+        </p>
+    </div>
 </footer>
 
 <!-- Bootstrap core JS-->
