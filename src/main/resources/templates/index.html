@@ -18,24 +18,27 @@
         }
 
         .hero {
-            background: linear-gradient(135deg, #86cfeb, #007bff);
+            background: url('/img/Gunpo.png') no-repeat center center/cover,
+            linear-gradient(135deg, #a1c4fd, #c2e9fb); /* 하늘색 조합 */
             color: white;
-            padding: 70px 30px;
+            padding: 100px 50px; /* 크기를 유지 */
             text-align: center;
-            border-radius: 10px;
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            border-radius: 15px; /* 부드러운 모서리 */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* 부드러운 그림자 */
+            margin-bottom: 40px; /* 간격 유지 */
         }
 
         .hero h1 {
             font-size: 2.5rem;
             font-weight: 700;
             margin-bottom: 15px;
+            color: #333; /* 어두운 색으로 글씨가 잘 보이게 */
         }
 
         .hero p {
             font-size: 1.1rem;
             line-height: 1.6;
+            color: #444; /* 조금 더 연한 어두운 색 */
         }
 
         .feature {
@@ -89,6 +92,7 @@
             background: #333;
             color: white;
             padding: 20px 0;
+            margin-top: 150px; /* footer 위쪽에 여백을 추가해서 위치를 내림 */
         }
 
         footer a {
@@ -99,7 +103,6 @@
         footer a:hover {
             text-decoration: underline;
         }
-
         .hover-effect {
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
@@ -111,97 +114,79 @@
     </style>
 </head>
 <body>
-<div class="d-flex" id="wrapper">
-    <!-- Sidebar-->
-    <div class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
-        <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
-                지역화폐 가맹점 찾기</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
+<nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
+                <li class="nav-item">
+                    <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
+                </li>
+                <li class="nav-item">
+                    <button id="mypageButton" class="btn btn-outline-secondary" style="display:none;">마이페이지
+                    </button>
+                </li>
+            </ul>
         </div>
     </div>
-    <!-- Page content wrapper-->
-    <div id="page-content-wrapper">
-        <!-- Top navigation-->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    <ul class="navbar-nav ms-auto mt-2 mt-lg-0">
-                        <li class="nav-item">
-                            <button id="authButton" class="btn btn-outline-primary">로그인/회원가입</button>
-                        </li>
-                        <li class="nav-item">
-                            <button id="mypageButton" class="btn btn-outline-secondary" style="display:none;">마이페이지
-                            </button>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-        <!-- Page content-->
-        <div class="container-fluid">
-            <!-- Hero Section -->
-            <div class="hero text-center py-5 bg-light" id="heroSection">
-                <h1 class="display-4 mb-3">환영합니다, 군포 시민 여러분!</h1>
-                <p class="lead">군포 시민을 위한 소통 플랫폼입니다. 다양한 정보와 소통의 장을 제공합니다.</p>
-            </div>
-
-            <!-- Feature Section -->
-        </div>
-        <div class="row text-center my-5">
-            <!-- 경기 지역화폐 가맹점 찾기 -->
-            <div class="col-md-6 mb-4" id="currencySection">
-                <div class="p-4 bg-white shadow-sm rounded hover-effect">
-                    <div class="icon mb-3" style="font-size: 2rem;">💳</div>
-                    <h2 class="h4">경기 지역화폐 가맹점 찾기</h2>
-                    <p>군포 내 지역화폐 사용 가능한 가맹점을 검색해보세요.</p>
-                </div>
-            </div>
-
-            <!-- 커뮤니티 게시판 -->
-            <div class="col-md-6 mb-4" id="boardSection">
-                <div class="p-4 bg-white shadow-sm rounded hover-effect">
-                    <div class="icon mb-3" style="font-size: 2rem;">📋</div>
-                    <h2 class="h4">커뮤니티 게시판</h2>
-                    <p>로그인과 동네 인증 후 다양한 주제로 의견을 나눌 수 있습니다.</p>
-                </div>
+</nav>
+<!-- Page content-->
+<div class="container-fluid">
+    <!-- Hero Section -->
+    <div class="hero text-center py-5 bg-light" id="heroSection">
+        <h1 class="display-4 mb-3">환영합니다, 군포 시민 여러분!</h1>
+        <p class="lead">군포 시민을 위한 플랫폼입니다. 군포에 대한 다양한 정보를 얻고 소통해보세요.</p>
+    </div>
+    <!-- Feature Section -->
+    <div class="row text-center my-5">
+        <div class="col-md-6 mb-4">
+            <div id="currencySection" class="p-4 bg-white shadow-sm rounded hover-effect">
+                <div class="icon mb-3" style="font-size: 2rem;">💳</div>
+                <h2 class="h4">경기 지역화폐 가맹점 찾기</h2>
+                <p>군포 내 지역화폐 사용 가능한 가맹점을 검색해보세요.</p>
             </div>
         </div>
-
-        <!-- Additional Section -->
-        <div class="row text-center my-5">
-            <!-- 지속적인 정보 업데이트 -->
-            <div class="col-md-6 mb-4" id="newsSection">
-                <div class="p-4 bg-white shadow-sm rounded hover-effect">
-                    <div class="icon mb-3" style="font-size: 2rem;">🌐</div>
-                    <h2 class="h4">지속적인 정보 업데이트</h2>
-                    <p>군포의 최신 소식과 정보를 지속적으로 업데이트합니다.</p>
-                </div>
-            </div>
-
-            <!-- 흡연 구역 찾기 -->
-            <div class="col-md-6 mb-4" id="smokingAreaSection">
-                <div class="p-4 bg-white shadow-sm rounded hover-effect">
-                    <div class="icon mb-3" style="font-size: 2rem;">🚭</div>
-                    <h2 class="h4">흡연 구역 찾기</h2>
-                    <p>군포 내 흡연 구역을 찾아보세요.</p>
-                </div>
+        <div class="col-md-6 mb-4">
+            <div id="boardSection" class="p-4 bg-white shadow-sm rounded hover-effect">
+                <div class="icon mb-3" style="font-size: 2rem;">📋</div>
+                <h2 class="h4">커뮤니티 게시판</h2>
+                <p>로그인과 동네 인증 후 다양한 주제로 의견을 나눌 수 있습니다.</p>
             </div>
         </div>
-
+        <div class="col-md-6 mb-4">
+            <div id="smokingAreaSection" class="p-4 bg-white shadow-sm rounded hover-effect">
+                <div class="icon mb-3" style="font-size: 2rem;">🚭</div>
+                <h2 class="h4">흡연 구역 찾기</h2>
+                <p>군포 내 흡연 구역을 찾아보세요.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div id="newsSection" class="p-4 bg-white shadow-sm rounded hover-effect">
+                <div class="icon mb-3" style="font-size: 2rem;">🌐</div>
+                <h2 class="h4">지속적인 정보 업데이트</h2>
+                <p>군포의 최신 소식과 정보를 지속적으로 업데이트합니다.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div id="chatSection" class="p-4 bg-white shadow-sm rounded hover-effect">
+                <div class="icon mb-3" style="font-size: 2rem;">💬</div>
+                <h2 class="h4">실시간 채팅</h2>
+                <p>로그인 없이도 자유롭게 채팅을 즐겨보세요.</p>
+            </div>
+        </div>
+        <div class="col-md-6 mb-4">
+            <div id="inquirySection" class="p-4 bg-white shadow-sm rounded hover-effect">
+                <div class="icon mb-3" style="font-size: 2rem;">📨</div>
+                <h2 class="h4">문의하기</h2>
+                <p>궁금한 점이나 건의사항이 있다면 언제든 문의해주세요.</p>
+            </div>
+        </div>
     </div>
 </div>
-
 <!-- Footer Section -->
 <footer class="bg-dark text-white text-center py-4">
     <div class="container">
@@ -231,6 +216,14 @@
 
     document.getElementById('smokingAreaSection').addEventListener('click', function () {
         window.location.href = '/smoking-area'; // 클릭 시 흡연 구역 페이지로 이동
+    });
+
+    document.getElementById('chatSection').addEventListener('click', function () {
+        window.location.href = '/chat'; // 클릭 시 실시간 채팅 페이지로 이동
+    });
+
+    document.getElementById('inquirySection').addEventListener('click', function () {
+        window.location.href = '/inquiry-list'; // 클릭 시 문의하기 페이지로 이동
     });
 
     // 로그아웃 확인 후 처리
