@@ -1,6 +1,7 @@
 package com.example.gunpo.domain;
 
 import com.example.gunpo.dto.MemberDto;
+import com.example.gunpo.dto.member.oauth.OAuth2UserInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +25,7 @@ public class Member {
 
     private String email;
 
-    private String password;
+    private String password; // 일반 회원은 비밀번호를, 소셜 로그인 회원은 provider의 id를 사용
 
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
@@ -34,6 +35,8 @@ public class Member {
     private LocalDate dateOfBirth;
 
     private boolean neighborhoodVerification;
+
+    private String provider; // 소셜 로그인 제공자 (Google, Kakao, Naver)
 
     @OneToMany(mappedBy = "author")
     @Builder.Default
@@ -56,14 +59,16 @@ public class Member {
                 .build();
     }
 
+    // 일반 회원 생성
     public static Member create(MemberDto memberDto, String encodedPassword) {
         return Member.builder()
                 .email(memberDto.getEmail())
-                .password(encodedPassword)
+                .password(encodedPassword) // 일반 회원은 비밀번호를 사용
                 .nickname(memberDto.getNickname())
                 .dateOfBirth(memberDto.getDateOfBirth())
                 .memberRole(MemberRole.MEMBER)
                 .neighborhoodVerification(false)
+                .provider("local") // 일반 회원은 provider 값을 "local"로 설정
                 .build();
     }
 
