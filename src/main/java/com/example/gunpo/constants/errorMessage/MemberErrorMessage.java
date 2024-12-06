@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum MemberErrorMessage {
     INVALID_REFRESH_TOKEN("유효하지 않은 refreshToken입니다."),
     INCORRECT_PASSWORD("비밀번호가 일치하지 않습니다."),
@@ -17,10 +20,6 @@ public enum MemberErrorMessage {
 
     MemberErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }
