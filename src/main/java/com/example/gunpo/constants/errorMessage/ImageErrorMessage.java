@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum ImageErrorMessage {
     IMAGE_STORAGE_ERROR("이미지 저장 중 오류가 발생했습니다."),
     INVALID_FILE_FORMAT("지원되지 않는 파일 형식입니다."),
@@ -9,10 +12,6 @@ public enum ImageErrorMessage {
 
     ImageErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

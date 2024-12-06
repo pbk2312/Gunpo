@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum ChatErrorMessage {
 
     MESSAGE_SERIALIZATION_FAILED("메시지를 직렬화하는 데 실패했습니다."),
@@ -9,10 +12,6 @@ public enum ChatErrorMessage {
 
     ChatErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

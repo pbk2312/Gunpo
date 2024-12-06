@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum NewsErrorMessage {
 
     FETCH_DOCUMENT_ERROR("뉴스 데이터를 가져오는 중 오류가 발생했습니다."),
@@ -10,10 +13,6 @@ public enum NewsErrorMessage {
 
     NewsErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

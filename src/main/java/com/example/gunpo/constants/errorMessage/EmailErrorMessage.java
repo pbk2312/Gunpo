@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum EmailErrorMessage {
     DUPLICATE_EMAIL("이미 사용 중인 이메일입니다."),
     VERIFICATION_CODE_EXPIRED("인증번호가 만료되었거나 존재하지 않습니다."),
@@ -11,10 +14,6 @@ public enum EmailErrorMessage {
 
     EmailErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }

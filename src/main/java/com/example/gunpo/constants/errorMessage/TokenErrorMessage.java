@@ -1,5 +1,8 @@
 package com.example.gunpo.constants.errorMessage;
 
+import lombok.Getter;
+
+@Getter
 public enum TokenErrorMessage {
     INVALID_TOKEN("유효하지 않은 토큰입니다."),
     EXPIRED_TOKEN("만료된 토큰입니다."),
@@ -11,10 +14,6 @@ public enum TokenErrorMessage {
 
     TokenErrorMessage(String message) {
         this.message = message;
-    }
-
-    public String getMessage() {
-        return message;
     }
 
 }
