@@ -44,7 +44,7 @@ public class AuthenticationService {
         return tokenDto;
     }
 
-    private Member findMemberByEmail(String email) {
+    public Member findMemberByEmail(String email) {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new MemberNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_EMAIL.getMessage()));
     }
