@@ -1,6 +1,5 @@
 package com.example.gunpo.controller.restapi;
 
-
 import com.example.gunpo.dto.member.LoginDto;
 import com.example.gunpo.dto.MemberDto;
 import com.example.gunpo.dto.member.MemberUpdateDto;
@@ -30,6 +29,10 @@ public class MemberApiController {
     private final AuthenticationService authenticationService;
     private final MemberManagementService memberManagementService;
 
+    // 쿠키 유효기간 상수
+    private static final int ACCESS_TOKEN_EXPIRATION = 60 * 60 * 24; // 24시간
+    private static final int REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 7; // 7일
+
     @PostMapping("/sign-up")
     public ResponseEntity<ResponseDto<String>> signUp(@Valid @RequestBody MemberDto memberDto) {
         log.info("회원가입 요청: 이메일 = {}, 닉네임 = {}", memberDto.getEmail(), memberDto.getNickname());
@@ -43,8 +46,8 @@ public class MemberApiController {
             @RequestBody LoginDto loginDto, HttpServletResponse response, HttpServletRequest request) {
         log.info("로그인 요청: 이메일 = {}", loginDto.getEmail());
         TokenDto tokenDto = authenticationService.login(loginDto);
-        CookieUtils.addCookie(response, "accessToken", tokenDto.getAccessToken(), 3600);
-        CookieUtils.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), 36000);
+        CookieUtils.addCookie(response, "accessToken", tokenDto.getAccessToken(), ACCESS_TOKEN_EXPIRATION);
+        CookieUtils.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), REFRESH_TOKEN_EXPIRATION);
         String redirectUrl = getRedirectUrlFromSession(request);
         log.info("로그인 성공: 이메일 = {}, 리디렉션 URL = {}", loginDto.getEmail(), redirectUrl);
         return ResponseEntity.ok(new ResponseDto<>("로그인 성공", redirectUrl, true));
@@ -74,7 +77,6 @@ public class MemberApiController {
         return ResponseEntity.ok(new ResponseDto<>("회원 탈퇴 성공", null, true));
     }
 
-
     @GetMapping("/validateToken")
     public ResponseEntity<ResponseDto<Map<String, Object>>> validateToken(
             @CookieValue(value = "accessToken", required = false) String accessToken,
@@ -88,7 +90,8 @@ public class MemberApiController {
 
         if (validationResult.getNewAccessToken() != null) {
             data.put("accessToken", validationResult.getNewAccessToken());
-            CookieUtils.addCookie(response, "accessToken", validationResult.getNewAccessToken(), 3600);
+            CookieUtils.addCookie(response, "accessToken", validationResult.getNewAccessToken(),
+                    ACCESS_TOKEN_EXPIRATION);
         }
 
         log.info("토큰 검증 성공: 액세스 토큰 유효성 = {}, 리프레시 토큰 유효성 = {}", validationResult.isAccessTokenValid(),
