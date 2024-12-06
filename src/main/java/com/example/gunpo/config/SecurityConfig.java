@@ -67,7 +67,6 @@ public class SecurityConfig {
 
                 // JWT 보안 설정 추가
                 .with(new JwtSecurityConfig(tokenProvider), jwtSecurityConfig -> {
-                    // JwtSecurityConfig에 대한 커스터마이즈 작업을 수행합니다.
                 })
 
                 // OAuth2 로그인 설정 추가
