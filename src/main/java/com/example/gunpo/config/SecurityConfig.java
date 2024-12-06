@@ -3,6 +3,7 @@ package com.example.gunpo.config;
 
 import com.example.gunpo.handler.JwtAccessDeniedHandler;
 import com.example.gunpo.handler.JwtAuthenticationEntryPoint;
+import com.example.gunpo.handler.OAuth2AuthenticationSuccessHandler;
 import com.example.gunpo.infrastructure.TokenProvider;
 import com.example.gunpo.service.member.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class SecurityConfig {
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler successHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,11 +73,11 @@ public class SecurityConfig {
                 // OAuth2 로그인 설정 추가
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")
+                        .successHandler(successHandler)
                         // 로그인 성공 시 사용자 정보 처리
                         .userInfoEndpoint(userInfoEndpoint ->
                                 userInfoEndpoint.userService(customOAuth2UserService)
                         )
-
                 );
 
         return http.build();
