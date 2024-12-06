@@ -127,7 +127,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기 지역화폐 가맹점 찾기</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
+                지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
@@ -162,7 +163,26 @@
                     </div>
                     <button type="submit" class="btn btn-primary w-100">로그인</button>
                 </form>
-                <button id="signupButton" class="btn btn-signup w-100">회원가입</button> <!-- 회원가입 버튼에 ID 추가 -->
+                <button id="signupButton" class="btn btn-signup w-100">회원가입</button>
+
+                <!-- 소셜 로그인 -->
+                <div class="social-login mt-4">
+                    <p class="text-center">또는 소셜 계정으로 로그인하세요</p>
+                    <div class="d-flex flex-column justify-content-center align-items-center gap-4">
+                        <!-- Google -->
+                        <a href="/oauth2/authorization/google" class="d-inline-block">
+                            <img src="/img/구글.png" alt="Google 로그인" style="width: 270px; height: 70px;">
+                        </a>
+                        <!-- Kakao -->
+                        <a href="/oauth2/authorization/kakao" class="d-inline-block">
+                            <img src="/img/카카오.png" alt="Kakao 로그인" style="width: 270px; height: 70px;">
+                        </a>
+                        <!-- Naver -->
+                        <a href="/oauth2/authorization/naver" class="d-inline-block">
+                            <img src="/img/네이버.png" alt="Naver 로그인" style="width: 270px; height: 70px;">
+                        </a>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
@@ -192,8 +212,8 @@
 
         fetch("/api/member/login", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password }),
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({email, password}),
         })
             .then((response) => {
                 if (!response.ok) {
