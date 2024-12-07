@@ -6,9 +6,11 @@ import com.example.gunpo.domain.board.Comment;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.CommentNotFoundException;
+import com.example.gunpo.exception.board.InvalidReplyCommentException;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.repository.CommentRepository;
 import com.example.gunpo.service.member.AuthenticationService;
+import com.example.gunpo.service.redis.notification.NotificationRedisService;
 import com.example.gunpo.validator.board.CommentValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,6 +42,8 @@ class CommentServiceTest {
     @Mock
     private CommentValidator commentValidator;
 
+    @Mock
+    private NotificationRedisService notificationRedisService;
 
     private Member mockMember;
     private Board mockBoard;
@@ -198,7 +202,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("대댓글 수정 - 대댓글이 부모 댓글과 연결되지 않으면 예외를 던진다.")
-    void updateReplyComment_invalidParent_throwsIllegalArgumentException() {
+    void updateReplyComment_invalidParent_throwsInvalidReplyCommentException() {
         // Given
         Long parentCommentId = 1L;
         Long replyId = 2L;
@@ -215,8 +219,8 @@ class CommentServiceTest {
         // When & Then
         assertThatThrownBy(
                 () -> commentService.updateReplyComment(parentCommentId, replyId, accessToken, "Updated Content"))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 대댓글은 부모 댓글과 연결되어 있지 않습니다.");
+                .isInstanceOf(InvalidReplyCommentException.class)
+                .hasMessage(BoardErrorMessage.INVALID_REPLY_COMMENT.getMessage());
         verify(commentRepository, never()).save(any(Comment.class));
     }
 
@@ -251,7 +255,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("대댓글 삭제 - 대댓글이 부모 댓글과 연결되지 않으면 예외를 던진다.")
-    void deleteReplyComment_invalidParent_throwsIllegalArgumentException() {
+    void deleteReplyComment_invalidParent_throwsInvalidReplyCommentException() {
         // Given
         Long parentCommentId = 1L;
         Long replyId = 2L;
@@ -267,8 +271,8 @@ class CommentServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> commentService.deleteReplyComment(parentCommentId, replyId, accessToken))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 대댓글은 부모 댓글과 연결되어 있지 않습니다.");
+                .isInstanceOf(InvalidReplyCommentException.class)
+                .hasMessage(BoardErrorMessage.INVALID_REPLY_COMMENT.getMessage());
         verify(commentRepository, never()).delete(any(Comment.class));
     }
 
