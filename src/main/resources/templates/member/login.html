@@ -8,243 +8,249 @@
     <title>로그인 - Gunpo Community Platform</title>
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <!-- Core theme CSS (includes Bootstrap) -->
     <link href="css/styles.css" rel="stylesheet"/>
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            font-family: 'Inter', sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
         }
 
         .login-container {
-            max-width: 500px;
-            margin: auto;
-            padding: 40px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
+            max-width: 450px;
+            margin: 100px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease-in-out;
         }
 
         .login-container:hover {
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+            transform: scale(1.02);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
         }
 
         h2 {
             font-size: 2rem;
-            margin-bottom: 20px;
-            color: #333;
-            font-weight: bold;
+            font-weight: 700;
+            color: #2575fc;
             text-align: center;
+            margin-bottom: 20px;
         }
 
         .form-label {
             font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
         }
 
         .form-control {
-            border-radius: 8px;
+            width: 100%;
             padding: 12px;
             font-size: 1rem;
             border: 1px solid #ddd;
-            transition: border-color 0.3s ease;
+            border-radius: 8px;
+            transition: border-color 0.3s ease-in-out;
         }
 
         .form-control:focus {
-            border-color: #007bff;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            border-color: #6a11cb;
+            box-shadow: 0 0 5px rgba(106, 17, 203, 0.5);
+            outline: none;
         }
 
         .btn-primary {
-            background-color: #007bff;
-            border-color: #007bff;
+            display: block;
+            width: 100%;
             padding: 12px;
             font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #6a11cb, #2575fc);
+            border: none;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #0056b3;
-            border-color: #0056b3;
+            background: linear-gradient(135deg, #4d00c6, #1a65d1);
         }
 
         .btn-signup {
-            background-color: #28a745;
-            border-color: #28a745;
-            margin-top: 20px;
+            margin-top: 15px;
+            width: 100%;
             padding: 12px;
             font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+            background: #28a745;
+            border: none;
             border-radius: 8px;
-            transition: background-color 0.3s ease;
+            transition: background 0.3s ease;
         }
 
         .btn-signup:hover {
-            background-color: #218838;
-            border-color: #1e7e34;
+            background: #218838;
         }
 
-        /* 홈 버튼 스타일 */
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #6a11cb; /* 아이콘 색상 */
+        .social-login {
+            margin-top: 30px;
+            text-align: center;
+            display: flex; /* 플렉스박스를 사용 */
+            flex-direction: column; /* 세로 방향으로 정렬 */
+            align-items: center; /* 항목들을 중앙 정렬 */
+            gap: 15px; /* 항목 간 간격 */
+        }
+
+        .social-login p {
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #666;
+        }
+
+
+        .social-login img {
+            max-width: 260px; /* 기본 크기 */
+            border-radius: 8px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .social-login img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 카카오 이미지 크기 커스터마이징 */
+        #kakao-login {
+            max-width: 500px !important; /* 이미지를 300px로 늘림 */
+            width: 100%; /* 반응형 지원 */
+            height: auto; /* 비율 유지 */
+        }
+
+        footer {
+            margin-top: 230px;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: #ffd700;
             text-decoration: none;
         }
 
-        .navbar-brand .icon {
-            font-size: 2rem; /* 아이콘 크기 */
-            margin-right: 10px;
+        footer a:hover {
+            text-decoration: underline;
         }
 
-        .navbar-brand .text {
-            font-size: 1rem; /* 글씨 크기를 아이콘보다 작게 설정 */
-            color: #6c757d; /* 회색 글씨 */
+        .login-container {
+            position: relative; /* 버튼을 오른쪽 끝에 배치하기 위해 사용 */
         }
 
-        .navbar-brand:hover .text {
-            color: #343a40; /* 호버 시 글씨 색상 변경 */
+        .btn-home {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 6px 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+            background: #87CEEB; /* 하늘색 */
+            border: none;
+            border-radius: 6px;
+            transition: background 0.3s ease;
+            cursor: pointer;
         }
 
-        .custom-alert {
-            max-width: 500px; /* 메시지의 너비를 폼에 맞춤 */
-            margin: 10px auto; /* 화면 중앙 정렬 */
-            padding: 10px; /* 내부 여백을 적당히 설정 */
-            border-radius: 5px; /* 부드러운 모서리 */
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 약간의 그림자 추가 */
-            font-size: 0.9rem; /* 글씨 크기를 살짝 작게 */
+        .btn-home:hover {
+            background: #00BFFF; /* hover 상태에서 더 진한 하늘색 */
         }
+
 
     </style>
 </head>
 <body>
-<div class="d-flex" id="wrapper">
-    <!-- Sidebar -->
-    <aside class="border-end bg-white" id="sidebar-wrapper">
-        <div class="sidebar-heading border-bottom bg-light">Gunpo Community</div>
-        <div class="list-group list-group-flush">
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
-                지역화폐 가맹점 찾기</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/smoking-area">흡연 구역</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/news">뉴스</a>
-        </div>
-    </aside>
-    <!-- Page content wrapper -->
-    <div id="page-content-wrapper">
-        <!-- Top navigation -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="/">
-                    <span class="icon">🏠</span> <!-- 상시 보이는 홈 아이콘 -->
-                    <span class="text">홈으로</span> <!-- 아이콘보다 작고 회색 글씨 -->
-                </a>
-            </div>
-        </nav>
-        <!-- Main content -->
-        <main class="container-fluid">
-            <div th:if="${errorMessage}" class="alert alert-danger custom-alert text-center">
-                <p th:text="${errorMessage}" class="m-0"></p>
-            </div>
-            <div class="login-container mt-5">
-                <h2 class="text-center">로그인</h2>
-                <form id="loginForm" action="/api/member/login" method="post">
-                    <div class="mb-3">
-                        <label for="email" class="form-label">이메일</label>
-                        <input type="email" class="form-control" id="email" name="email" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">비밀번호</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100">로그인</button>
-                </form>
-                <button id="signupButton" class="btn btn-signup w-100">회원가입</button>
+<div class="login-container">
+    <h2>로그인</h2>
+    <button id="homeButton" class="btn-home">홈으로</button>
 
-                <!-- 소셜 로그인 -->
-                <div class="social-login mt-4">
-                    <p class="text-center">또는 소셜 계정으로 로그인하세요</p>
-                    <div class="d-flex flex-column justify-content-center align-items-center gap-4">
-                        <!-- Google -->
-                        <a href="/oauth2/authorization/google" class="d-inline-block">
-                            <img src="/img/구글.png" alt="Google 로그인" style="width: 270px; height: 70px;">
-                        </a>
-                        <!-- Kakao -->
-                        <a href="/oauth2/authorization/kakao" class="d-inline-block">
-                            <img src="/img/카카오.png" alt="Kakao 로그인" style="width: 270px; height: 70px;">
-                        </a>
-                        <!-- Naver -->
-                        <a href="/oauth2/authorization/naver" class="d-inline-block">
-                            <img src="/img/네이버.png" alt="Naver 로그인" style="width: 270px; height: 70px;">
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </main>
+    <div th:if="${errorMessage}" class="alert alert-danger custom-alert text-center">
+        <p th:text="${errorMessage}" class="m-0"></p>
     </div>
+
+    <form id="loginForm" action="/api/member/login" method="post">
+        <label for="email" class="form-label">이메일</label>
+        <input type="email" id="email" name="email" class="form-control" required>
+
+        <label for="password" class="form-label">비밀번호</label>
+        <input type="password" id="password" name="password" class="form-control" required>
+
+        <button type="submit" class="btn-primary">로그인</button>
+    </form>
+    <button id="signupButton" class="btn-signup">회원가입</button>
+
+
+    <div class="social-login">
+        <p>또는 소셜 계정으로 로그인하세요</p>
+        <a href="/oauth2/authorization/google"><img src="/img/구글.png" alt="Google 로그인"></a>
+        <a href="/oauth2/authorization/kakao"><img id="kakao-login" src="/img/카카오.png" alt="Kakao 로그인"></a>
+        <a href="/oauth2/authorization/naver"><img src="/img/네이버.png" alt="Naver 로그인"></a>
+    </div>
+
 </div>
-<footer class="bg-dark text-white text-center py-4">
-    <div class="container">
-        <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
-        <p>Contact us: <a href="mailto:support@gunpocommunity.kr" class="text-white">support@gunpocommunity.kr</a></p>
-        <p>
-            <a href="#!" class="text-white">Privacy Policy</a> |
-            <a href="#!" class="text-white">Terms of Service</a> |
-            <a href="#!" class="text-white">Contact Us</a>
-        </p>
-    </div>
+
+<footer>
+    <p>&copy; 2024 Gunpo Community Platform. All rights reserved.</p>
+    <p>Contact: <a href="mailto:support@gunpocommunity.kr">support@gunpocommunity.kr</a></p>
 </footer>
 
-
-<!-- Bootstrap core JS -->
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Core theme JS -->
-<script src="js/scripts.js"></script>
 <script>
+
+    document.getElementById("homeButton").onclick = function () {
+        window.location.href = "/";
+    };
+
     document.getElementById("loginForm").onsubmit = function (event) {
-        event.preventDefault(); // 기본 폼 제출을 막음
+        event.preventDefault();
         const email = document.getElementById("email").value;
         const password = document.getElementById("password").value;
 
         fetch("/api/member/login", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({email, password}),
+            body: JSON.stringify({email, password})
         })
-            .then((response) => {
+            .then(response => {
                 if (!response.ok) {
-                    return response.json().then((data) => {
-                        alert(data.message || "로그인에 실패했습니다."); // 실패 메시지 알림
+                    return response.json().then(data => {
+                        alert(data.message || "로그인 실패");
                         throw new Error(data.message || "로그인 실패");
                     });
                 }
-                return response.json(); // 성공 시 JSON 응답 처리
+                return response.json();
             })
-            .then((data) => {
+            .then(data => {
                 if (data.success) {
-                    const redirectUrl = data.data; // 서버에서 받은 리다이렉트 URL
-                    if (redirectUrl) {
-                        window.location.href = redirectUrl; // 리다이렉트 처리
-                    } else {
-                        console.error("리다이렉트 URL이 존재하지 않습니다.");
-                        alert("로그인 후 이동할 페이지를 찾을 수 없습니다.");
-                    }
+                    window.location.href = data.data || "/";
                 } else {
-                    alert(data.message); // 실패 메시지 알림
+                    alert(data.message);
                 }
             })
-            .catch((error) => {
-                console.error("로그인 처리 중 오류 발생:", error);
-            });
+            .catch(console.error);
     };
 
     document.getElementById("signupButton").onclick = function () {
-        window.location.href = "/sign-up"; // 회원가입 버튼 클릭 시 회원가입 페이지로 이동
+        window.location.href = "/sign-up";
     };
+
 </script>
 </body>
 </html>
