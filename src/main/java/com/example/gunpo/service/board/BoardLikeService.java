@@ -3,7 +3,7 @@ package com.example.gunpo.service.board;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.service.member.AuthenticationService;
-import com.example.gunpo.service.redis.RedisBoardLikeService;
+import com.example.gunpo.service.redis.board.RedisBoardLikeService;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

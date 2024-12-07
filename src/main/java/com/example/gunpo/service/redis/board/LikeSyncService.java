@@ -1,4 +1,4 @@
-package com.example.gunpo.service.redis;
+package com.example.gunpo.service.redis.board;
 
 import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.exception.board.InvalidPostIdException;

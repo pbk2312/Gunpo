@@ -9,7 +9,7 @@ import com.example.gunpo.exception.board.InvalidPageableException;
 import com.example.gunpo.mapper.BoardMapper;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.service.member.AuthenticationService;
-import com.example.gunpo.service.redis.RedisViewCountService;
+import com.example.gunpo.service.redis.board.RedisViewCountService;
 import com.example.gunpo.validator.board.BoardValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

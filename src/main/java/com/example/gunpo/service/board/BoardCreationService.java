@@ -5,7 +5,7 @@ import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.repository.BoardRepository;
 import com.example.gunpo.service.member.AuthenticationService;
-import com.example.gunpo.service.redis.RedisViewCountService;
+import com.example.gunpo.service.redis.board.RedisViewCountService;
 import com.example.gunpo.validator.board.BoardValidator;
 import com.example.gunpo.validator.member.AuthenticationValidator;
 import com.example.gunpo.service.image.ImageProcessor;
