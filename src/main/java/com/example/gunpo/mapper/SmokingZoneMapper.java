@@ -13,7 +13,4 @@ public interface SmokingZoneMapper {
     // SmokingArea를 SmokingZoneAreaDto로 변환
     SmokingAreaDto toDto(SmokingArea smokingArea);
 
-    // SmokingZoneAreaDto를 SmokingArea로 변환 (필요시)
-    SmokingArea toEntity(SmokingAreaDto dto);
-
 }
