@@ -1,6 +1,6 @@
 package com.example.gunpo.controller.restapi;
 
-import com.example.gunpo.dto.functions.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.service.functions.GyeonggiCurrencyStoreService;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.example.gunpo.dto.functions;
+package com.example.gunpo.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package com.example.gunpo.service.redis;
 
 import com.example.gunpo.constants.RedisConstants;
-import com.example.gunpo.dto.functions.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
 import com.example.gunpo.domain.GyeonggiCurrencyStore;
 import com.example.gunpo.mapper.GyeonggiCurrencyStoreMapper;
 import com.example.gunpo.repository.GyeonggiCurrencyStoreRepository;
