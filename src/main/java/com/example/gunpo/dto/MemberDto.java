@@ -3,7 +3,6 @@ package com.example.gunpo.dto;
 
 import com.example.gunpo.domain.MemberRole;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
