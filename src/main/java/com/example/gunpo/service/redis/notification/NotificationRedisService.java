@@ -55,11 +55,4 @@ public class NotificationRedisService {
         redisTemplate.opsForHash().delete(key, notificationId); // 특정 알림 삭제
     }
 
-    // 사용자 ID를 기준으로 모든 알림 삭제
-    public void deleteNotifications(String userId) {
-        // Redis 키 생성: "notifications:<userId>"
-        // - 사용자별 고유 Redis 키를 삭제하여 해당 사용자의 모든 알림 제거
-        redisTemplate.delete(KEY + ":" + userId); // 사용자별 해시 키 삭제
-    }
-
 }
