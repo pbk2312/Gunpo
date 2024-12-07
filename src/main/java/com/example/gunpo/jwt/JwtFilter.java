@@ -1,6 +1,5 @@
-package com.example.gunpo.filter;
+package com.example.gunpo.jwt;
 
-import com.example.gunpo.infrastructure.TokenProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;

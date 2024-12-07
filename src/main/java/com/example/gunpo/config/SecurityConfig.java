@@ -1,10 +1,10 @@
 package com.example.gunpo.config;
 
 
-import com.example.gunpo.handler.JwtAccessDeniedHandler;
-import com.example.gunpo.handler.JwtAuthenticationEntryPoint;
+import com.example.gunpo.jwt.JwtAccessDeniedHandler;
+import com.example.gunpo.jwt.JwtAuthenticationEntryPoint;
 import com.example.gunpo.handler.OAuth2AuthenticationSuccessHandler;
-import com.example.gunpo.infrastructure.TokenProvider;
+import com.example.gunpo.jwt.TokenProvider;
 import com.example.gunpo.service.member.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;

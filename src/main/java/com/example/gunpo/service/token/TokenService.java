@@ -2,7 +2,7 @@ package com.example.gunpo.service.token;
 
 
 import com.example.gunpo.dto.member.TokenDto;
-import com.example.gunpo.infrastructure.TokenProvider;
+import com.example.gunpo.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;

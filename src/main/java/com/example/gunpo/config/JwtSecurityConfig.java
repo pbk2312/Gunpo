@@ -1,7 +1,7 @@
 package com.example.gunpo.config;
 
-import com.example.gunpo.infrastructure.TokenProvider;
-import com.example.gunpo.filter.JwtFilter;
+import com.example.gunpo.jwt.TokenProvider;
+import com.example.gunpo.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;

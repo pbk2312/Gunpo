@@ -4,7 +4,7 @@ import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.exception.location.NeighborhoodVerificationException;
 import com.example.gunpo.exception.member.UnauthorizedException;
-import com.example.gunpo.infrastructure.TokenProvider;
+import com.example.gunpo.jwt.TokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

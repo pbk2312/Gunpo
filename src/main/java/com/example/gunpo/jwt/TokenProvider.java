@@ -1,4 +1,4 @@
-package com.example.gunpo.infrastructure;
+package com.example.gunpo.jwt;
 
 import com.example.gunpo.constants.errorMessage.MemberErrorMessage;
 import com.example.gunpo.constants.errorMessage.TokenErrorMessage;
