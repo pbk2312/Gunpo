@@ -1,4 +1,4 @@
-package com.example.gunpo.infrastructure;
+package com.example.gunpo.email;
 
 import com.example.gunpo.constants.errorMessage.EmailErrorMessage;
 import com.example.gunpo.exception.email.EmailSendFailedException;

@@ -2,7 +2,7 @@ package com.example.gunpo.controller.restapi;
 
 import com.example.gunpo.dto.member.EmailDto;
 import com.example.gunpo.dto.ResponseDto;
-import com.example.gunpo.service.email.EmailService;
+import com.example.gunpo.email.EmailService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
