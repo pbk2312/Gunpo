@@ -35,7 +35,7 @@ public class OAuth2UserInfo {
                 .provider("google")
                 .id("google_" + (String) attributes.get("sub"))
                 .password((String) attributes.get("sub")) // 구글은 ID를 password로 사용
-                .nickname((String) attributes.get("name"))
+                .nickname((String) attributes.get("name") + "_google") // 닉네임에 provider 추가
                 .email((String) attributes.get("email"))
                 .build();
     }
@@ -49,8 +49,8 @@ public class OAuth2UserInfo {
                 .provider("kakao")
                 .id("kakao_" + attributes.get("id").toString())
                 .password(attributes.get("id").toString())
-                .nickname((String) properties.get("nickname"))
-                .email(email) // 이메일 추가
+                .nickname((String) properties.get("nickname") + "_kakao") // 닉네임에 provider 추가
+                .email(email)
                 .build();
     }
 
@@ -61,8 +61,8 @@ public class OAuth2UserInfo {
                 .provider("naver")
                 .id("naver_" + (String) response.get("id"))
                 .password((String) response.get("id")) // 네이버는 ID를 password로 사용
-                .nickname((String) response.get("name"))
-                .email((String) response.get("email")) // 이메일 추가
+                .nickname((String) response.get("name") + "_naver") // 닉네임에 provider 추가
+                .email((String) response.get("email"))
                 .build();
     }
 
