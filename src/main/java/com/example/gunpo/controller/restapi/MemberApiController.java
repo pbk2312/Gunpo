@@ -30,7 +30,7 @@ public class MemberApiController {
     private final MemberManagementService memberManagementService;
 
     // 쿠키 유효기간 상수
-    private static final int ACCESS_TOKEN_EXPIRATION = 60 * 60 * 24; // 24시간
+    private static final int ACCESS_TOKEN_EXPIRATION = 60 * 60; // 1시간
     private static final int REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 7; // 7일
 
     @PostMapping("/sign-up")
