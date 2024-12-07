@@ -1,5 +1,6 @@
 package com.example.gunpo.service.member;
 
+import com.example.gunpo.domain.CustomUserDetails;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.member.oauth.OAuth2UserInfo;
 import com.example.gunpo.repository.MemberRepository;
