@@ -2,6 +2,7 @@
 
 ---
 
-![image](https://github.com/user-attachments/assets/afc51882-95c5-4629-bf54-8d2b5ddab6ac)
+![image](https://github.com/user-attachments/assets/8225160f-ef3c-4b81-a33c-d6ee3e4f3276)
 
-* 흡연구역
+
+
