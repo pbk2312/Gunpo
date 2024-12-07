@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Java CI with Gradle and Docker
 
 on:
   push:
@@ -7,23 +7,31 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  build-docker-image:
     runs-on: ubuntu-latest
     permissions:
       contents: read
 
     steps:
+      # 소스 코드 체크아웃
       - uses: actions/checkout@v4
 
+      # JDK 설정
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
+      # Gradle 설정
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4.0.0
 
+      # Gradle Wrapper 실행 권한 부여
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      # Spring Boot 애플리케이션 빌드
       - name: Build with Gradle Wrapper
         env:
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
@@ -43,3 +51,43 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: ./gradlew build -x test
+
+      # Docker 이미지 빌드
+      - name: Build Docker Image
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test .
+
+      # DockerHub 로그인
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # DockerHub로 이미지 푸시
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+
+  deploy-on-ec2:
+    needs: build-docker-image
+    runs-on: self-hosted
+
+    steps:
+      # EC2에서 Docker 이미지 가져오기
+      - name: Pull Docker Image
+        run: sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+
+      # 기존 컨테이너 중지 및 삭제
+      - name: Stop and Remove Existing Container
+        run: |
+          if [ $(sudo docker ps -a -q -f name=spring-cicd-test) ]; then
+            sudo docker stop spring-cicd-test
+            sudo docker rm spring-cicd-test
+          fi
+
+      # 새 컨테이너 실행
+      - name: Run New Docker Container
+        run: sudo docker run --rm -d -p 80:8080 --name spring-cicd-test ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+
+      # 불필요한 Docker 이미지 정리
+      - name: Clean Up Docker
+        run: sudo docker system prune -f
