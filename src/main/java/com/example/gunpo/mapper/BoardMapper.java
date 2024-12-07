@@ -1,7 +1,7 @@
 package com.example.gunpo.mapper;
 
 import com.example.gunpo.Factory.ImageProcessor;
-import com.example.gunpo.domain.Board;
+import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.dto.board.BoardDto;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

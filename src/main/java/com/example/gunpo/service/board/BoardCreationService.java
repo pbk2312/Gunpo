@@ -1,6 +1,6 @@
 package com.example.gunpo.service.board;
 
-import com.example.gunpo.domain.Board;
+import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.repository.BoardRepository;

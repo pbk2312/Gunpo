@@ -1,4 +1,4 @@
-package com.example.gunpo.domain;
+package com.example.gunpo.domain.board;
 
 public enum Category {
 

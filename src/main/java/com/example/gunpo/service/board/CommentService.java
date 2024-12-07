@@ -1,8 +1,8 @@
 package com.example.gunpo.service.board;
 
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
-import com.example.gunpo.domain.Board;
-import com.example.gunpo.domain.Comment;
+import com.example.gunpo.domain.board.Board;
+import com.example.gunpo.domain.board.Comment;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.functions.NotificationDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;

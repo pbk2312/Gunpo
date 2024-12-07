@@ -1,7 +1,7 @@
 package com.example.gunpo.domain;
 
+import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.dto.MemberDto;
-import com.example.gunpo.dto.member.oauth.OAuth2UserInfo;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

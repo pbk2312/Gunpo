@@ -1,6 +1,7 @@
-package com.example.gunpo.domain;
+package com.example.gunpo.domain.board;
 
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
+import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.board.BoardDto;
 import jakarta.persistence.*;
 import lombok.*;

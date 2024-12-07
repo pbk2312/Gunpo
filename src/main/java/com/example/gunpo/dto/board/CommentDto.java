@@ -1,13 +1,12 @@
 package com.example.gunpo.dto.board;
 
-import com.example.gunpo.domain.Comment;
+import com.example.gunpo.domain.board.Comment;
 import com.example.gunpo.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @AllArgsConstructor

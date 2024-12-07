@@ -1,5 +1,6 @@
-package com.example.gunpo.domain;
+package com.example.gunpo.domain.board;
 
+import com.example.gunpo.domain.Member;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;

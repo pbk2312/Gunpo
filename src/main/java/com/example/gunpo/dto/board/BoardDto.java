@@ -1,6 +1,6 @@
 package com.example.gunpo.dto.board;
 
-import com.example.gunpo.domain.Category;
+import com.example.gunpo.domain.board.Category;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;

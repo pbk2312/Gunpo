@@ -1,6 +1,6 @@
 package com.example.gunpo.controller.restapi;
 
-import com.example.gunpo.domain.Category;
+import com.example.gunpo.domain.board.Category;
 import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.service.board.BoardCreationService;

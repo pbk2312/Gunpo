@@ -1,7 +1,7 @@
 package com.example.gunpo.controller.view;
 
 
-import com.example.gunpo.domain.Comment;
+import com.example.gunpo.domain.board.Comment;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.dto.board.CommentDto;

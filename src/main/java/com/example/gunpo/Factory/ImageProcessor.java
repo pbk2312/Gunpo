@@ -1,7 +1,7 @@
 package com.example.gunpo.Factory;
 
-import com.example.gunpo.domain.Board;
-import com.example.gunpo.domain.BoardImage;
+import com.example.gunpo.domain.board.Board;
+import com.example.gunpo.domain.board.BoardImage;
 import com.example.gunpo.service.image.ImageService;
 import java.util.ArrayList;
 import java.util.Collections;

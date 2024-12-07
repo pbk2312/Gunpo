@@ -1,6 +1,6 @@
 package com.example.gunpo.service.redis;
 
-import com.example.gunpo.domain.Board;
+import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.exception.board.InvalidPostIdException;
 import com.example.gunpo.repository.BoardRepository;
 import java.util.Set;

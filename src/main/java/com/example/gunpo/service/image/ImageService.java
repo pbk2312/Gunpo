@@ -1,8 +1,8 @@
 package com.example.gunpo.service.image;
 
 import com.example.gunpo.constants.errorMessage.ImageErrorMessage;
-import com.example.gunpo.domain.Board;
-import com.example.gunpo.domain.BoardImage;
+import com.example.gunpo.domain.board.Board;
+import com.example.gunpo.domain.board.BoardImage;
 import com.example.gunpo.exception.board.ImageStorageException;
 import com.example.gunpo.repository.BoardImageRepository;
 import lombok.RequiredArgsConstructor;

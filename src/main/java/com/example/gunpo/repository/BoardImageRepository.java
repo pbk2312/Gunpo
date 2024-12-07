@@ -1,6 +1,6 @@
 package com.example.gunpo.repository;
 
-import com.example.gunpo.domain.BoardImage;
+import com.example.gunpo.domain.board.BoardImage;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BoardImageRepository extends JpaRepository<BoardImage, Long> {

@@ -1,6 +1,6 @@
 package com.example.gunpo.repository;
 
-import com.example.gunpo.domain.Board;
+import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.domain.Member;
 import java.util.List;
 import java.util.Optional;

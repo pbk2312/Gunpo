@@ -1,7 +1,7 @@
 package com.example.gunpo.validator.board;
 
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
-import com.example.gunpo.domain.Comment;
+import com.example.gunpo.domain.board.Comment;
 import com.example.gunpo.domain.Member;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.member.AuthenticationService;
