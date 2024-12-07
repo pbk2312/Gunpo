@@ -2,7 +2,7 @@ package com.example.gunpo.service.functions;
 
 import com.example.gunpo.constants.ApiConstants;
 import com.example.gunpo.constants.errorMessage.ApiErrorMessage;
-import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.dto.functions.GyeonggiCurrencyStoreDto;
 import com.example.gunpo.exception.api.ApiCallException;
 import com.example.gunpo.exception.api.ApiResponseParsingException;
 import com.example.gunpo.mapper.GyeonggiCurrencyStoreMapper;

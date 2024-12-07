@@ -1,6 +1,6 @@
 package com.example.gunpo.mapper;
 
-import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.dto.functions.GyeonggiCurrencyStoreDto;
 import com.example.gunpo.domain.GyeonggiCurrencyStore;
 import java.util.Map;
 import org.springframework.stereotype.Component;

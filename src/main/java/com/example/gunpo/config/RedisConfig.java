@@ -1,7 +1,7 @@
 package com.example.gunpo.config;
 
 import com.example.gunpo.domain.SmokingArea;
-import com.example.gunpo.dto.GyeonggiCurrencyStoreDto;
+import com.example.gunpo.dto.functions.GyeonggiCurrencyStoreDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
