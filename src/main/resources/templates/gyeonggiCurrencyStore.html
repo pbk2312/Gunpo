@@ -37,7 +37,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat/rooms">1대1 채팅방 목록</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat/rooms">1대1 채팅방
+                목록</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
                 지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
@@ -59,19 +60,29 @@
 
         <!-- Description Section -->
         <div class="container mt-4">
-            <div class="alert alert-primary shadow-sm rounded" role="alert" style="background-image: linear-gradient(to right, #007bff, #00c6ff); color: white; padding: 20px; border: none;">
-                <h3 class="mb-3" style="font-family: 'Poppins', sans-serif; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);">
+            <div class="alert alert-primary shadow-sm rounded" role="alert"
+                 style="background-image: linear-gradient(to right, #007bff, #00c6ff); color: white; padding: 20px; border: none;">
+                <h3 class="mb-3"
+                    style="font-family: 'Poppins', sans-serif; font-weight: bold; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4); color: yellowgreen;">
                     🌟 Gunpo - 경기 지역화폐 가맹점 안내
                 </h3>
-                <p style="font-size: 1.2rem; font-family: 'Open Sans', sans-serif; line-height: 1.5;">
-                    군포시에서 지역화폐를 사용할 수 있는 가맹점 정보를 확인해 보세요!<br/>
+                <p style="
+        font-size: 1.1rem;
+        font-family: 'Open Sans', sans-serif;
+        line-height: 1.8;
+        color: black;
+        background-color: #f9f9f9;
+        padding: 1rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);">
+                    <span style="color: black;">군포시에서 지역화폐를 사용할 수 있는 가맹점 정보를 확인해 보세요!</span><br/>
                     아래 검색 기능을 사용해 원하는 상호명을 찾아보거나, 지도를 탐색하며 다양한 가맹점을 발견하세요.
                 </p>
             </div>
             <!-- Search Form -->
-            <form id="searchForm" class="mb-3">
-                <input type="text" id="storeName" placeholder="상호명을 입력하세요" class="form-control mb-2">
-                <button type="submit" class="btn btn-primary">검색</button>
+            <form id="searchForm" class="mb-3 d-flex">
+                <input type="text" id="storeName" placeholder="상호명을 입력하세요" class="form-control mb-2" style="flex-grow: 1;">
+                <button type="submit" class="btn btn-primary ml-2" style="display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;">검색</button>
             </form>
         </div>
 
@@ -177,13 +188,13 @@
         infoWindows = []; // 배열 초기화
 
         // 검색어가 상호명에 포함된 모든 마커 찾기
-        const foundMarkers = markers.filter(({ store }) => store.CMPNM_NM.includes(storeName));
+        const foundMarkers = markers.filter(({store}) => store.CMPNM_NM.includes(storeName));
 
         if (foundMarkers.length > 0) {
             // 지도 범위 설정을 위한 LatLngBounds 객체 생성
             const bounds = new kakao.maps.LatLngBounds();
 
-            foundMarkers.forEach(({ marker, store }) => {
+            foundMarkers.forEach(({marker, store}) => {
                 const position = marker.getPosition();
 
                 // 지도 범위에 마커 위치 추가
