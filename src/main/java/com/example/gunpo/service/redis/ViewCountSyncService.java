@@ -25,7 +25,7 @@ public class ViewCountSyncService {
         log.info("조회수 동기화 시작");
 
         Set<String> keys = getRedisKeys();
-        if (keys == null || keys.isEmpty()) {
+        if (keys.isEmpty()) {
             log.info("동기화할 Redis 키가 없습니다.");
             return;
         }
