@@ -1,6 +1,6 @@
 package com.example.gunpo.service.board;
 
-import com.example.gunpo.Factory.ImageProcessor;
+import com.example.gunpo.service.image.ImageProcessor;
 import com.example.gunpo.constants.errorMessage.BoardErrorMessage;
 import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.domain.board.BoardImage;

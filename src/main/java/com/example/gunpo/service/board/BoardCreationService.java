@@ -8,7 +8,7 @@ import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.service.redis.RedisViewCountService;
 import com.example.gunpo.validator.board.BoardValidator;
 import com.example.gunpo.validator.member.AuthenticationValidator;
-import com.example.gunpo.Factory.ImageProcessor;
+import com.example.gunpo.service.image.ImageProcessor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
