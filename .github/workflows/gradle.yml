@@ -54,7 +54,7 @@ jobs:
 
     # Docker build
     - name: Build Docker Image
-      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test .
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/gunpo .
 
     # Docker login
     - name: Login to Docker Hub
@@ -65,7 +65,7 @@ jobs:
 
     # Docker push
     - name: Push Docker Image to Docker Hub
-      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
 
     # Deploy to EC2
     - name: Deploy to EC2
@@ -75,9 +75,9 @@ jobs:
         username: ec2-user
         key: ${{ secrets.EC2_PRIVATE_KEY }}
         script: |
-          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test:latest
-          if [ $(sudo docker ps -a -q -f name=spring-cicd-test) ]; then
-            sudo docker stop spring-cicd-test
+          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gunpo:latest
+          if [ $(sudo docker ps -a -q -f name=gunpo) ]; then
+            sudo docker stop gunpo
           fi
-          sudo docker run --rm -it -d -p 80:8080 --name spring-cicd-test ${{ secrets.DOCKERHUB_USERNAME }}/spring-cicd-test
+          sudo docker run --rm -it -d -p 80:8080 --name gunpo ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
           sudo docker system prune -f
