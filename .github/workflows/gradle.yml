@@ -1,0 +1,83 @@
+name: CI/CD using GitHub Actions & Docker
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  ci-cd:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    # Checkout repository
+    - uses: actions/checkout@v4
+
+    # Set up JDK 17
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    # Set up Gradle
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v4.0.0
+
+    # Grant execute permission for gradlew
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    # Build with Gradle
+    - name: Build with Gradle Wrapper
+      env:
+        SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+        SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+        SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+        SERVICE_KEY: ${{ secrets.SERVICE_KEY }}
+        JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
+        SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
+        SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
+        UPLOAD_DIR: ${{ secrets.UPLOAD_DIR }}
+        GYEONGGI_CURRENCY_DATA_KEY: ${{ secrets.GYEONGGI_CURRENCY_DATA_KEY }}
+        KAKAO_CLIENT_ID: ${{ secrets.KAKAO_CLIENT_ID }}
+        KAKAO_CLIENT_SECRET: ${{ secrets.KAKAO_CLIENT_SECRET }}
+        NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+        NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+        GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+        GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+      run: ./gradlew build -x test
+
+    # Docker build
+    - name: Build Docker Image
+      run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/gunpo .
+
+    # Docker login
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+    # Docker push
+    - name: Push Docker Image to Docker Hub
+      run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
+
+    # Deploy to EC2
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ec2-user
+        key: ${{ secrets.EC2_PRIVATE_KEY }}
+        script: |
+          sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gunpo:latest
+          if [ $(sudo docker ps -a -q -f name=gunpo) ]; then
+            sudo docker stop gunpo
+          fi
+          sudo docker run --rm -it -d -p 80:8080 --name gunpo ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
+          sudo docker system prune -f
