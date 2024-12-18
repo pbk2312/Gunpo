@@ -18,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -43,7 +44,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 // CSRF 비활성화
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") //  API 요청은 클라이언트가 토큰을 제공하여 인증
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                )
 
                 // 예외 처리 설정
                 .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -51,15 +55,15 @@ public class SecurityConfig {
                         .accessDeniedHandler(jwtAccessDeniedHandler)
                 )
 
-                // H2 콘솔을 위한 헤더 설정
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.sameOrigin()))
-
-                // 세션 관리 정책: Stateless
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 요청 권한 설정: 모든 요청 허용 (임시 설정)
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .anyRequest().permitAll()
+                        .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers("/api/member/**", "/login","/api/chat/","/sign-up"
+                                ,"/api/sendCertificationMail","/api/verifyEmail"
+
+                        ).permitAll()
+                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
                 )
 
                 // CORS 설정
