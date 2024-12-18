@@ -80,5 +80,23 @@ jobs:
           if [ $(sudo docker ps -a -q -f name=gunpo) ]; then
             sudo docker stop gunpo
           fi
-          sudo docker run --rm -it -d -p 80:8080 --name gunpo ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
+          sudo docker run --rm -it -d -p 80:8080 \
+            -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
+            -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
+            -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
+            -e SERVICE_KEY=${{ secrets.SERVICE_KEY }} \
+            -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            -e SPRING_DATA_REDIS_HOST=${{ secrets.EC2_HOST }} \
+            -e REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
+            -e SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }} \
+            -e SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }} \
+            -e UPLOAD_DIR=${{ secrets.UPLOAD_DIR }} \
+            -e GYEONGGI_CURRENCY_DATA_KEY=${{ secrets.GYEONGGI_CURRENCY_DATA_KEY }} \
+            -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
+            -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
+            -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
+            -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
+            -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
+            -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+            --name gunpo ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
           sudo docker system prune -f
