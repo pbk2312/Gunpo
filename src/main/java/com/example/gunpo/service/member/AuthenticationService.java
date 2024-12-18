@@ -17,6 +17,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +40,13 @@ public class AuthenticationService {
     public TokenDto login(LoginDto loginDto) {
         Member member = findMemberByEmail(loginDto.getEmail());
         Authentication authentication = authenticateUser(loginDto);
+
+        // 인증 정보를 SecurityContext에 설정
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         TokenDto tokenDto = generateToken(authentication);
         storeRefreshToken(member, tokenDto);
         return tokenDto;
-    }
-
-    public Member findMemberByEmail(String email) {
-        return memberRepository.findByEmail(email)
-                .orElseThrow(() -> new MemberNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_EMAIL.getMessage()));
     }
 
     private Authentication authenticateUser(LoginDto loginDto) {
@@ -56,6 +56,11 @@ public class AuthenticationService {
         } catch (BadCredentialsException e) {
             throw new IncorrectPasswordException(MemberErrorMessage.INCORRECT_PASSWORD.getMessage());
         }
+    }
+
+    public Member findMemberByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new MemberNotFoundException(MemberErrorMessage.MEMBER_NOT_FOUND_EMAIL.getMessage()));
     }
 
     private TokenDto generateToken(Authentication authentication) {
