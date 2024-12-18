@@ -39,6 +39,7 @@ jobs:
         SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
         SERVICE_KEY: ${{ secrets.SERVICE_KEY }}
         JWT_SECRET: ${{ secrets.JWT_SECRET }}
+        SPRING_DATA_REDIS_HOST: ${{ secrets.EC2_HOST }}
         REDIS_PASSWORD: ${{ secrets.REDIS_PASSWORD }}
         SPRING_MAIL_USERNAME: ${{ secrets.SPRING_MAIL_USERNAME }}
         SPRING_MAIL_PASSWORD: ${{ secrets.SPRING_MAIL_PASSWORD }}
