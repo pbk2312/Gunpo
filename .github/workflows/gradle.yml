@@ -52,13 +52,16 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: ./gradlew build -x test
+        if: ${{ failure() }}
 
       # Docker 이미지 빌드
       - name: Build Docker Image
+        if: ${{ steps.build.outputs.result == 'success' }}
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/gunpo .
 
       # Docker 로그인
       - name: Login to Docker Hub
+        if: ${{ steps.build.outputs.result == 'success' }}
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -66,10 +69,12 @@ jobs:
 
       # Docker 이미지 푸시
       - name: Push Docker Image to Docker Hub
+        if: ${{ steps.build.outputs.result == 'success' }}
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
 
       # EC2에 배포
       - name: Deploy to EC2
+        if: ${{ steps.build.outputs.result == 'success' }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
