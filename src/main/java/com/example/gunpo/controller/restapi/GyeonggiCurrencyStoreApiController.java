@@ -22,11 +22,16 @@ public class GyeonggiCurrencyStoreApiController {
 
     private final GyeonggiCurrencyStoreService gyeonggiCurrencyStoreService;
 
+    private static final String NO_MERCHANTS_FOUND = "경기 지역 화폐 가맹점 정보가 없습니다.";
+    private static final String MERCHANTS_FETCH_SUCCESS = "경기 지역 화폐 가맹점 정보를 성공적으로 가져왔습니다.";
+    private static final String NO_MERCHANT_BY_NAME = "해당 상호명을 가진 가맹점이 없습니다.";
+    private static final String MERCHANTS_FETCH_BY_NAME_SUCCESS = "조회 성공";
+
     @GetMapping("/GyeonggiCurrencyStoreInfo")
     public ResponseEntity<ResponseDto<List<GyeonggiCurrencyStoreDto>>> getGyeonggiCurrencyStoreInfo() {
         List<GyeonggiCurrencyStoreDto> allMerchantsFromRedis = gyeonggiCurrencyStoreService.getAllMerchants();
 
-        String message = allMerchantsFromRedis.isEmpty() ? "경기 지역 화폐 가맹점 정보가 없습니다." : "경기 지역 화폐 가맹점 정보를 성공적으로 가져왔습니다.";
+        String message = allMerchantsFromRedis.isEmpty() ? NO_MERCHANTS_FOUND : MERCHANTS_FETCH_SUCCESS;
         log.info("응답 메시지 설정: {}", message);
 
         ResponseDto<List<GyeonggiCurrencyStoreDto>> responseDto = new ResponseDto<>(message, allMerchantsFromRedis,
@@ -43,10 +48,10 @@ public class GyeonggiCurrencyStoreApiController {
         List<GyeonggiCurrencyStoreDto> stores = gyeonggiCurrencyStoreService.findByCmpnmNm(cmpnmNm);
 
         if (stores.isEmpty()) {
-            return ResponseEntity.ok(new ResponseDto<>("해당 상호명을 가진 가맹점이 없습니다.", stores, false));
+            return ResponseEntity.ok(new ResponseDto<>(NO_MERCHANT_BY_NAME, stores, false));
         }
 
-        return ResponseEntity.ok(new ResponseDto<>("조회 성공", stores, true));
+        return ResponseEntity.ok(new ResponseDto<>(MERCHANTS_FETCH_BY_NAME_SUCCESS, stores, true));
     }
 
 }

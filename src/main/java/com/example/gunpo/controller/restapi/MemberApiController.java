@@ -33,12 +33,20 @@ public class MemberApiController {
     private static final int ACCESS_TOKEN_EXPIRATION = 60 * 60; // 1시간
     private static final int REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 7; // 7일
 
+    // 메시지 상수
+    private static final String SIGN_UP_SUCCESS = "회원가입 성공";
+    private static final String LOGIN_SUCCESS = "로그인 성공";
+    private static final String LOGOUT_SUCCESS = "로그아웃 성공";
+    private static final String MEMBER_UPDATE_SUCCESS = "성공적으로 업데이트 성공";
+    private static final String MEMBER_DELETE_SUCCESS = "회원 탈퇴 성공";
+    private static final String TOKEN_VALIDATION_SUCCESS = "토큰 검증 성공";
+
     @PostMapping("/sign-up")
     public ResponseEntity<ResponseDto<String>> signUp(@Valid @RequestBody MemberDto memberDto) {
         log.info("회원가입 요청: 이메일 = {}, 닉네임 = {}", memberDto.getEmail(), memberDto.getNickname());
         memberManagementService.save(memberDto);
         log.info("회원가입 성공: 이메일 = {}", memberDto.getEmail());
-        return ResponseEntity.ok(new ResponseDto<>("회원가입 성공", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(SIGN_UP_SUCCESS, null, true));
     }
 
     @PostMapping("/login")
@@ -50,7 +58,7 @@ public class MemberApiController {
         CookieUtils.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), REFRESH_TOKEN_EXPIRATION);
         String redirectUrl = getRedirectUrlFromSession(request);
         log.info("로그인 성공: 이메일 = {}, 리디렉션 URL = {}", loginDto.getEmail(), redirectUrl);
-        return ResponseEntity.ok(new ResponseDto<>("로그인 성공", redirectUrl, true));
+        return ResponseEntity.ok(new ResponseDto<>(LOGIN_SUCCESS, redirectUrl, true));
     }
 
     @PostMapping("/logout")
@@ -61,20 +69,20 @@ public class MemberApiController {
         CookieUtils.removeCookie(response, "accessToken");
         CookieUtils.removeCookie(response, "refreshToken");
         log.info("로그아웃 성공: 액세스 토큰 = {}", accessToken);
-        return ResponseEntity.ok(new ResponseDto<>("로그아웃 성공", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(LOGOUT_SUCCESS, null, true));
     }
 
     @PutMapping("/update")
     public ResponseEntity<ResponseDto<String>> updateMember(@RequestBody @Valid MemberUpdateDto updateDto) {
         memberManagementService.update(updateDto);
-        return ResponseEntity.ok(new ResponseDto<>("성공적으로 업데이트 성공", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(MEMBER_UPDATE_SUCCESS, null, true));
     }
 
     @DeleteMapping("/delete")
     public ResponseEntity<ResponseDto<String>> deleteMember(
             @CookieValue(value = "accessToken", required = false) String accessToken) {
         memberManagementService.delete(accessToken);
-        return ResponseEntity.ok(new ResponseDto<>("회원 탈퇴 성공", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(MEMBER_DELETE_SUCCESS, null, true));
     }
 
     @GetMapping("/validateToken")
@@ -96,7 +104,7 @@ public class MemberApiController {
 
         log.info("토큰 검증 성공: 액세스 토큰 유효성 = {}, 리프레시 토큰 유효성 = {}", validationResult.isAccessTokenValid(),
                 validationResult.isRefreshTokenValid());
-        return ResponseEntity.ok(new ResponseDto<>(validationResult.getMessage(), data, true));
+        return ResponseEntity.ok(new ResponseDto<>(TOKEN_VALIDATION_SUCCESS, data, true));
     }
 
     private String getRedirectUrlFromSession(HttpServletRequest request) {

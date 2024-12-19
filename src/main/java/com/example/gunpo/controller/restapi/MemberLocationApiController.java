@@ -21,6 +21,9 @@ public class MemberLocationApiController {
     private final LocationService locationService;
     private final MemberManagementService memberManagementService;
 
+    private static final String NEIGHBORHOOD_VERIFICATION_SUCCESS = "동네 인증 성공";
+    private static final String NEIGHBORHOOD_VERIFICATION_FAILURE = "동네 인증 실패";
+
 
     @PostMapping("/neighborhoodVerify")
     public ResponseEntity<ResponseDto<?>> verifyLocation(
@@ -34,11 +37,11 @@ public class MemberLocationApiController {
 
         if (!isVerified) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseDto<>("동네 인증 실패", null, false));
+                    .body(new ResponseDto<>(NEIGHBORHOOD_VERIFICATION_FAILURE, null, false));
         }
         memberManagementService.NeighborhoodVerification(accessToken); // 동네 인증 업데이트
 
-        return ResponseEntity.ok(new ResponseDto<>("동네 인증 성공", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(NEIGHBORHOOD_VERIFICATION_SUCCESS, null, true));
     }
 
 }

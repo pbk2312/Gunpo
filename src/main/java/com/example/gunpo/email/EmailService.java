@@ -21,6 +21,7 @@ public class EmailService {
 
     @Transactional
     public String sendCertificationMail(EmailDto emailDto) {
+
         validateEmailForSendingCertification(emailDto.getEmail());
         String certificationNumber = generateCertificationNumber();
         sendCertificationEmail(emailDto.getEmail(), certificationNumber);

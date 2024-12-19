@@ -1,6 +1,5 @@
 package com.example.gunpo.controller.restapi;
 
-
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.dto.SmokingAreaDto;
 import com.example.gunpo.service.functions.SmokingAreaService;
@@ -22,18 +21,20 @@ public class SmokingAreaApiController {
 
     private final SmokingAreaService smokingAreaService;
 
+    private static final String SMOKING_ZONES_FETCH_SUCCESS = "흡연 구역 정보를 성공적으로 가져왔습니다.";
+    private static final String SMOKING_ZONES_EMPTY = "흡연 구역 정보가 없습니다.";
+
     @GetMapping("/smoking-area")
     public ResponseEntity<ResponseDto<List<SmokingAreaDto>>> getAllSmokingZones() {
         List<SmokingAreaDto> smokingZones = smokingAreaService.getAllSmokingZones();
         log.info("흡연 구역 정보를 Redis에서 가져왔습니다: {}", smokingZones);
 
-        String message = smokingZones.isEmpty() ? "흡연 구역 정보가 없습니다." : "흡연 구역 정보를 성공적으로 가져왔습니다.";
+        String message = smokingZones.isEmpty() ? SMOKING_ZONES_EMPTY : SMOKING_ZONES_FETCH_SUCCESS;
         log.info("응답 메시지 설정: {}", message);
 
-        ResponseDto<List<SmokingAreaDto>> responseDto = new ResponseDto<>(message, smokingZones,true);
+        ResponseDto<List<SmokingAreaDto>> responseDto = new ResponseDto<>(message, smokingZones, true);
         log.info("ResponseDto 생성: {}", responseDto);
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
-
 }

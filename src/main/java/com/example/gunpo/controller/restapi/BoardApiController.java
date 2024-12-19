@@ -24,6 +24,11 @@ public class BoardApiController {
     private final BoardCreationService boardCreationService;
     private final BoardUpdateService boardUpdateService;
 
+    private static final String BOARD_CREATE_SUCCESS = "게시물 작성이 성공적으로 완료되었습니다.";
+    private static final String BOARD_UPDATE_SUCCESS = "성공적으로 게시물 수정이 완료되었습니다.";
+    private static final String BOARD_DELETE_SUCCESS = "성공적으로 삭제가 완료되었습니다.";
+
+
     @PostMapping("/new")
     public ResponseEntity<ResponseDto<String>> boardCreatePost(
             @CookieValue(value = "accessToken", required = false) String accessToken,
@@ -35,7 +40,7 @@ public class BoardApiController {
         BoardDto boardDto = new BoardDto(title, content, Category.valueOf(category));
         boardCreationService.create(boardDto, accessToken, images);
         log.info("게시물 작성 성공 - 제목: {}", title);
-        return ResponseEntity.ok(new ResponseDto<>("게시물 작성이 성공적으로 완료 되었습니다.", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(BOARD_CREATE_SUCCESS, null, true));
     }
 
     @PutMapping("/update")
@@ -51,7 +56,7 @@ public class BoardApiController {
         BoardDto boardDto = new BoardDto(id, title, content, Category.valueOf(category));
         boardUpdateService.updatePost(boardDto, newImages, deleteImages, accessToken);
         log.info("게시물 수정 성공 - ID: {}", id);
-        return ResponseEntity.ok(new ResponseDto<>("성공적으로 게시물 수정 완료", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(BOARD_UPDATE_SUCCESS, null, true));
     }
 
     @DeleteMapping("/delete/{id}")
@@ -61,7 +66,7 @@ public class BoardApiController {
         log.info("게시물 삭제 요청 - ID: {}", id);
         boardService.deletePost(id, accessToken);
         log.info("게시물 삭제 성공 - ID: {}", id);
-        return ResponseEntity.ok(new ResponseDto<>("성공적으로 삭제가 완료되었습니다", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(BOARD_DELETE_SUCCESS, null, true));
     }
 
 }

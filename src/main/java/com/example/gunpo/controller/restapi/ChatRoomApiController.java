@@ -33,7 +33,6 @@ public class ChatRoomApiController {
     ) {
         Member member = getMember(accessToken);
         messageDto.setSender(member.getNickname());
-        log.info("roomId: {}, sender: {}, message: {}", roomId, messageDto.getSender(), messageDto.getText());
         redisPublisher.publishMessage("chat." + roomId, messageDto);
         redisMessageService.saveMessage(roomId, messageDto);
     }
@@ -48,8 +47,6 @@ public class ChatRoomApiController {
 
         // Redis에서 메시지 리스트 가져오기
         List<MessageDto> messages = redisMessageService.getRecentMessages(roomId, count);
-
-        log.info("Fetching {} recent messages for roomId: {}, requested by: {}", count, roomId, currentUserNickname);
 
         // 현재 사용자 닉네임과 메시지 리스트 반환
         return new ChatResponseDto(currentUserNickname, messages);

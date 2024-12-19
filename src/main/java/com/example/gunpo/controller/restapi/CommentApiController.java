@@ -1,6 +1,5 @@
 package com.example.gunpo.controller.restapi;
 
-
 import com.example.gunpo.dto.board.CommentRequestDto;
 import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.service.board.CommentService;
@@ -25,6 +24,13 @@ public class CommentApiController {
 
     private final CommentService commentService;
 
+    private static final String COMMENT_CREATE_SUCCESS = "댓글 작성 성공!";
+    private static final String REPLY_COMMENT_CREATE_SUCCESS = "대댓글 작성 성공!";
+    private static final String COMMENT_UPDATE_SUCCESS = "댓글 수정 성공!";
+    private static final String COMMENT_DELETE_SUCCESS = "댓글 삭제 성공!";
+    private static final String REPLY_COMMENT_UPDATE_SUCCESS = "대댓글 수정 성공!";
+    private static final String REPLY_COMMENT_DELETE_SUCCESS = "대댓글 삭제 성공!";
+
     // 일반 댓글 추가
     @PostMapping("/{boardId}")
     public ResponseEntity<ResponseDto<String>> addComment(
@@ -33,7 +39,7 @@ public class CommentApiController {
             @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
         commentService.addComment(boardId, accessToken, requestDto.getContent());
-        return ResponseEntity.ok(new ResponseDto<>("댓글 작성 성공!", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(COMMENT_CREATE_SUCCESS, null, true));
     }
 
     // 대댓글 추가
@@ -45,7 +51,7 @@ public class CommentApiController {
             @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
         commentService.addReplyComment(boardId, parentCommentId, accessToken, requestDto.getContent());
-        return ResponseEntity.ok(new ResponseDto<>("대댓글 작성 성공!", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(REPLY_COMMENT_CREATE_SUCCESS, null, true));
     }
 
     // 댓글 수정
@@ -56,7 +62,7 @@ public class CommentApiController {
             @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
         commentService.updateComment(commentId, accessToken, requestDto.getContent());
-        return ResponseEntity.ok(new ResponseDto<>("댓글 수정 성공!", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(COMMENT_UPDATE_SUCCESS, null, true));
     }
 
     // 댓글 삭제
@@ -66,7 +72,7 @@ public class CommentApiController {
             @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
         commentService.deleteComment(commentId, accessToken);
-        return ResponseEntity.ok(new ResponseDto<>("댓글 삭제 성공!", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(COMMENT_DELETE_SUCCESS, null, true));
     }
 
     // 대댓글 수정
@@ -80,7 +86,7 @@ public class CommentApiController {
         log.info("대댓글 수정 요청 받음: parentCommentId = {}, replyId = {}, content = {}, accessToken = {}",
                 parentCommentId, replyId, requestDto.getContent(), accessToken);
         commentService.updateReplyComment(parentCommentId, replyId, accessToken, requestDto.getContent());
-        return ResponseEntity.ok(new ResponseDto<>("대댓글 수정 성공!", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(REPLY_COMMENT_UPDATE_SUCCESS, null, true));
     }
 
     // 대댓글 삭제
@@ -91,7 +97,7 @@ public class CommentApiController {
             @CookieValue(value = "accessToken", required = false) String accessToken
     ) {
         commentService.deleteReplyComment(parentCommentId, replyId, accessToken);
-        return ResponseEntity.ok(new ResponseDto<>("대댓글 삭제 성공!", null, true));
+        return ResponseEntity.ok(new ResponseDto<>(REPLY_COMMENT_DELETE_SUCCESS, null, true));
     }
 
 }

@@ -24,6 +24,8 @@ public class NotificationApiController {
     private final AuthenticationService authenticationService;
     private final NotificationRedisService notificationRedisService;
 
+    private static final String NOTIFICATION_DELETE_SUCCESS = "알림이 성공적으로 삭제되었습니다.";
+
     @GetMapping
     public ResponseEntity<List<NotificationDto>> getNotifications(
             @CookieValue(value = "accessToken", required = false) String accessToken
@@ -43,7 +45,7 @@ public class NotificationApiController {
         // 특정 알림 삭제
         notificationRedisService.deleteNotification(member.getId().toString(), notificationId);
 
-        return ResponseEntity.ok("Notification deleted successfully.");
+        return ResponseEntity.ok(NOTIFICATION_DELETE_SUCCESS);
     }
 
 }
