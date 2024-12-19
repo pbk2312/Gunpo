@@ -52,16 +52,13 @@ jobs:
           GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
           GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
         run: ./gradlew build -x test
-        if: ${{ failure() }}
 
       # Docker 이미지 빌드
       - name: Build Docker Image
-        if: ${{ steps.build.outputs.result == 'success' }}
         run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/gunpo .
 
       # Docker 로그인
       - name: Login to Docker Hub
-        if: ${{ steps.build.outputs.result == 'success' }}
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -69,12 +66,10 @@ jobs:
 
       # Docker 이미지 푸시
       - name: Push Docker Image to Docker Hub
-        if: ${{ steps.build.outputs.result == 'success' }}
         run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/gunpo
 
       # EC2에 배포
       - name: Deploy to EC2
-        if: ${{ steps.build.outputs.result == 'success' }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.EC2_HOST }}
@@ -83,34 +78,37 @@ jobs:
           script: |
             # 최신 Docker 이미지 가져오기
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/gunpo:latest
-            
+
             # 기존 컨테이너 중지 및 삭제
             if [ $(sudo docker ps -a -q -f name=gunpo) ]; then
               sudo docker stop gunpo
               sudo docker rm gunpo
             fi
-            
-            # 새 컨테이너 실행 시 환경 변수 추가
+
+            # .env 파일 생성
+            echo "SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }}" > .env
+            echo "SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }}" >> .env
+            echo "SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }}" >> .env
+            echo "SERVICE_KEY=${{ secrets.SERVICE_KEY }}" >> .env
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> .env
+            echo "SPRING_DATA_REDIS_HOST=${{ secrets.EC2_HOST }}" >> .env
+            echo "REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}" >> .env
+            echo "SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }}" >> .env
+            echo "SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }}" >> .env
+            echo "UPLOAD_DIR=${{ secrets.UPLOAD_DIR }}" >> .env
+            echo "GYEONGGI_CURRENCY_DATA_KEY=${{ secrets.GYEONGGI_CURRENCY_DATA_KEY }}" >> .env
+            echo "KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }}" >> .env
+            echo "KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }}" >> .env
+            echo "NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }}" >> .env
+            echo "NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }}" >> .env
+            echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+            echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+
+            # 새 컨테이너 실행 (환경 변수는 .env 파일에서 로드)
             sudo docker run -d -p 80:8080 \
               --name gunpo \
-              -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
-              -e SPRING_DATASOURCE_USERNAME=${{ secrets.SPRING_DATASOURCE_USERNAME }} \
-              -e SPRING_DATASOURCE_PASSWORD=${{ secrets.SPRING_DATASOURCE_PASSWORD }} \
-              -e SERVICE_KEY=${{ secrets.SERVICE_KEY }} \
-              -e JWT_SECRET=${{ secrets.JWT_SECRET }} \
-              -e SPRING_DATA_REDIS_HOST=${{ secrets.EC2_HOST }} \
-              -e REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }} \
-              -e SPRING_MAIL_USERNAME=${{ secrets.SPRING_MAIL_USERNAME }} \
-              -e SPRING_MAIL_PASSWORD=${{ secrets.SPRING_MAIL_PASSWORD }} \
-              -e UPLOAD_DIR=${{ secrets.UPLOAD_DIR }} \
-              -e GYEONGGI_CURRENCY_DATA_KEY=${{ secrets.GYEONGGI_CURRENCY_DATA_KEY }} \
-              -e KAKAO_CLIENT_ID=${{ secrets.KAKAO_CLIENT_ID }} \
-              -e KAKAO_CLIENT_SECRET=${{ secrets.KAKAO_CLIENT_SECRET }} \
-              -e NAVER_CLIENT_ID=${{ secrets.NAVER_CLIENT_ID }} \
-              -e NAVER_CLIENT_SECRET=${{ secrets.NAVER_CLIENT_SECRET }} \
-              -e GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }} \
-              -e GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }} \
+              --env-file .env \
               ${{ secrets.DOCKERHUB_USERNAME }}/gunpo:latest
-            
+
             # 사용하지 않는 Docker 리소스 정리
             sudo docker system prune -f
