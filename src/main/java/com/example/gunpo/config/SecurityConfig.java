@@ -59,8 +59,9 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
-                        .requestMatchers("/api/member/**", "/login","/api/chat/","/sign-up"
-                                ,"/api/sendCertificationMail","/api/verifyEmail"
+                        .requestMatchers("/api/member/**", "/login", "/api/chat/", "/sign-up"
+                                , "/chat", "/news", "/GyeonggiCurrencyStore","/smoking-area"
+                                , "/api/sendCertificationMail", "/api/verifyEmail"
 
                         ).permitAll()
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
