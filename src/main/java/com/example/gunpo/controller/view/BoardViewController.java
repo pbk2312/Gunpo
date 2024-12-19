@@ -7,7 +7,6 @@ import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.dto.board.CommentDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.InvalidPostIdException;
-import com.example.gunpo.exception.location.NeighborhoodVerificationException;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.board.BoardService;
 import com.example.gunpo.service.board.CommentService;
@@ -22,7 +21,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 @Controller
@@ -52,35 +50,26 @@ public class BoardViewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @CookieValue(value = "accessToken", required = false) String accessToken,
-            Model model,
-            RedirectAttributes redirectAttributes) {
-        try {
-            // 사용자가 로그인된 상태인지 확인
-            Member member = authenticationService.getUserDetails(accessToken);
-            authenticationValidator.validateNeighborhoodVerification(member);
+            Model model) {
 
-            // 게시물 페이지 불러오기
-            Page<BoardDto> boardPage = getBoardPage(page, size);
+        // 사용자가 로그인된 상태인지 확인
+        Member member = authenticationService.getUserDetails(accessToken);
+        authenticationValidator.validateNeighborhoodVerification(member);
 
-            logBoardRequest(page, size, boardPage);
+        // 게시물 페이지 불러오기
+        Page<BoardDto> boardPage = getBoardPage(page, size);
 
-            checkFirstBoardDto(boardPage);
+        logBoardRequest(page, size, boardPage);
 
-            // model에 페이지 정보와 게시물 목록 추가
-            model.addAttribute("boardPage", boardPage);
-            model.addAttribute("currentPage", page);
-            model.addAttribute("totalPages", boardPage.getTotalPages());
+        checkFirstBoardDto(boardPage);
 
-            return "board/list";
-        } catch (UnauthorizedException e) {
-            // 로그인하지 않은 경우 메시지 추가 후 /login으로 리디렉션
-            redirectAttributes.addFlashAttribute("errorMessage", "지역 커뮤니티 게시판은 로그인이 필요합니다.");
-            return "redirect:/login";
-        } catch (NeighborhoodVerificationException e) {
-            // 동네 인증이 되지 않은 경우 메시지 추가 후 /neighborhoodVerification으로 리디렉션
-            redirectAttributes.addFlashAttribute("errorMessage", "지역 커뮤니티 게시판은 동네 인증이 필요합니다.");
-            return "redirect:/neighborhoodVerification";
-        }
+        // model에 페이지 정보와 게시물 목록 추가
+        model.addAttribute("boardPage", boardPage);
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", boardPage.getTotalPages());
+
+        return "board/list";
+
     }
 
     @GetMapping("/{id}")
