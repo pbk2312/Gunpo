@@ -25,25 +25,11 @@ public class ContactController {
     @GetMapping("/inquiry-list")
     public String getInquiryList(
             @CookieValue(value = "accessToken", required = false) String accessToken,
-            RedirectAttributes redirectAttributes,
             Model model
     ) {
-        if (accessToken == null) {
-            redirectAttributes.addFlashAttribute("errorMessage", "로그인이 필요합니다.");
-            return "redirect:/login";
-        }
-
-        try {
-            List<InquiryDto> inquiryList = inquiryService.getInquiryList(accessToken);
-            model.addAttribute("inquiryDtoList", inquiryList);
-            return "inquirylist";
-        } catch (UnauthorizedException e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "문의하기는 로그인이 필요합니다.");
-            return "redirect:/login";
-        } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("errorMessage", "알 수 없는 오류가 발생했습니다.");
-            return "redirect:/error";
-        }
+        List<InquiryDto> inquiryList = inquiryService.getInquiryList(accessToken);
+        model.addAttribute("inquiryDtoList", inquiryList);
+        return "inquirylist";
     }
 
 }
