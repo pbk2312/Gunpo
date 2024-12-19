@@ -85,7 +85,7 @@ jobs:
               sudo docker rm gunpo
             fi
             
-            # 새 컨테이너 실행
+            # 새 컨테이너 실행 시 환경 변수 추가
             sudo docker run -d -p 80:8080 \
               --name gunpo \
               -e SPRING_DATASOURCE_URL=${{ secrets.SPRING_DATASOURCE_URL }} \
