@@ -85,6 +85,10 @@
         </nav>
         <!-- Page content-->
         <div class="container-fluid text-center">
+            <div th:if="${param.errorMessage}" class="alert alert-danger custom-alert text-center">
+                <p th:text="${param.errorMessage}" class="m-0"></p>
+            </div>
+
             <h1 class="mt-4">동네 인증</h1>
             <p>현재 위치를 인증하여 <strong>군포 커뮤니티</strong>를 이용하세요!</p>
             <button class="btn btn-primary mt-3" onclick="getLocation()">내 위치로 인증하기</button>
