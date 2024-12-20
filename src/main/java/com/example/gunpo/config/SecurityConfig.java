@@ -60,7 +60,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
                         .requestMatchers("/api/member/**", "/login", "/api/chat/", "/sign-up"
-                                , "/chat", "/news", "/GyeonggiCurrencyStore","/smoking-area"
+                                , "/chat", "/news", "/GyeonggiCurrencyStore", "/smoking-area"
                                 , "/api/sendCertificationMail", "/api/verifyEmail"
 
                         ).permitAll()
@@ -91,10 +91,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.setAllowCredentials(true);
+        configuration.addAllowedOrigin("https://gunpo.store"); // 허용할 도메인
+        configuration.addAllowedMethod("*"); // 허용할 HTTP 메서드
+        configuration.addAllowedHeader("*"); // 허용할 HTTP 헤더
+        configuration.setAllowCredentials(true); // 쿠키를 포함한 인증 요청 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

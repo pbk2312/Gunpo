@@ -16,10 +16,10 @@ public class CorsConfig implements WebMvcConfigurer {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.addAllowedOrigin("*");
-        config.addAllowedHeader("*");
-        config.addAllowedMethod("*");
+        config.setAllowCredentials(true); // 쿠키를 포함한 인증 요청 허용
+        config.addAllowedOrigin("https://gunpo.store"); // 허용할 도메인
+        config.addAllowedHeader("*"); // 허용할 HTTP 헤더
+        config.addAllowedMethod("*"); // 허용할 HTTP 메서드 (GET, POST, PUT 등)
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
