@@ -112,8 +112,8 @@ jobs:
             # Redis 컨테이너 실행
             sudo docker run -d --name Gunporedis -p 6379:6379 redis:latest
 
-            # 애플리케이션 컨테이너 실행
-            sudo docker run -d -p 80:8080 \
+            # 애플리케이션 컨테이너 실행 (80과 8080 모두 허용)
+            sudo docker run -d -p 80:8080 -p 8080:8080 \
               --name gunpo \
               --env-file .env \
               ${{ secrets.DOCKERHUB_USERNAME }}/gunpo:latest
