@@ -55,7 +55,6 @@ public class Board {
     @Builder.Default
     private List<Comment> comments = new ArrayList<>();
 
-    // 업데이트 로직
     public Board updateBoard(String title, String content, Category category, List<BoardImage> updatedImages) {
         return this.toBuilder()
                 .title(title != null && !title.isBlank() ? title : this.title)
@@ -79,7 +78,6 @@ public class Board {
                 .build();
     }
 
-    // 이미지 추가
     public void addImage(BoardImage image) {
         if (image == null) {
             throw new IllegalArgumentException(BoardErrorMessage.IMAGE_NOT_NULL.getMessage());
@@ -87,7 +85,6 @@ public class Board {
         this.images.add(image);
     }
 
-    // 댓글 추가
     public void addComment(Comment comment) {
         if (comment == null) {
             throw new IllegalArgumentException(BoardErrorMessage.COMMENT_NOT_NULL.getMessage());

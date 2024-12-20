@@ -16,7 +16,7 @@ import lombok.Setter;
 public class GyeonggiCurrencyStore {
 
     @Id
-    @Column(name = "BIZREGNO") // 사업자 등록번호, 기본 키로 설정
+    @Column(name = "BIZREGNO")
     private String bizRegNo;
 
     @Column(name = "CMPNM_NM")
