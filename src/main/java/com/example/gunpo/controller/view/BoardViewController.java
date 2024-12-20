@@ -7,11 +7,13 @@ import com.example.gunpo.dto.board.BoardDto;
 import com.example.gunpo.dto.board.CommentDto;
 import com.example.gunpo.exception.board.CannotFindBoardException;
 import com.example.gunpo.exception.board.InvalidPostIdException;
+import com.example.gunpo.exception.location.NeighborhoodVerificationException;
 import com.example.gunpo.exception.member.UnauthorizedException;
 import com.example.gunpo.service.board.BoardService;
 import com.example.gunpo.service.board.CommentService;
 import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.validator.member.AuthenticationValidator;
+import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -50,25 +52,32 @@ public class BoardViewController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @CookieValue(value = "accessToken", required = false) String accessToken,
-            Model model) {
+            Model model,
+            HttpServletResponse response
+    ) {
 
         // 사용자가 로그인된 상태인지 확인
         Member member = authenticationService.getUserDetails(accessToken);
-        authenticationValidator.validateNeighborhoodVerification(member);
 
-        // 게시물 페이지 불러오기
-        Page<BoardDto> boardPage = getBoardPage(page, size);
+        try {
+            authenticationValidator.validateNeighborhoodVerification(member);
 
-        logBoardRequest(page, size, boardPage);
+            // 게시물 페이지 불러오기
+            Page<BoardDto> boardPage = getBoardPage(page, size);
 
-        checkFirstBoardDto(boardPage);
+            logBoardRequest(page, size, boardPage);
 
-        // model에 페이지 정보와 게시물 목록 추가
-        model.addAttribute("boardPage", boardPage);
-        model.addAttribute("currentPage", page);
-        model.addAttribute("totalPages", boardPage.getTotalPages());
+            checkFirstBoardDto(boardPage);
 
-        return "board/list";
+            // model에 페이지 정보와 게시물 목록 추가
+            model.addAttribute("boardPage", boardPage);
+            model.addAttribute("currentPage", page);
+            model.addAttribute("totalPages", boardPage.getTotalPages());
+
+            return "board/list";
+        } catch (NeighborhoodVerificationException e) {
+            return "member/location";
+        }
 
     }
 

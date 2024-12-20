@@ -19,11 +19,8 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-        String redirectUrl = "/login";
 
-        if (authException.getCause() instanceof NeighborhoodVerificationException) {
-            redirectUrl = "/neighborhoodVerification";
-        }
+        String redirectUrl = "/login";
 
         String encodedMessage = URLEncoder.encode(LOGIN_ERROR_MESSAGE, StandardCharsets.UTF_8);
         response.sendRedirect(redirectUrl + "?errorMessage=" + encodedMessage);
