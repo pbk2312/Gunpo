@@ -110,7 +110,6 @@ public class GyeonggiCurrencyStoreService {
 
     private List<GyeonggiCurrencyStoreDto> parseResponseBody(String responseBody) {
         if (isEmptyResponse(responseBody)) {
-            log.warn("응답이 비어 있습니다.");
             return Collections.emptyList(); // 빈 리스트 반환
         }
 

@@ -64,21 +64,17 @@ public class SecurityConfig {
                                 , "/api/sendCertificationMail", "/api/verifyEmail"
 
                         ).permitAll()
-                        .anyRequest().authenticated() // 그 외 요청은 인증 필요
+                        .anyRequest().authenticated()
                 )
 
-                // CORS 설정
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
-                // JWT 보안 설정 추가
                 .with(new JwtSecurityConfig(tokenProvider), jwtSecurityConfig -> {
                 })
 
-                // OAuth2 로그인 설정 추가
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login")
                         .successHandler(successHandler)
-                        // 로그인 성공 시 사용자 정보 처리
                         .userInfoEndpoint(userInfoEndpoint ->
                                 userInfoEndpoint.userService(customOAuth2UserService)
                         )

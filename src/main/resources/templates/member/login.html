@@ -180,8 +180,8 @@
     <h2>로그인</h2>
     <button id="homeButton" class="btn-home">홈으로</button>
 
-    <div th:if="${errorMessage}" class="alert alert-danger custom-alert text-center">
-        <p th:text="${errorMessage}" class="m-0"></p>
+    <div th:if="${param.errorMessage}" class="alert alert-danger custom-alert text-center">
+        <p th:text="${param.errorMessage}" class="m-0"></p>
     </div>
 
     <form id="loginForm" action="/api/member/login" method="post">

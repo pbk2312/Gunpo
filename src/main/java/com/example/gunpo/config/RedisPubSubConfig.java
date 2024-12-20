@@ -9,11 +9,12 @@ import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 @Configuration
 public class RedisPubSubConfig {
+
     @Bean
     public RedisMessageListenerContainer redisContainer(RedisConnectionFactory connectionFactory, RedisSubscriber subscriber) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(connectionFactory);
-        container.addMessageListener(subscriber, new PatternTopic("chat.*")); // "chat."으로 시작하는 채널 구독
+        container.addMessageListener(subscriber, new PatternTopic("chat.*"));
         return container;
     }
 
