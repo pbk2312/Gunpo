@@ -34,8 +34,8 @@ public class OAuth2UserInfo {
         return OAuth2UserInfo.builder()
                 .provider("google")
                 .id("google_" + (String) attributes.get("sub"))
-                .password((String) attributes.get("sub")) // 구글은 ID를 password로 사용
-                .nickname((String) attributes.get("name") + "_google") // 닉네임에 provider 추가
+                .password((String) attributes.get("sub"))
+                .nickname((String) attributes.get("name") + "_google")
                 .email((String) attributes.get("email"))
                 .build();
     }
@@ -49,7 +49,7 @@ public class OAuth2UserInfo {
                 .provider("kakao")
                 .id("kakao_" + attributes.get("id").toString())
                 .password(attributes.get("id").toString())
-                .nickname((String) properties.get("nickname") + "_kakao") // 닉네임에 provider 추가
+                .nickname((String) properties.get("nickname") + "_kakao")
                 .email(email)
                 .build();
     }
@@ -60,8 +60,8 @@ public class OAuth2UserInfo {
         return OAuth2UserInfo.builder()
                 .provider("naver")
                 .id("naver_" + (String) response.get("id"))
-                .password((String) response.get("id")) // 네이버는 ID를 password로 사용
-                .nickname((String) response.get("name") + "_naver") // 닉네임에 provider 추가
+                .password((String) response.get("id"))
+                .nickname((String) response.get("name") + "_naver")
                 .email((String) response.get("email"))
                 .build();
     }
@@ -69,11 +69,11 @@ public class OAuth2UserInfo {
     public Member toEntity() {
         return Member.builder()
                 .email(email)
-                .password(password) // 소셜 로그인에서 제공하는 ID를 password로 사용
+                .password(password)
                 .provider(provider)
                 .nickname(nickname)
-                .memberRole(MemberRole.MEMBER) // 기본 역할을 MEMBER로 설정
-                .neighborhoodVerification(false) // 기본값: false
+                .memberRole(MemberRole.MEMBER)
+                .neighborhoodVerification(false)
                 .build();
     }
 

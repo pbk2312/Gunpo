@@ -13,9 +13,9 @@ import lombok.ToString;
 public class NotificationDto {
 
     private String notificationId;
-    private String userId; // 알림을 받을 사용자 ID
-    private String message; // 알림 내용
-    private LocalDateTime timestamp; // 알림 생성 시간
-    private Long postId; // 댓글 달린 게시물 ID
+    private String userId;
+    private String message;
+    private LocalDateTime timestamp;
+    private Long postId;
 
 }

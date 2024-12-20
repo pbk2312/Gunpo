@@ -33,9 +33,9 @@ public class Inquiry {
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
-    private InquiryCategory category;  // 카테고리 추가
+    private InquiryCategory category;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // 회원과의 N:1
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 

@@ -12,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 public class CommentDto {
 
-    private final Long id;               // 댓글 ID
-    private String authorName;           // 작성자 이름
-    private String content;              // 댓글 내용
-    private LocalDateTime createdAt;     // 작성 시간
-    private List<CommentDto> replies;    // 대댓글
+    private final Long id;
+    private String authorName;
+    private String content;
+    private LocalDateTime createdAt;
+    private List<CommentDto> replies;
 
     public static CommentDto from(Comment comment) {
         Member author = comment.getAuthor();

@@ -25,7 +25,7 @@ public class Member {
 
     private String email;
 
-    private String password; // 일반 회원은 비밀번호를, 소셜 로그인 회원은 provider의 id를 사용
+    private String password;
 
     @Enumerated(EnumType.STRING)
     private MemberRole memberRole;
