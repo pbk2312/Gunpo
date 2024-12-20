@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-    <meta name="description" content="" />
-    <meta name="author" content="" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
     <title>Gunpo Community - Real-time Chat</title>
     <!-- Favicon-->
-    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico"/>
     <!-- Core theme CSS (includes Bootstrap)-->
-    <link href="css/styles.css" rel="stylesheet" />
+    <link href="css/styles.css" rel="stylesheet"/>
 </head>
 <body>
 <div class="d-flex" id="wrapper">
@@ -19,7 +19,8 @@
         <div class="list-group list-group-flush">
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/inquiry-list">문의하기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat">실시간 채팅</a>
-            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat/rooms">1대1 채팅방 목록</a>
+            <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/chat/rooms">1대1 채팅방
+                목록</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/GyeonggiCurrencyStore">경기
                 지역화폐 가맹점 찾기</a>
             <a class="list-group-item list-group-item-action list-group-item-light p-3" href="/board/list">커뮤니티 게시판</a>
@@ -47,13 +48,15 @@
             </p>
 
             <!-- Chat box area -->
-            <div id="chat-box" class="border rounded shadow-sm p-4 mb-4 bg-white" style="height: 500px; overflow-y: auto; font-size: 1.2rem;">
+            <div id="chat-box" class="border rounded shadow-sm p-4 mb-4 bg-white"
+                 style="height: 500px; overflow-y: auto; font-size: 1.2rem;">
                 <!-- Messages will appear here -->
             </div>
 
             <!-- Chat input area -->
             <div class="input-group input-group-lg mb-3">
-                <input type="text" class="form-control" id="message" placeholder="Type your message here..." aria-label="Message" aria-describedby="send-button">
+                <input type="text" class="form-control" id="message" placeholder="Type your message here..."
+                       aria-label="Message" aria-describedby="send-button">
                 <button class="btn btn-primary px-4" id="send-button" onclick="sendMessage()">Send</button>
             </div>
         </div>
@@ -78,10 +81,9 @@
 <script src="js/scripts.js"></script>
 <!-- WebSocket and REST for real-time chat -->
 <script>
-    var ws = new WebSocket("ws://localhost:8080/ws/chat");
-
+    var ws = new WebSocket("wss://gunpo.store/ws/chat");
     // 페이지가 로드될 때 Redis에서 저장된 채팅 메시지 불러오기
-    window.onload = function() {
+    window.onload = function () {
         fetch('/api/chat/messages')
             .then(response => response.json())
             .then(messages => {
@@ -95,7 +97,7 @@
     };
 
     // WebSocket으로 새 메시지 받기
-    ws.onmessage = function(event) {
+    ws.onmessage = function (event) {
         var chatBox = document.getElementById('chat-box');
         var message = document.createElement('p');
         message.textContent = event.data;
@@ -129,7 +131,7 @@
     }
 
     // Enter 키로 메시지 전송
-    document.getElementById('message').addEventListener('keydown', function(event) {
+    document.getElementById('message').addEventListener('keydown', function (event) {
         if (event.key === 'Enter') {
             sendMessage();
             event.preventDefault(); // Enter 키로 개행되지 않도록 방지

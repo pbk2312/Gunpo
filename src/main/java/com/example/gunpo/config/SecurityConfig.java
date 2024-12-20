@@ -61,7 +61,8 @@ public class SecurityConfig {
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
                         .requestMatchers("/api/member/**", "/login", "/api/chat/", "/sign-up"
                                 , "/chat", "/news", "/GyeonggiCurrencyStore", "/smoking-area"
-                                , "/api/sendCertificationMail", "/api/verifyEmail"
+                                , "/api/sendCertificationMail", "/api/verifyEmail","/api/smoking-area","/api/GyeonggiCurrencyStoreInfo"
+                                ,"/api/chat/messages"
 
                         ).permitAll()
                         .anyRequest().authenticated()
