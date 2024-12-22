@@ -147,29 +147,29 @@
             var message = document.getElementById("message").value;
             if (!message.trim()) return;
 
-            console.log("메시지 전송 시작:", message);  // 메시지 전송 시작 로그
+            console.log("메시지 전송 시작:", message);
 
-            axios.post("/chat/" + roomId, { text: message }, {
+            axios.post(`/chat/${encodeURIComponent(roomId)}`, { text: message }, {
                 headers: {
-                    'Content-Type': 'application/json' // 헤더에 JSON 설정
+                    'Content-Type': 'application/json'
                 }
             })
                 .then(() => {
-                    console.log("메시지 전송 성공");  // 메시지 전송 성공 로그
+                    console.log("메시지 전송 성공");
                     document.getElementById("message").value = "";
                     loadMessages();
                 })
                 .catch(error => {
-                    console.error("메시지 전송 실패:", error);  // 오류 발생시 로그
+                    console.error("메시지 전송 실패:", error);
                 });
         }
 
         function loadMessages() {
-            console.log("메시지 로딩 시작");  // 메시지 로딩 시작 로그
+            console.log("메시지 로딩 시작");
 
-            axios.get("/chat/" + roomId + "/messages?count=10")
+            axios.get(`/chat/${encodeURIComponent(roomId)}/messages?count=10`)
                 .then(response => {
-                    console.log("메시지 로딩 성공", response.data);  // 메시지 로딩 성공 로그
+                    console.log("메시지 로딩 성공", response.data);
 
                     var data = response.data;
                     currentUserNickname = data.currentUserNickname;
@@ -204,13 +204,13 @@
                     chatBox.scrollTop = chatBox.scrollHeight;
                 })
                 .catch(error => {
-                    console.error("메시지 불러오기 실패:", error);  // 오류 발생시 로그
+                    console.error("메시지 불러오기 실패:", error);
                 });
         }
 
         function handleKeyPress(event) {
             if (event.key === "Enter") {
-                event.preventDefault(); // 기본 동작 방지
+                event.preventDefault();
                 sendMessage();
             }
         }
