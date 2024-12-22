@@ -149,7 +149,11 @@
 
             console.log("메시지 전송 시작:", message);  // 메시지 전송 시작 로그
 
-            axios.post("/chat/" + roomId, {text: message})
+            axios.post("/chat/" + roomId, { text: message }, {
+                headers: {
+                    'Content-Type': 'application/json' // 헤더에 JSON 설정
+                }
+            })
                 .then(() => {
                     console.log("메시지 전송 성공");  // 메시지 전송 성공 로그
                     document.getElementById("message").value = "";
