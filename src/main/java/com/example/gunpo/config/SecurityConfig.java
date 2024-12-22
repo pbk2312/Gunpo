@@ -43,11 +43,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // CSRF 비활성화
-                .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") //  API 요청은 클라이언트가 토큰을 제공하여 인증
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                )
+                .csrf(csrf -> csrf.disable())
 
                 // 예외 처리 설정
                 .exceptionHandling(exceptionHandling -> exceptionHandling

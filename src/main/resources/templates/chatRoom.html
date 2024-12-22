@@ -139,12 +139,11 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script th:inline="javascript">
+        var roomId = /*[[${roomId}]]*/;  // 이 부분을 아래처럼 수정
         var currentUserNickname;
 
         function sendMessage() {
             var message = document.getElementById("message").value;
-            var roomId = /*[[${roomId}]]*/;
-
             if (!message.trim()) return;
 
             axios.post("/chat/" + roomId, {text: message})
@@ -158,8 +157,6 @@
         }
 
         function loadMessages() {
-            var roomId = /*[[${roomId}]]*/;
-
             axios.get("/chat/" + roomId + "/messages?count=10")
                 .then(response => {
                     var data = response.data;
