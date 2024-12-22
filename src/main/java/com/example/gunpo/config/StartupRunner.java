@@ -19,10 +19,8 @@ public class StartupRunner {
     @Bean
     public ApplicationRunner initializeData() {
         return args -> {
-            // 모든 흡연 구역 데이터를 가져와 Redis에 저장
             smokingAreaService.fetchAllDataAndSaveToRedis();
             gyeonggiCurrencyStoreService.fetchAllDataAndSaveToRedis();
-            log.info("모든 흡연 구역 데이터가 Redis에 저장되었습니다.");
         };
     }
 

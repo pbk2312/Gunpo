@@ -110,13 +110,13 @@ public class GyeonggiCurrencyStoreService {
 
     private List<GyeonggiCurrencyStoreDto> parseResponseBody(String responseBody) {
         if (isEmptyResponse(responseBody)) {
-            return Collections.emptyList();
+            return Collections.emptyList(); // 빈 리스트 반환
         }
 
         Map<String, Object> responseMap = parseJsonToMap(responseBody);
         if (responseMap == null || isNoDataResponse(responseMap)) {
             log.warn("API에서 데이터가 없습니다.");
-            return Collections.emptyList();
+            return Collections.emptyList(); // 빈 리스트 반환
         }
 
         return extractItemsFromResponse(responseMap);
@@ -143,7 +143,7 @@ public class GyeonggiCurrencyStoreService {
         Map<String, Object> result = (Map<String, Object>) responseMap.get("RESULT");
         if (result != null && "INFO-200".equals(result.get("CODE"))) { // INFO-200: 데이터 없음
             log.warn("API에서 데이터 없음: {}", result.get("MESSAGE"));
-//            return true; // 데이터 없음
+            return true; // 데이터 없음
         }
         return false; // 데이터 있음
     }
