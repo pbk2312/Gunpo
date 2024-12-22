@@ -4,6 +4,7 @@
 <head>
     <title>채팅방</title>
     <style>
+        /* 기존 스타일 동일 */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f5;
@@ -140,29 +141,50 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script th:inline="javascript">
-        var roomId = encodeURIComponent(/*[[${roomId}]]*/); // URL 인코딩
+        // URL 인코딩 처리
+        var roomId = encodeURIComponent(/*[[${roomId}]]*/);
         var currentUserNickname;
 
+        // 로그 출력 함수
+        function logInfo(message, data = null) {
+            console.log(`[INFO]: ${message}`);
+            if (data) console.log(data);
+        }
+
+        function logError(message, error = null) {
+            console.error(`[ERROR]: ${message}`);
+            if (error) console.error(error);
+        }
+
+        // 메시지 전송
         function sendMessage() {
             var message = document.getElementById("message").value;
             if (!message.trim()) return;
 
+            logInfo("Sending message...", {text: message, roomId: roomId});
+
             axios.post("/chat/" + roomId, {text: message})
                 .then(() => {
                     document.getElementById("message").value = "";
+                    logInfo("Message sent successfully");
                     loadMessages();
                 })
                 .catch(error => {
-                    console.error("메시지 전송 실패:", error);
+                    logError("Failed to send message", error);
                 });
         }
 
+        // 메시지 불러오기
         function loadMessages() {
+            logInfo("Loading messages for room", {roomId: roomId});
+
             axios.get("/chat/" + roomId + "/messages?count=10")
                 .then(response => {
                     var data = response.data;
                     currentUserNickname = data.currentUserNickname;
                     var messages = data.messages;
+
+                    logInfo("Messages loaded successfully", messages);
 
                     var chatBox = document.getElementById("chatBox");
                     chatBox.innerHTML = '';
@@ -193,17 +215,19 @@
                     chatBox.scrollTop = chatBox.scrollHeight;
                 })
                 .catch(error => {
-                    console.error("메시지 불러오기 실패:", error);
+                    logError("Failed to load messages", error);
                 });
         }
 
+        // 엔터 키 처리
         function handleKeyPress(event) {
             if (event.key === "Enter") {
-                event.preventDefault(); // 기본 동작 방지
+                event.preventDefault();
                 sendMessage();
             }
         }
 
+        // 초기 메시지 로드
         window.onload = loadMessages;
     </script>
 </head>
