@@ -39,7 +39,6 @@ public class SmokingAreaService {
     private final RedisSmokingAreaService redisSmokingAreaService;
 
     public void fetchAllDataAndSaveToRedis() {
-        // Check if data already exists in Redis
         if (redisSmokingAreaService.isDataPresent()) {
             log.info("Redis에 흡연 구역 데이터가 이미 존재하므로 API 호출을 중단합니다.");
             return;

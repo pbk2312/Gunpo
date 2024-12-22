@@ -27,7 +27,6 @@ public class MemberManagementService {
     public void save(MemberDto memberDto) {
         memberRegistrationValidator.validateNewMember(memberDto);
 
-        // 엔티티의 팩토리 메서드를 사용하여 Member 생성
         Member member = Member.create(memberDto, encodePassword(memberDto.getPassword()));
         memberRepository.save(member);
     }
@@ -38,7 +37,6 @@ public class MemberManagementService {
     }
     @Transactional
     public void update(MemberUpdateDto updateDto) {
-        // 엔티티의 업데이트 메서드 사용
         Member existingMember = getExistingMember(updateDto);
         Member updatedMember = existingMember.updateProfile(
                 updateDto.getNickname(),
@@ -50,7 +48,6 @@ public class MemberManagementService {
     }
     @Transactional
     public void NeighborhoodVerification(String accessToken) {
-        // 상태 변경을 엔티티에 위임
         Member member = authenticationService.getUserDetails(accessToken);
         Member updatedMember = member.verifyNeighborhood();
         memberRepository.save(updatedMember);

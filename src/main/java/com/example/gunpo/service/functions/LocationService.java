@@ -12,7 +12,7 @@ public class LocationService {
     private static final double GUNPO_LATITUDE = 37.2981;
     private static final double GUNPO_LONGITUDE = 126.936;
     private static final double GUNPO_RADIUS_KM = 10.0;
-    private static final double EARTH_RADIUS_KM = 6371; // 지구 반경 (단위: km)
+    private static final double EARTH_RADIUS_KM = 6371;
 
     public boolean isWithinGunpoRadius(double userLatitude, double userLongitude) {
         validateCoordinates(userLatitude, userLongitude);

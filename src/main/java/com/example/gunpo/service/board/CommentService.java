@@ -37,7 +37,6 @@ public class CommentService {
         Comment comment = Comment.create(board, member, content, null);
         board.addComment(comment);
 
-        // 알림 메시지 생성
         String notificationMessage = member.getNickname() + "님이 게시글에 댓글을 남겼습니다.";
         String authorId = board.getAuthor().getId().toString();
 
@@ -61,7 +60,7 @@ public class CommentService {
         Comment parentComment = getComment(parentCommentId);
         Member member = authenticationService.getUserDetails(accessToken);
 
-        Comment reply = Comment.create(board, member, content, parentComment);  // 부모 댓글을 설정한 대댓글 생성
+        Comment reply = Comment.create(board, member, content, parentComment);
         board.addComment(reply);
         commentRepository.save(reply);
     }

@@ -20,7 +20,6 @@ public class RedisViewCountService {
     private final StringRedisTemplate stringRedisTemplate;
     private final BoardRepository boardRepository;
 
-    // Redis 키 생성 관련 메서드
     private String generateBoardViewKey(Long boardId) {
         return RedisConstants.VIEW_COUNT_PREFIX + boardId;
     }
@@ -29,7 +28,6 @@ public class RedisViewCountService {
         return RedisConstants.VIEW_COUNT_PREFIX + boardId + ":user:" + userId;
     }
 
-    // Redis 값 파싱 및 기본값 처리
     private int parseRedisValue(String value, String redisKey) {
         if (value == null) {
             log.info("Redis에서 키 {}의 값이 없어서 0 반환", redisKey);
@@ -124,7 +122,6 @@ public class RedisViewCountService {
         log.info("Redis에서 게시물 {}의 조회수 증가, 새 값: {}", boardId, getViewCount(boardId));
     }
 
-    // DB에서 조회수를 가져오는 메서드
     private int fetchViewCountFromDB(Long boardId) {
         return boardRepository.findViewCountByBoardId(boardId)
                 .orElse(0); // 조회된 값이 없으면 기본값 0 반환

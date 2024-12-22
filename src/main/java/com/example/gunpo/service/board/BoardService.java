@@ -86,14 +86,13 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public List<BoardDto> getPostListByMember(String accessToken) {
-        // 인증된 사용자의 정보를 가져옴
+
         Member member = getMember(accessToken);
 
-        // 해당 사용자가 작성한 게시물 리스트를 조회
         List<Board> boardByAuthor = boardRepository.getBoardByAuthor(member);
 
         return boardByAuthor.stream()
-                .map(boardMapper::toDto) // 메서드 참조로 변경
+                .map(boardMapper::toDto)
                 .toList();
     }
 

@@ -25,7 +25,6 @@ public class LikeSyncService {
     public void syncLikeCountsToDatabase() {
         log.info("좋아요 수 동기화 시작");
 
-        // Redis에서 좋아요 키 가져오기
         Set<String> keys = fetchLikeKeys();
         if (keys == null || keys.isEmpty()) {
             log.info("동기화할 Redis 키가 없습니다.");
@@ -40,16 +39,14 @@ public class LikeSyncService {
         log.info("좋아요 수 동기화 완료");
     }
 
-    // Redis에서 좋아요 관련 키 가져오기
     private Set<String> fetchLikeKeys() {
         return stringRedisTemplate.keys("board:like:*");
     }
 
-    // 개별 Redis 키 처리
     private void processLikeKey(String key) {
         try {
             if (!isValidLikeKey(key)) {
-                return; // 유효한 키가 아니면 무시
+                return;
             }
 
             Long boardId = extractBoardIdFromKey(key);
