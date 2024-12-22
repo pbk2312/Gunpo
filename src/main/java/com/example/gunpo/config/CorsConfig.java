@@ -31,16 +31,9 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // 배포 환경에 맞게 파일 경로를 설정하거나 classpath:/static/ 경로를 사용
-        String filePath = System.getenv("GUNPO_STATIC_PATH"); // 환경 변수로 파일 경로 설정
-        if (filePath != null && !filePath.isEmpty()) {
-            registry.addResourceHandler("/Gunpo/**")
-                    .addResourceLocations("file:" + filePath + "/Gunpo/");
-        } else {
-            // 로컬 환경에서 기본 static 경로 사용
-            registry.addResourceHandler("/Gunpo/**")
-                    .addResourceLocations("classpath:/static/Gunpo/");
-        }
+        // /Gunpo/** 경로를 실제 파일 시스템 경로로 매핑
+        registry.addResourceHandler("/Gunpo/**")
+                .addResourceLocations("file:/Users/park/IdeaProjects/Gunpo/src/main/resources/static/Gunpo/");
     }
 
 }
