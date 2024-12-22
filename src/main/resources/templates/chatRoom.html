@@ -140,7 +140,7 @@
     </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script th:inline="javascript">
-        var roomId = encodeURIComponent(/*[[${roomId}]]*/); // URL 인코딩
+        var roomId = /*[[${roomId}]]*/ 'default';
         var currentUserNickname;
 
         function sendMessage() {
