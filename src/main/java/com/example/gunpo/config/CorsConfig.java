@@ -16,10 +16,10 @@ public class CorsConfig implements WebMvcConfigurer {
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // 쿠키를 포함한 인증 요청 허용
-        config.addAllowedOrigin("https://gunpo.store"); // 허용할 도메인
-        config.addAllowedHeader("*"); // 허용할 HTTP 헤더
-        config.addAllowedMethod("*"); // 허용할 HTTP 메서드 (GET, POST, PUT 등)
+        config.setAllowCredentials(true);
+        config.addAllowedOrigin("https://gunpo.store");
+        config.addAllowedHeader("*");
+        config.addAllowedMethod("*");
         source.registerCorsConfiguration("/**", config);
         return new CorsFilter(source);
     }
@@ -31,7 +31,6 @@ public class CorsConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // /Gunpo/** 경로를 실제 파일 시스템 경로로 매핑
         registry.addResourceHandler("/Gunpo/**")
                 .addResourceLocations("file:/Users/park/IdeaProjects/Gunpo/src/main/resources/static/Gunpo/");
     }

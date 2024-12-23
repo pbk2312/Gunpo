@@ -1,6 +1,5 @@
 package com.example.gunpo.config;
 
-
 import com.example.gunpo.jwt.JwtAccessDeniedHandler;
 import com.example.gunpo.jwt.JwtAuthenticationEntryPoint;
 import com.example.gunpo.handler.OAuth2AuthenticationSuccessHandler;
@@ -18,10 +17,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @RequiredArgsConstructor
@@ -45,7 +40,6 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
 
-                // 예외 처리 설정
                 .exceptionHandling(exceptionHandling -> exceptionHandling
                         .authenticationEntryPoint(jwtAuthenticationEntryPoint)
                         .accessDeniedHandler(jwtAccessDeniedHandler)
@@ -57,14 +51,12 @@ public class SecurityConfig {
                         .requestMatchers("/", "/css/**", "/js/**", "/images/**", "/static/**").permitAll()
                         .requestMatchers("/api/member/**", "/login", "/api/chat/", "/sign-up"
                                 , "/chat", "/news", "/GyeonggiCurrencyStore", "/smoking-area"
-                                , "/api/sendCertificationMail", "/api/verifyEmail","/api/smoking-area","/api/GyeonggiCurrencyStoreInfo"
-                                ,"/api/chat/messages"
-
+                                , "/api/sendCertificationMail", "/api/verifyEmail", "/api/smoking-area",
+                                "/api/GyeonggiCurrencyStoreInfo"
+                                , "/api/chat/messages"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
-
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
 
                 .with(new JwtSecurityConfig(tokenProvider), jwtSecurityConfig -> {
                 })
@@ -83,19 +75,6 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations());
-    }
-
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("https://gunpo.store"); // 허용할 도메인
-        configuration.addAllowedMethod("*"); // 허용할 HTTP 메서드
-        configuration.addAllowedHeader("*"); // 허용할 HTTP 헤더
-        configuration.setAllowCredentials(true); // 쿠키를 포함한 인증 요청 허용
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 
 }
