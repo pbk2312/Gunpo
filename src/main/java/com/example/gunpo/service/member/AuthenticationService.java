@@ -97,7 +97,9 @@ public class AuthenticationService {
         return findMemberByEmail(userDetails.getUsername());
     }
 
-    public TokenValidationResult validateTokens(String accessToken, String refreshToken) {
+    @Transactional(readOnly = true)
+    public TokenValidationResult validateTokens(String accessToken) {
+        // 먼저 accessToken이 유효한지 확인
         if (isTokenValid(accessToken)) {
             return TokenValidationResult.builder()
                     .isAccessTokenValid(true)
@@ -107,7 +109,10 @@ public class AuthenticationService {
                     .build();
         }
 
+        // accessToken이 유효하지 않다면, refreshToken을 Redis에서 가져와서 검증
+        String refreshToken = getRefreshTokenFromRedis(accessToken);
         if (refreshToken != null && isTokenValid(refreshToken)) {
+            // refreshToken이 유효하면 새로운 accessToken 발급
             TokenDto newTokenDto = tokenService.generateTokenDto(
                     tokenService.getAuthenticationFromRefreshToken(refreshToken)
             );
@@ -119,12 +124,20 @@ public class AuthenticationService {
                     .build();
         }
 
+        // 두 토큰이 모두 유효하지 않으면
         return TokenValidationResult.builder()
                 .isAccessTokenValid(false)
                 .isRefreshTokenValid(false)
                 .newAccessToken(null)
                 .message("Both tokens are invalid.")
                 .build();
+    }
+
+    private String getRefreshTokenFromRedis(String accessToken) {
+        // accessToken을 기반으로 해당 유저의 refreshToken을 Redis에서 가져옴
+        Authentication authentication = tokenService.getAuthentication(accessToken);
+        Member member = findMemberByAuthentication(authentication);
+        return redisTokenService.getStringValue(String.valueOf(member.getId()));
     }
 
     private boolean isTokenValid(String token) {

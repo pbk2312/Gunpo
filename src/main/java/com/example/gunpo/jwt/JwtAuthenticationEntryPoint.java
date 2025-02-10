@@ -1,6 +1,5 @@
 package com.example.gunpo.jwt;
 
-import com.example.gunpo.exception.location.NeighborhoodVerificationException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;

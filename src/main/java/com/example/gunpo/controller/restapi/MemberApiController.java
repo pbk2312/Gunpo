@@ -31,7 +31,6 @@ public class MemberApiController {
 
     // 쿠키 유효기간 상수
     private static final int ACCESS_TOKEN_EXPIRATION = 60 * 60; // 1시간
-    private static final int REFRESH_TOKEN_EXPIRATION = 60 * 60 * 24 * 7; // 7일
 
     // 메시지 상수
     private static final String SIGN_UP_SUCCESS = "회원가입 성공";
@@ -55,7 +54,6 @@ public class MemberApiController {
         log.info("로그인 요청: 이메일 = {}", loginDto.getEmail());
         TokenDto tokenDto = authenticationService.login(loginDto);
         CookieUtils.addCookie(response, "accessToken", tokenDto.getAccessToken(), ACCESS_TOKEN_EXPIRATION);
-        CookieUtils.addCookie(response, "refreshToken", tokenDto.getRefreshToken(), REFRESH_TOKEN_EXPIRATION);
         String redirectUrl = getRedirectUrlFromSession(request);
         log.info("로그인 성공: 이메일 = {}, 리디렉션 URL = {}", loginDto.getEmail(), redirectUrl);
         return ResponseEntity.ok(new ResponseDto<>(LOGIN_SUCCESS, redirectUrl, true));
@@ -67,7 +65,6 @@ public class MemberApiController {
         log.info("로그아웃 요청: 액세스 토큰 = {}", accessToken);
         authenticationService.logout(accessToken);
         CookieUtils.removeCookie(response, "accessToken");
-        CookieUtils.removeCookie(response, "refreshToken");
         log.info("로그아웃 성공: 액세스 토큰 = {}", accessToken);
         return ResponseEntity.ok(new ResponseDto<>(LOGOUT_SUCCESS, null, true));
     }
@@ -88,10 +85,8 @@ public class MemberApiController {
     @GetMapping("/validateToken")
     public ResponseEntity<ResponseDto<Map<String, Object>>> validateToken(
             @CookieValue(value = "accessToken", required = false) String accessToken,
-            @CookieValue(value = "refreshToken", required = false) String refreshToken,
             HttpServletResponse response) {
-        log.info("토큰 검증 요청: 액세스 토큰 = {}, 리프레시 토큰 = {}", accessToken, refreshToken);
-        TokenValidationResult validationResult = authenticationService.validateTokens(accessToken, refreshToken);
+        TokenValidationResult validationResult = authenticationService.validateTokens(accessToken);
         Map<String, Object> data = new HashMap<>();
         data.put("isAccessTokenValid", validationResult.isAccessTokenValid());
         data.put("isRefreshTokenValid", validationResult.isRefreshTokenValid());

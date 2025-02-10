@@ -19,4 +19,9 @@ public class RedisTokenService {
         stringRedisTemplate.delete(memberId);
     }
 
+    // refreshToken 가져오기
+    public String getStringValue(String memberId) {
+        return stringRedisTemplate.opsForValue().get(memberId);
+    }
+
 }
