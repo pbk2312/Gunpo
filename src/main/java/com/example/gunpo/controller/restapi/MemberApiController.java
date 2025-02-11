@@ -86,8 +86,19 @@ public class MemberApiController {
     public ResponseEntity<ResponseDto<Map<String, Object>>> validateToken(
             @CookieValue(value = "accessToken", required = false) String accessToken,
             HttpServletResponse response) {
-        TokenValidationResult validationResult = authenticationService.validateTokens(accessToken);
+
         Map<String, Object> data = new HashMap<>();
+
+        // accessToken이 없으면 비로그인 상태 처리
+        if (accessToken == null || accessToken.trim().isEmpty()) {
+            log.info("accessToken 없음: 비로그인 상태로 처리");
+            data.put("isAccessTokenValid", false);
+            data.put("isRefreshTokenValid", false);
+            return ResponseEntity.ok(new ResponseDto<>(TOKEN_VALIDATION_SUCCESS, data, true));
+        }
+
+        // JWT 검증 진행
+        TokenValidationResult validationResult = authenticationService.validateTokens(accessToken);
         data.put("isAccessTokenValid", validationResult.isAccessTokenValid());
         data.put("isRefreshTokenValid", validationResult.isRefreshTokenValid());
 
@@ -97,7 +108,7 @@ public class MemberApiController {
                     ACCESS_TOKEN_EXPIRATION);
         }
 
-        log.info("토큰 검증 성공: 액세스 토큰 유효성 = {}, 리프레시 토큰 유효성 = {}", validationResult.isAccessTokenValid(),
+        log.info("토큰 검증 완료: 액세스 토큰 유효성 = {}, 리프레시 토큰 유효성 = {}", validationResult.isAccessTokenValid(),
                 validationResult.isRefreshTokenValid());
         return ResponseEntity.ok(new ResponseDto<>(TOKEN_VALIDATION_SUCCESS, data, true));
     }
