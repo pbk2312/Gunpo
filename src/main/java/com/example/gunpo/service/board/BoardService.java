@@ -47,7 +47,9 @@ public class BoardService {
 
         log.info("게시물 조회 요청 - 페이지 번호: {}, 페이지 크기: {}", pageable.getPageNumber(), pageable.getPageSize());
 
-        Page<BoardDto> boardDtos = boardRepository.findAll(sortedByCreatedAtDesc).map(boardMapper::toDto);
+        // ✅ @EntityGraph를 적용한 findAll 사용 (author, comments, images 미리 조회)
+        Page<BoardDto> boardDtos = boardRepository.findAll(sortedByCreatedAtDesc)
+                .map(boardMapper::toDto);
 
         setViewCounts(boardDtos.getContent());
 
@@ -86,9 +88,7 @@ public class BoardService {
 
     @Transactional(readOnly = true)
     public List<BoardDto> getPostListByMember(String accessToken) {
-
         Member member = getMember(accessToken);
-
         List<Board> boardByAuthor = boardRepository.getBoardByAuthor(member);
 
         return boardByAuthor.stream()
@@ -105,7 +105,6 @@ public class BoardService {
                 .toList();
     }
 
-
     private Board getBoard(Long postId) {
         boardValidator.validatePostId(postId);
         return boardRepository.findById(postId)
@@ -116,7 +115,6 @@ public class BoardService {
         int viewCount = redisViewCountService.getViewCount(boardId);
         boardDto.setViewCount(viewCount);
     }
-
 
     private void setViewCounts(List<BoardDto> boardDtos) {
         List<Long> boardIds = boardDtos.stream()

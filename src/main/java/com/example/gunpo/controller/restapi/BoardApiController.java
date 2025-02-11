@@ -6,6 +6,7 @@ import com.example.gunpo.dto.ResponseDto;
 import com.example.gunpo.service.board.BoardCreationService;
 import com.example.gunpo.service.board.BoardService;
 import com.example.gunpo.service.board.BoardUpdateService;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +36,7 @@ public class BoardApiController {
             @RequestParam String title,
             @RequestParam String content,
             @RequestParam String category,
-            @RequestParam List<MultipartFile> images) {
+            @RequestParam Set<MultipartFile> images) {
         log.info("게시물 작성 요청 - 제목: {}, 카테고리: {}, 이미지 개수: {}", title, category, images.size());
         BoardDto boardDto = new BoardDto(title, content, Category.valueOf(category));
         boardCreationService.create(boardDto, accessToken, images);
@@ -50,8 +51,8 @@ public class BoardApiController {
             @RequestParam String title,
             @RequestParam String content,
             @RequestParam String category,
-            @RequestParam List<MultipartFile> newImages,
-            @RequestParam(required = false) List<String> deleteImages) {
+            @RequestParam Set<MultipartFile> newImages,
+            @RequestParam(required = false) Set<String> deleteImages) {
         log.info("게시물 수정 요청 - ID: {}, 제목: {}, 카테고리: {}", id, title, category);
         BoardDto boardDto = new BoardDto(id, title, content, Category.valueOf(category));
         boardUpdateService.updatePost(boardDto, newImages, deleteImages, accessToken);

@@ -15,6 +15,7 @@ import com.example.gunpo.service.member.AuthenticationService;
 import com.example.gunpo.validator.member.AuthenticationValidator;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
@@ -89,7 +90,7 @@ public class BoardViewController {
             BoardDto boardDto = boardService.getPost(id, accessToken);
             model.addAttribute("board", boardDto);
 
-            List<Comment> comments = commentService.getComments(id);
+            Set<Comment> comments = commentService.getComments(id);
 
             // 댓글을 CommentDto 리스트로 변환
             List<CommentDto> commentDtos = comments.stream()

@@ -4,6 +4,7 @@ import com.example.gunpo.service.image.ImageProcessor;
 import com.example.gunpo.domain.board.Board;
 import com.example.gunpo.dto.board.BoardDto;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +14,7 @@ public class BoardMapper {
 
     private final ImageProcessor imageProcessor;
     public BoardDto toDto(Board board) {
-        List<String> imagePaths = imageProcessor.extractImagePaths(board);
+        Set<String> imagePaths = imageProcessor.extractImagePaths(board);
         return BoardDto.builder()
                 .id(board.getId())
                 .title(board.getTitle())

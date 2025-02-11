@@ -6,10 +6,11 @@ import com.example.gunpo.dto.board.BoardDto;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.log4j.Log4j2;
+import org.hibernate.annotations.BatchSize;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Getter
@@ -49,18 +50,20 @@ public class Board {
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<BoardImage> images = new ArrayList<>();
+    @BatchSize(size = 10) // Batch fetching 적용
+    private Set<BoardImage> images = new HashSet<>();
 
     @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Comment> comments = new ArrayList<>();
+    @BatchSize(size = 10) // Batch fetching 적용
+    private Set<Comment> comments = new HashSet<>();
 
-    public Board updateBoard(String title, String content, Category category, List<BoardImage> updatedImages) {
+    public Board updateBoard(String title, String content, Category category, Set<BoardImage> updatedImages) {
         return this.toBuilder()
                 .title(title != null && !title.isBlank() ? title : this.title)
                 .content(content != null && !content.isBlank() ? content : this.content)
                 .category(category != null ? category : this.category)
-                .images(updatedImages != null ? new ArrayList<>(updatedImages) : this.images)
+                .images(updatedImages != null ? new HashSet<>(updatedImages) : this.images)
                 .updatedAt(LocalDateTime.now())
                 .build();
     }

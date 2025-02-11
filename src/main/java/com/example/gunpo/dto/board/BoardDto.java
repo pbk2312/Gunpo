@@ -6,6 +6,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.Set;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -35,7 +36,7 @@ public class BoardDto {
 
     private int viewCount;
 
-    private List<String> imagePaths;
+    private Set<String> imagePaths;
 
     @NotNull(message = "카테고리는 필수입니다.")
     @Enumerated(EnumType.STRING)

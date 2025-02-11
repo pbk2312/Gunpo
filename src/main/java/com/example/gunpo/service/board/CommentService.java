@@ -15,6 +15,7 @@ import com.example.gunpo.service.redis.notification.NotificationRedisService;
 import com.example.gunpo.validator.board.CommentValidator;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -83,7 +84,7 @@ public class CommentService {
 
     // 게시글의 댓글들 조회
     @Transactional(readOnly = true)
-    public List<Comment> getComments(Long boardId) {
+    public Set<Comment> getComments(Long boardId) {
         Board board = getBoard(boardId);
         return board.getComments();
     }

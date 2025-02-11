@@ -9,6 +9,7 @@ import com.example.gunpo.service.redis.board.RedisViewCountService;
 import com.example.gunpo.validator.board.BoardValidator;
 import com.example.gunpo.validator.member.AuthenticationValidator;
 import com.example.gunpo.service.image.ImageProcessor;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
@@ -29,7 +30,7 @@ public class BoardCreationService {
     private final BoardValidator boardValidator;
 
     @Transactional
-    public void create(BoardDto boardDto, String accessToken, List<MultipartFile> images) {
+    public void create(BoardDto boardDto, String accessToken, Set<MultipartFile> images) {
         authenticationValidator.validateAccessToken(accessToken);
         boardValidator.validate(boardDto);
 

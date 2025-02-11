@@ -14,9 +14,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Service
@@ -33,8 +33,8 @@ public class ImageService {
     private static final String[] ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".gif"};
 
     @Transactional
-    public List<BoardImage> saveImages(List<MultipartFile> images, Board board) {
-        List<BoardImage> savedImages = new ArrayList<>();
+    public Set<BoardImage> saveImages(Set<MultipartFile> images, Board board) {
+        Set<BoardImage> savedImages = new HashSet<>();
 
         if (images == null || images.isEmpty()) {
             log.info("업로드된 이미지가 없습니다.");
@@ -170,5 +170,4 @@ public class ImageService {
                 .board(board)
                 .build();
     }
-
 }

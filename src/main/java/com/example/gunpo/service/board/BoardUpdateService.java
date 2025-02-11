@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +25,7 @@ public class BoardUpdateService {
     private final BoardValidator boardValidator;
 
     @Transactional
-    public void updatePost(BoardDto boardDto, List<MultipartFile> newImages, List<String> deleteImages,
+    public void updatePost(BoardDto boardDto, Set<MultipartFile> newImages, Set<String> deleteImages,
                            String accessToken) {
 
         // 기존 게시글 조회
@@ -39,7 +39,7 @@ public class BoardUpdateService {
         imageProcessor.processDeletedImages(deleteImages, existingBoard);
 
         // 추가할 새 이미지 처리
-        List<BoardImage> updatedImages = imageProcessor.processNewImages(newImages, existingBoard);
+        Set<BoardImage> updatedImages = imageProcessor.processNewImages(newImages, existingBoard);
 
         Board updatedBoard = existingBoard.updateBoard(
                 boardDto.getTitle(),
@@ -50,5 +50,4 @@ public class BoardUpdateService {
 
         boardRepository.save(updatedBoard);
     }
-
 }
